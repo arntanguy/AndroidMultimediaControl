@@ -27,18 +27,20 @@ public class RemoteControlActivity extends Activity {
     private void startNetwork() {
     	try {
 			// to get the ip address of the server by the name
-
-			InetAddress ip = InetAddress.getByName("192.168.42.254");
+			InetAddress ip = InetAddress.getByName("192.168.42.110");
 
 			// Connecting to the port 4242
 			// Creates a socket with the server bind to it.
 			sock = new Socket(ip, 4242);
-			ps = new PrintStream(sock.getOutputStream());
-			ps.println("say hi from client");
-			ps.println("quit");
-
+			if(sock == null) System.out.println("Socket null !!");
 			BufferedReader is = new BufferedReader(new InputStreamReader(sock.getInputStream()));
 			System.out.println(is.readLine());
+			System.out.println(is.readLine());
+
+			
+			ps = new PrintStream(sock.getOutputStream());
+			ps.println("play");
+			ps.println("quit");
 
 		} catch (SocketException e) {
 			System.out.println("SocketException " + e);

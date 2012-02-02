@@ -6,6 +6,8 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketException;
 
+import org.freedesktop.dbus.exceptions.DBusException;
+
 public class Server {
 
 	// port number should be more than 1024
@@ -17,8 +19,11 @@ public class Server {
 
 	public static void main(String args[]) {
 
-		System.out.println(" Wait !! ");
-
+		System.out.println(" Waiting for command !! ");
+		
+		  try { new NewClass(); } catch (DBusException e) { // TODO
+		 e.printStackTrace(); }
+		 
 		try {
 			// Initialising the ServerSocket
 			sersock = new ServerSocket(PORT);
@@ -32,35 +37,45 @@ public class Server {
 				// which two way communication take place
 				sock = sersock.accept();
 
-				System.out.println("Client Connected  :" + sock);
-
-				// Receive message from client i.e Request from client
-				BufferedReader is = null;
-				try {
-					is = new BufferedReader(new InputStreamReader(sock
-							.getInputStream()));
-				} catch (IOException e1) {
-					System.out.println("Unable to read data stream ! \n"
-							+ e1.getStackTrace());
-					return;
-				}
-
-				while (run) {
-					System.out.println("run");
-					String str = is.readLine();
-					System.out.println(str);
-					if (str.equals("quit")) {
-						run = false;
-					}
-				}
+				System.out.println("Client Connected  :" + sock);			 
 
 				// Send message to the client i.e Response
 				PrintStream ios = new PrintStream(sock.getOutputStream());
 				ios.println("Hello from server");
+				ios.println("Comment va ?");
 				ios.close();
+				
+				// Receive message from client i.e Request from client
+				BufferedReader is = new BufferedReader(new InputStreamReader(sock.getInputStream()));
+			
+				CommandParser parser = new CommandParser();
+				System.out.println("Parsing commands");
+				while (run) { 
+					String str = is.readLine();
+					System.out.println(str);
 
+					if (!str.isEmpty()) {
+						Command c = parser.parse(str);
+						switch (c.getCommand()) {
+						case PLAY:
+							System.out.println("Play");
+							try {
+								new NewClass();
+							} catch (Exception e) {
+								System.out.println("Erreur DBUS");
+								e.printStackTrace();
+							}
+							break;
+						case QUIT:
+							System.out.println("Quit");
+							run = false;
+							break;
+						}
+					}
+				}
 			} catch (SocketException se) {
 				System.out.println("Server Socket problem  " + se.getMessage());
+				se.printStackTrace();
 			} catch (Exception e) {
 				System.out.println("Couldn't start " + e.getMessage());
 			}
