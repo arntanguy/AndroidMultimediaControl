@@ -1,6 +1,6 @@
 
 public enum CommandWord {
-	PLAY("play"), QUIT("quit"), UNKNOWN("unknown");
+	PLAY("play"), PAUSE("pause"), QUIT("quit"), UNKNOWN("unknown");
 	
 
     // Le String de commande.

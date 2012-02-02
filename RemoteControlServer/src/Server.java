@@ -36,14 +36,13 @@ public class Server {
 				// makes a socket connection to particular client after
 				// which two way communication take place
 				sock = sersock.accept();
-
+				
 				System.out.println("Client Connected  :" + sock);			 
 
 				// Send message to the client i.e Response
 				PrintStream ios = new PrintStream(sock.getOutputStream());
 				ios.println("Hello from server");
 				ios.println("Comment va ?");
-				ios.close();
 				
 				// Receive message from client i.e Request from client
 				BufferedReader is = new BufferedReader(new InputStreamReader(sock.getInputStream()));
@@ -52,7 +51,6 @@ public class Server {
 				System.out.println("Parsing commands");
 				while (run) { 
 					String str = is.readLine();
-					System.out.println(str);
 
 					if (!str.isEmpty()) {
 						Command c = parser.parse(str);
@@ -66,8 +64,13 @@ public class Server {
 								e.printStackTrace();
 							}
 							break;
+						case PAUSE:
+							System.out.println("Pause");
+							break;
 						case QUIT:
 							System.out.println("Quit");
+							ios.close();
+							is.close();
 							run = false;
 							break;
 						}
