@@ -20,9 +20,6 @@ public class Server {
 	public static void main(String args[]) {
 
 		System.out.println(" Waiting for command !! ");
-		
-		  try { new NewClass(); } catch (DBusException e) { // TODO
-		 e.printStackTrace(); }
 		 
 		try {
 			// Initialising the ServerSocket

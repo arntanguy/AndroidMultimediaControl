@@ -10,24 +10,51 @@ import java.net.SocketException;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.widget.Button;
+import android.widget.ToggleButton;
 
 public class RemoteControlActivity extends Activity {
 	Socket sock = null;
 	PrintStream ps = null;
 
+	Button previousB;
+	Button nextB;
+	ToggleButton playB;
+
+	private OnClickListener playClickListener = new
+	OnClickListener()
+	{
+		@Override
+		public void onClick(View v) {
+			System.out.println((playB.isChecked()) ?	"Play clicked" : "Pause clicked");
+		}
+	};
+
+
+
 	/** Called when the activity is first created. */
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.main);
-        
-        startNetwork();
-    }
-    
-    private void startNetwork() {
-    	try {
+	@Override
+	public void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+
+		setContentView(R.layout.mediacontrols);
+
+		previousB = (Button) findViewById(R.id.previousButton);
+		nextB = (Button) findViewById(R.id.nextButton);
+		playB = (ToggleButton) findViewById(R.id.playButton);
+
+		playB.setOnClickListener(playClickListener);
+
+
+		startNetwork();
+	}
+
+	private void startNetwork() {
+		try {
 			// to get the ip address of the server by the name
-			InetAddress ip = InetAddress.getByName("192.168.42.110");
+			InetAddress ip = InetAddress.getByName("192.168.5.75");
 
 			// Connecting to the port 4242
 			// Creates a socket with the server bind to it.
@@ -37,7 +64,7 @@ public class RemoteControlActivity extends Activity {
 			System.out.println(is.readLine());
 			System.out.println(is.readLine());
 
-			
+
 			ps = new PrintStream(sock.getOutputStream());
 			ps.println("play");
 			ps.println("quit");
@@ -55,5 +82,5 @@ public class RemoteControlActivity extends Activity {
 				System.out.println(" Close Error   :" + ie.getMessage());
 			} 
 		} 
-    }
+	}
 }

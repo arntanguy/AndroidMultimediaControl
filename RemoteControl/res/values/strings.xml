@@ -3,5 +3,8 @@
 
     <string name="hello">Hello World, RemoteControlActivity!</string>
     <string name="app_name">RemoteControl</string>
+    <string name="previous">&lt;&lt;</string>
+    <string name="next">>></string>
+    <string name="play">Play</string>
 
 </resources>
