@@ -6,6 +6,8 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketException;
 
+import org.freedesktop.dbus.exceptions.DBusException;
+
 public class Server {
 
 	// port number should be more than 1024
@@ -16,22 +18,19 @@ public class Server {
 	private Socket sock = null;
 	PrintStream ios = null;
 	BufferedReader is = null;
+	DBus dbus = null;
 	
-	public Server(int port) {
+	public Server(int port) throws DBusException {
 		PORT = port;
+		dbus = new DBus();
 	}
 	
-	public Server() {
+	public Server() throws DBusException {
 		this(4242);
-		System.out.println(" Waiting for command !! ");
-			
-			// Gives the Server Details Machine name, Port number
-			System.out.println("Server Started  :" + sersock);
-			
-				
+		System.out.println(" Waiting for command !! ");				
 	}
 	
-	public void connect() throws IOException {
+	public void connect() throws IOException, DBusException {
 		// Initialising the ServerSocket
 		sersock = new ServerSocket(PORT);
 
@@ -47,6 +46,9 @@ public class Server {
 		
 		// Receive message from client i.e Request from client
 		is = new BufferedReader(new InputStreamReader(sock.getInputStream()));
+		
+		dbus.connect();
+		
 	}
 	
 	public void disconnect() throws IOException {
@@ -67,21 +69,18 @@ public class Server {
 				switch (c.getCommand()) {
 				case PLAY:
 					System.out.println("Play");
-					try {
-						new DBus();
-					} catch (Exception e) {
-						System.out.println("Erreur DBUS");
-						e.printStackTrace();
-					}
+					dbus.play();
 					break;
 				case PAUSE:
 					System.out.println("Pause");
 					break;
 				case NEXT:
 					System.out.println("Next");
+					dbus.next();
 					break;
 				case PREVIOUS:
 					System.out.println("Previous");
+					dbus.previous();
 					break;
 				case QUIT:
 					System.out.println("Quit");

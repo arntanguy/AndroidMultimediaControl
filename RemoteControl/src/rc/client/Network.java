@@ -7,46 +7,55 @@ import java.io.PrintStream;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.net.SocketException;
+import java.net.UnknownHostException;
 
 public class Network {
 	Socket sock = null;
 	PrintStream ps = null;
-	InetAddress serverIp = null;
-	private int port = 4242;
+	BufferedReader is = null;
+	String serverIp;
+	private static final int DEFAULT_PORT = 4242;
+	private int port;
+
+	public Network(String ip, int port) {
+		serverIp = ip;
+		this.port = port;
+	}
+
+	public Network(String ip) {
+		this(ip, DEFAULT_PORT);
+	}
 
 	public Network() {
+		this("192.168.1.137", DEFAULT_PORT);
 	}
 
-	public void connect() {
-		try {
-			// Set the adress of the server
-			serverIp = InetAddress.getByName("192.168.5.75");
+	public void connect() throws SocketException, IOException,
+			UnknownHostException {
+		// Set the adress of the server
+		InetAddress ip = InetAddress.getByName(serverIp);
 
-			// Creates a socket with the server bind to it.
-			sock = new Socket(serverIp, port);
-			BufferedReader is = new BufferedReader(new InputStreamReader(sock.getInputStream()));
-			System.out.println(is.readLine()); // XXX reads a line from the server
-			System.out.println(is.readLine()); // TODO really read, and not just only the greeting message
+		// Creates a socket with the server bind to it.
+		sock = new Socket(ip, port);
+		is = new BufferedReader(new InputStreamReader(sock.getInputStream()));
+		System.out.println(is.readLine()); // XXX reads a line from the server
+											// TODO really read, and not just
+											// only the greeting message
 
-
-			ps = new PrintStream(sock.getOutputStream());
-		} catch (SocketException e) {
-			System.out.println("SocketException " + e);
-		} catch (IOException e) {
-			System.out.println("IOException " + e);
-		}
-
+		ps = new PrintStream(sock.getOutputStream());
 	}
-	public void disconnect() {
-		try {
-			sock.close();
-		} catch (IOException ie) {
-			System.out.println(" Close Error   :" + ie.getMessage());
-		} 
+
+	public void disconnect() throws IOException {
+		ps.close();
+		is.close();
+		sock.close();
 	}
-	
+
 	public void sendCommand(String c) {
-		ps.println(c);
+		if (ps != null) {
+			System.out.println("Sending command "+c);
+			ps.println(c);
+		}
 	}
-	
+
 }

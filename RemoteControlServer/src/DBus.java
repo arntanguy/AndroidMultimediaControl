@@ -17,16 +17,12 @@ public class DBus {
 	private static DBusConnection conn = null;
 	MediaPlayer mediaPlayer;
 
-	public DBus() throws DBusException {
-
+	public DBus() {
 		System.out.println("DBUS");
-		conn = DBusConnection.getConnection(DBusConnection.SESSION);
-		mediaPlayer = (MediaPlayer) conn.getRemoteObject(ServiceBusName,
-				ObjectPath);
-		conn.disconnect();
 	}
 
-	public void play() {		
+	public void play() {
+		System.out.println("DBUS Play");
 		mediaPlayer.Pause();
 	}
 
@@ -36,5 +32,15 @@ public class DBus {
 
 	public void previous() {
 		mediaPlayer.Prev();
+	}
+
+	public void connect() throws DBusException {
+		conn = DBusConnection.getConnection(DBusConnection.SESSION);
+		mediaPlayer = (MediaPlayer) conn.getRemoteObject(ServiceBusName,
+				ObjectPath);
+	}
+
+	public void disconnect() {
+		conn.disconnect();
 	}
 }

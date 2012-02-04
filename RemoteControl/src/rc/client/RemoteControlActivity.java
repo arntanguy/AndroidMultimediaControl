@@ -1,5 +1,9 @@
 package rc.client;
 
+import java.io.IOException;
+import java.net.SocketException;
+import java.net.UnknownHostException;
+
 import android.app.Activity;
 import android.os.Bundle;
 import android.view.View;
@@ -14,16 +18,32 @@ public class RemoteControlActivity extends Activity {
 	Button nextB;
 	ToggleButton playB;
 
+
 	/** Called when the activity is first created. */
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
-		network = new Network();
-		network.connect();
+		/**
+		 * XXX: Don't just hide errors, manage them !
+		 */
+		network = new Network("192.168.1.137", 4242);
+		try {
+			network.connect();
+		} catch (UnknownHostException e) {
+			System.out.println("=== Unknown host " + e.getCause());
+			e.printStackTrace();
+		} catch (SocketException e) {
+			System.out.println("=== Problem with the socket ===");
+			e.printStackTrace();
+		} catch (IOException e) {
+			System.out.println("=== IOException ===");
+			e.printStackTrace();
+		}
 
 		setContentView(R.layout.mediacontrols);
-
+		// Warning : findViewById will only return non null views if the content
+		// view is already set !!
 		previousB = (Button) findViewById(R.id.previousButton);
 		nextB = (Button) findViewById(R.id.nextButton);
 		playB = (ToggleButton) findViewById(R.id.playButton);
@@ -32,26 +52,33 @@ public class RemoteControlActivity extends Activity {
 		nextB.setOnClickListener(nextClickListener);
 		previousB.setOnClickListener(previousClickListener);
 	}
-
+	
+	
+	
 	private OnClickListener playClickListener = new OnClickListener() {
 		@Override
 		public void onClick(View v) {
-			network.sendCommand("play");
+			if (network != null) {
+				network.sendCommand("play");
+			}
 		}
 	};
 
 	private OnClickListener nextClickListener = new OnClickListener() {
 		@Override
 		public void onClick(View v) {
-			network.sendCommand("next");
+			if (network != null) {
+				network.sendCommand("next");
+			}
 		}
 	};
 
 	private OnClickListener previousClickListener = new OnClickListener() {
 		@Override
 		public void onClick(View v) {
-			network.sendCommand("previous");
+			if (network != null) {
+				network.sendCommand("previous");
+			}
 		}
 	};
-
 }
