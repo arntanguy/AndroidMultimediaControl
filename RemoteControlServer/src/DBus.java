@@ -5,42 +5,34 @@
 
 import org.freedesktop.dbus.DBusConnection;
 import org.freedesktop.dbus.exceptions.DBusException;
-import org.freedesktop.MediaPlayer;
 
-public class DBus {
+abstract public class DBus {
 
 	// dbus-send --print-reply --session --dest=org.mpris.vlc /Player
 	// org.freedesktop.MediaPlayer.Pause
 
-	private static final String ObjectPath = "/Player";
-	private static final String ServiceBusName = "org.mpris.vlc";
-	private static DBusConnection conn = null;
-	MediaPlayer mediaPlayer;
+	protected String objectPath = "/Player";
+	protected String serviceBusName = "org.mpris.vlc";
+	protected static DBusConnection conn = null;
 
 	public DBus() {
-		System.out.println("DBUS");
 	}
+	/**
+	 * Start playing when stopped
+	 * Pause when playing
+	 * Play when in pause
+	 */
+	abstract public void togglePlayPause();
+	/**
+	 * Pause if playing, do nothing otherwise
+	 */
+	abstract public void pause();
+	
+	abstract public void next();
 
-	public void play() {
-		System.out.println("DBUS Play");
-		mediaPlayer.Pause();
-	}
+	abstract public void previous();
 
-	public void next() {
-		mediaPlayer.Next();
-	}
+	abstract public void connect() throws DBusException;
 
-	public void previous() {
-		mediaPlayer.Prev();
-	}
-
-	public void connect() throws DBusException {
-		conn = DBusConnection.getConnection(DBusConnection.SESSION);
-		mediaPlayer = (MediaPlayer) conn.getRemoteObject(ServiceBusName,
-				ObjectPath);
-	}
-
-	public void disconnect() {
-		conn.disconnect();
-	}
+	abstract public void disconnect();
 }

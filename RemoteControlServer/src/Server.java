@@ -4,8 +4,6 @@ import java.io.InputStreamReader;
 import java.io.PrintStream;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.net.SocketException;
-
 import org.freedesktop.dbus.exceptions.DBusException;
 
 public class Server {
@@ -18,11 +16,11 @@ public class Server {
 	private Socket sock = null;
 	PrintStream ios = null;
 	BufferedReader is = null;
-	DBus dbus = null;
+	DBusMPRIS dbus = null;
 	
 	public Server(int port) throws DBusException {
 		PORT = port;
-		dbus = new DBus();
+		dbus = new DBusMPRIS();
 	}
 	
 	public Server() throws DBusException {
@@ -69,10 +67,11 @@ public class Server {
 				switch (c.getCommand()) {
 				case PLAY:
 					System.out.println("Play");
-					dbus.play();
+					dbus.togglePlayPause();
 					break;
 				case PAUSE:
 					System.out.println("Pause");
+					dbus.pause();
 					break;
 				case NEXT:
 					System.out.println("Next");
