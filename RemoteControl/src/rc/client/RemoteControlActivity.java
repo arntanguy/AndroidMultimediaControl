@@ -6,6 +6,7 @@ import java.net.UnknownHostException;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
@@ -17,7 +18,6 @@ public class RemoteControlActivity extends Activity {
 	Button previousB;
 	Button nextB;
 	ToggleButton playB;
-
 
 	/** Called when the activity is first created. */
 	@Override
@@ -52,33 +52,48 @@ public class RemoteControlActivity extends Activity {
 		nextB.setOnClickListener(nextClickListener);
 		previousB.setOnClickListener(previousClickListener);
 	}
-	
-	
-	
+
 	private OnClickListener playClickListener = new OnClickListener() {
 		@Override
 		public void onClick(View v) {
-			if (network != null) {
 				network.sendCommand("play");
-			}
 		}
 	};
 
 	private OnClickListener nextClickListener = new OnClickListener() {
 		@Override
 		public void onClick(View v) {
-			if (network != null) {
 				network.sendCommand("next");
-			}
 		}
 	};
 
 	private OnClickListener previousClickListener = new OnClickListener() {
 		@Override
 		public void onClick(View v) {
-			if (network != null) {
 				network.sendCommand("previous");
-			}
 		}
 	};
+
+	@Override
+	public boolean dispatchKeyEvent(KeyEvent event) {
+		int action = event.getAction();
+		int keyCode = event.getKeyCode();
+		switch (keyCode) {
+		case KeyEvent.KEYCODE_VOLUME_UP:
+			if (action == KeyEvent.ACTION_UP) {
+				System.out.println("Volume up");
+				network.sendCommand("volume up=5");
+			}
+			return true;
+		case KeyEvent.KEYCODE_VOLUME_DOWN:
+			if (action == KeyEvent.ACTION_DOWN) {
+				System.out.println("Volume down !");
+				network.sendCommand("volume down=5");
+			}
+			return true;
+		default:
+			return super.dispatchKeyEvent(event);
+		}
+	}
+
 }

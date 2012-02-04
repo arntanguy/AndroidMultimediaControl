@@ -6,6 +6,10 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import org.freedesktop.dbus.exceptions.DBusException;
 
+import commands.Command;
+import commands.CommandParser;
+import dbus.DBusMPRIS;
+
 public class Server {
 
 	// port number should be more than 1024
@@ -80,6 +84,21 @@ public class Server {
 				case PREVIOUS:
 					System.out.println("Previous");
 					dbus.previous();
+					break;
+				case VOLUME:
+					System.out.println("Volume");
+					String o = c.getParameterValue("up");
+					if(o != null) {
+						dbus.setVolume(Integer.parseInt(o));
+						System.out.println("up="+o);
+					}
+					String d = c.getParameterValue("down");
+					if(d != null) {
+						dbus.setVolume(-Integer.parseInt((String)d));
+					}
+					
+					
+					
 					break;
 				case QUIT:
 					System.out.println("Quit");

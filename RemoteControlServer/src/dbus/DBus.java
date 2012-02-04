@@ -1,7 +1,5 @@
-/**
- *
- * @author sourcemorph
- */
+package dbus;
+ 
 
 import org.freedesktop.dbus.DBusConnection;
 import org.freedesktop.dbus.exceptions.DBusException;
@@ -31,6 +29,8 @@ abstract public class DBus {
 	abstract public void next();
 
 	abstract public void previous();
+	
+	abstract public void setVolume(int value);
 
 	abstract public void connect() throws DBusException;
 
