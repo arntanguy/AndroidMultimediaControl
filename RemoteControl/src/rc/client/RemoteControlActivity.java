@@ -45,7 +45,11 @@ public class RemoteControlActivity extends Activity {
 			System.out.println("=== IOException ===");
 			e.printStackTrace();
 		}
-
+		
+		// Start the command parser thread
+        Thread t = new Thread(network.getCommandParser(), "CommandParser Thread");
+		t.start();
+        
 		setContentView(R.layout.mediacontrols);
 		// Warning : findViewById will only return non null views if the content
 		// view is already set !!

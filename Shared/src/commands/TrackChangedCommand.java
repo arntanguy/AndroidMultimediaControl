@@ -17,10 +17,10 @@ public class TrackChangedCommand extends Command {
 	}
 	
 	public void setMetaData(Map<String, String> map) {
-		serializedMetaData = SerializationTool.serializeMap((Map<String, String>) map);
+		serializedMetaData = SerializationTool.mapToString((Map<String, String>) map);
 	}
 	
 	public Map<String, String> getMetaData() {
-		return SerializationTool.deserializeStringMap(serializedMetaData);
+		return SerializationTool.stringToMap(serializedMetaData);
 	}
 }

@@ -6,7 +6,6 @@ import java.util.Map;
 import org.freedesktop.MediaPlayer;
 import org.freedesktop.MediaPlayer.TrackChange;
 import org.freedesktop.dbus.DBusSigHandler;
-import org.freedesktop.dbus.Variant;
 
 import server.Server;
 
