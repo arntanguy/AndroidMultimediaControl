@@ -98,6 +98,13 @@ public class Server {
 					case CURRENT_TIME:
 						dbus.getPosition();
 						break;
+					case MOVE:
+						int pos = dbus.getPosition();
+						String p1 = c.getParameterValue("value");
+						if(p1 != null) {
+							dbus.setPosition(pos+Integer.parseInt(p1));
+						}
+						System.out.println(Integer.parseInt("-12"));
 					case VOLUME:
 						System.out.println("Volume");
 						String o = c.getParameterValue("up");

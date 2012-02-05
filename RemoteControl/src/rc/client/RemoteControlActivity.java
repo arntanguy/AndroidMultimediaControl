@@ -18,6 +18,8 @@ public class RemoteControlActivity extends Activity {
 	private Button previousB;
 	private Button nextB;
 	private ToggleButton playB;
+	private Button forwardB;
+	private Button backwardB;
 
 	/** Called when the activity is first created. */
 	@Override
@@ -47,10 +49,14 @@ public class RemoteControlActivity extends Activity {
 		previousB = (Button) findViewById(R.id.previousButton);
 		nextB = (Button) findViewById(R.id.nextButton);
 		playB = (ToggleButton) findViewById(R.id.playButton);
+		forwardB = (Button) findViewById(R.id.forwardButton);
+		backwardB = (Button) findViewById(R.id.backwardsButton);
 
 		playB.setOnClickListener(playClickListener);
 		nextB.setOnClickListener(nextClickListener);
 		previousB.setOnClickListener(previousClickListener);
+		forwardB.setOnClickListener(forwardClickListener);
+		backwardB.setOnClickListener(backwardsClickListener);
 	}
 
 	private OnClickListener playClickListener = new OnClickListener() {
@@ -75,6 +81,21 @@ public class RemoteControlActivity extends Activity {
 		@Override
 		public void onClick(View v) {
 			network.sendCommand("previous");
+		}
+	};
+	
+	private OnClickListener forwardClickListener = new OnClickListener() {
+		@Override
+		public void onClick(View v) {
+			// Move forward 10seconds
+			network.sendCommand("move value=10000");
+		}
+	};
+	
+	private OnClickListener backwardsClickListener = new OnClickListener() {
+		@Override
+		public void onClick(View v) {
+			network.sendCommand("move value=-10000");
 		}
 	};
 

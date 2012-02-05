@@ -80,6 +80,11 @@ public class DBusMPRIS extends DBus {
 	}
 	
 	@Override
+	public void setPosition(int pos) {
+		mediaPlayer.PositionSet(pos);
+	}
+	
+	@Override
 	public int getPosition() {
 		return 	mediaPlayer.PositionGet();
 	}
@@ -89,5 +94,7 @@ public class DBusMPRIS extends DBus {
 		// TODO Auto-generated method stub
 		return 0;
 	}
+
+	
 
 }

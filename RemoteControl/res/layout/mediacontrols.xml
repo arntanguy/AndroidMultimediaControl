@@ -21,6 +21,12 @@
             android:layout_height="wrap_content"
             android:text="@string/previous" />
 
+        <Button
+            android:id="@+id/backwardsButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/backwards" />
+
         <ToggleButton
             android:id="@+id/playButton"
             android:layout_width="wrap_content"
@@ -28,6 +34,12 @@
             android:text="@string/play"
             android:textOff="Play"
             android:textOn="Pause" />
+
+        <Button
+            android:id="@+id/forwardButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/forward" />
 
         <Button
             android:id="@+id/nextButton"

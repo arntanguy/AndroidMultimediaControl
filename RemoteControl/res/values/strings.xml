@@ -6,5 +6,7 @@
     <string name="previous">&lt;&lt;</string>
     <string name="next">>></string>
     <string name="play">Play</string>
+    <string name="forward">></string>
+    <string name="backwards">&lt;</string>
 
 </resources>
