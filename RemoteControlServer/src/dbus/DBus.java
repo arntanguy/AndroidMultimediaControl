@@ -40,4 +40,8 @@ abstract public class DBus {
 	}
 
 	abstract public void disconnect();
+	
+	abstract public int getPosition();
+	
+	abstract public int getTotalLenght();
 }

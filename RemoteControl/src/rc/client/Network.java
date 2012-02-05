@@ -9,11 +9,14 @@ import java.net.Socket;
 import java.net.SocketException;
 import java.net.UnknownHostException;
 
+import commands.Command;
+import commands.CommandParser;
+
 public class Network {
-	Socket sock = null;
-	PrintStream ps = null;
-	BufferedReader is = null;
-	String serverIp;
+	private Socket sock = null;
+	private PrintStream ps = null;
+	private BufferedReader is = null;
+	private String serverIp;
 	private static final int DEFAULT_PORT = 4242;
 	private int port;
 
@@ -39,8 +42,8 @@ public class Network {
 		sock = new Socket(ip, port);
 		is = new BufferedReader(new InputStreamReader(sock.getInputStream()));
 		System.out.println(is.readLine()); // XXX reads a line from the server
-											// TODO really read, and not just
-											// only the greeting message
+		// TODO really read, and not just
+		// only the greeting message
 
 		ps = new PrintStream(sock.getOutputStream());
 	}
@@ -53,9 +56,8 @@ public class Network {
 
 	public void sendCommand(String c) {
 		if (ps != null) {
-			System.out.println("Sending command "+c);
+			System.out.println("Sending command " + c);
 			ps.println(c);
 		}
 	}
-
 }

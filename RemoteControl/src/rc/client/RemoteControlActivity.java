@@ -13,11 +13,11 @@ import android.widget.Button;
 import android.widget.ToggleButton;
 
 public class RemoteControlActivity extends Activity {
-	Network network;
+	private Network network;
 
-	Button previousB;
-	Button nextB;
-	ToggleButton playB;
+	private Button previousB;
+	private Button nextB;
+	private ToggleButton playB;
 
 	/** Called when the activity is first created. */
 	@Override

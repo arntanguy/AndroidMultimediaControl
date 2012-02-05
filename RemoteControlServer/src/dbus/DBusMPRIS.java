@@ -78,5 +78,16 @@ public class DBusMPRIS extends DBus {
 	public void disconnect() {
 		conn.disconnect();
 	}
+	
+	@Override
+	public int getPosition() {
+		return 	mediaPlayer.PositionGet();
+	}
+
+	@Override
+	public int getTotalLenght() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
 
 }

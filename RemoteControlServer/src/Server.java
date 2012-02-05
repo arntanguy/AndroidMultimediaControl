@@ -4,6 +4,7 @@ import java.io.InputStreamReader;
 import java.io.PrintStream;
 import java.net.ServerSocket;
 import java.net.Socket;
+
 import org.freedesktop.dbus.exceptions.DBusException;
 
 import commands.Command;
@@ -33,7 +34,7 @@ public class Server {
 	}
 
 	public void connect() throws IOException, DBusException {
-		// Initialising the ServerSocket
+		// Initializing the ServerSocket
 		sersock = new ServerSocket(PORT);
 
 		// makes a socket connection to particular client after
@@ -94,6 +95,9 @@ public class Server {
 						System.out.println("Previous");
 						dbus.previous();
 						break;
+					case CURRENT_TIME:
+						dbus.getPosition();
+						break;
 					case VOLUME:
 						System.out.println("Volume");
 						String o = c.getParameterValue("up");
@@ -116,5 +120,9 @@ public class Server {
 				}
 			}
 		}
+	}
+	
+	public void sendCommand(String command) {
+		ios.println(command);
 	}
 } // Server class
