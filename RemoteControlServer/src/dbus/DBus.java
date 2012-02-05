@@ -3,6 +3,8 @@ package dbus;
 import org.freedesktop.dbus.DBusConnection;
 import org.freedesktop.dbus.exceptions.DBusException;
 
+import server.Server;
+
 abstract public class DBus {
 
 	// dbus-send --print-reply --session --dest=org.mpris.vlc /Player
@@ -12,8 +14,11 @@ abstract public class DBus {
 	protected String serviceBusName = "org.mpris.vlc";
 	protected static DBusConnection conn = null;
 	protected boolean connected = false;
+	
+	protected Server server;
 
-	public DBus() {
+	public DBus(Server s) {
+		server = s;
 	}
 
 	/**

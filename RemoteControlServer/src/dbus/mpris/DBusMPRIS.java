@@ -4,17 +4,19 @@ import org.freedesktop.MediaPlayer;
 import org.freedesktop.dbus.DBusConnection;
 import org.freedesktop.dbus.exceptions.DBusException;
 
+import server.Server;
+
 import dbus.DBus;
 
 public class DBusMPRIS extends DBus {
 	MediaPlayer mediaPlayer;
 	TrackChangeHandler handler;
 	
-	public DBusMPRIS() {
-		super();
+	public DBusMPRIS(Server s) {
+		super(s);
 		objectPath = "/Player";
 		serviceBusName = "org.mpris.vlc";
-		handler = new TrackChangeHandler();
+		handler = new TrackChangeHandler(server);
 	}
 
 	/**

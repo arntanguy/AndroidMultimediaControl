@@ -1,16 +1,18 @@
-import java.io.BufferedReader;
+package server;
+
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.io.PrintStream;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.Map;
 
+import org.freedesktop.dbus.Variant;
 import org.freedesktop.dbus.exceptions.DBusException;
 
 import commands.Command;
-import commands.CommandParser;
+import commands.TrackChangedCommand;
+
 import dbus.mpris.DBusMPRIS;
 
 /** SERIALIZING DATA PASSED THROUGH
@@ -34,7 +36,7 @@ public class Server {
 
 	public Server(int port) throws DBusException {
 		PORT = port;
-		dbus = new DBusMPRIS();
+		dbus = new DBusMPRIS(this);
 	}
 
 	public Server() throws DBusException {
@@ -60,13 +62,6 @@ public class Server {
 
 		// Receive message from client i.e Request from client
 		ois = new ObjectInputStream(sock.getInputStream());  
-		/*	try {
-			System.out.println((String)ois.readObject());
-		} catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}  		
-		 */	
 
 		dbus.connect();
 		System.out.println(dbus);

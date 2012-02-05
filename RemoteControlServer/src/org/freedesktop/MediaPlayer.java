@@ -23,12 +23,12 @@ public interface MediaPlayer extends DBusInterface {
 	 * of the signal is the metadata attached to the new "Track"
 	 */
 	public static class TrackChange extends DBusSignal {
-		public final Map<String, Variant> a;
+		public final Map<String, Variant> METADATA;
 
-		public TrackChange(String path, Map<String, Variant> a)
+		public TrackChange(String path, Map<String, Variant> METADATA)
 				throws DBusException {
-			super(path, a);
-			this.a = a;
+			super(path, METADATA);
+			this.METADATA = METADATA;
 		}
 	}
 
