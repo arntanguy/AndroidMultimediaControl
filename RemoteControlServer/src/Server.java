@@ -1,6 +1,8 @@
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.PrintStream;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -12,13 +14,7 @@ import commands.CommandParser;
 import dbus.mpris.DBusMPRIS;
 
 /** SERIALIZING DATA PASSED THROUGH
- * OutputStream os = s.getOutputStream();  
-ObjectOutputStream oos = new ObjectOutputStream(os);  
-testobject to = new testobject(1,"object from client");  
-oos.writeObject(to);  
-oos.writeObject(new String("another object from the client"));  
-oos.close();  
-os.close();  
+ * 
  * @author user
  *
  */
@@ -31,9 +27,10 @@ public class Server {
 	private boolean run = true;
 	private ServerSocket sersock = null;
 	private Socket sock = null;
-	PrintStream ios = null;
-	BufferedReader is = null;
 	DBusMPRIS dbus = null;
+
+	private ObjectOutputStream oos;
+	private ObjectInputStream ois;
 
 	public Server(int port) throws DBusException {
 		PORT = port;
@@ -55,32 +52,45 @@ public class Server {
 
 		System.out.println("Client Connected  :" + sock);
 
+
 		// Send message to the client i.e Response
-		ios = new PrintStream(sock.getOutputStream());
-		ios.println("Hello from server");
+		oos = new ObjectOutputStream(sock.getOutputStream());  
+		oos.writeObject(new String("== Hello from SerializedServer ==="));
+
 
 		// Receive message from client i.e Request from client
-		is = new BufferedReader(new InputStreamReader(sock.getInputStream()));
+		ois = new ObjectInputStream(sock.getInputStream());  
+		/*	try {
+			System.out.println((String)ois.readObject());
+		} catch (ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}  		
+		 */	
 
 		dbus.connect();
 		System.out.println(dbus);
 	}
 
 	public void disconnect() throws IOException {
-		ios.close();
-		is.close();
+		ois.close();
+		oos.close();
 		sock.close();
 		sersock.close();
 	}
 
 	public void parseCommands() throws IOException {
-		CommandParser parser = new CommandParser();
 		System.out.println("Parsing commands");
 		while (run) {
-			String str = is.readLine();
-
-			if (!str.isEmpty()) {
-				Command c = parser.parse(str);
+			Command c = null;
+			try {
+				c = (Command)ois.readObject();
+			} catch (ClassNotFoundException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+				c = null;
+			}
+			if(c!=null) {
 				if (!dbus.isConnected()) {
 					try {
 						dbus.connect();
@@ -130,18 +140,22 @@ public class Server {
 						}
 						break;
 					case QUIT:
-						System.out.println("Quit");
-						ios.close();
-						is.close();
+						disconnect();
 						run = false;
 						break;
 					}
 				}
 			}
 		}
+
 	}
-	
-	public void sendCommand(String command) {
-		ios.println(command);
+
+	public void sendCommand(Command command) {
+		try {
+			oos.writeObject(command);
+		} catch (IOException e) {
+			System.err.println("=== Erreur de sérialization de la commande "+command+ "===");
+			e.printStackTrace();
+		}  
 	}
 } // Server class

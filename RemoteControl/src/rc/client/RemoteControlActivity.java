@@ -4,6 +4,9 @@ import java.io.IOException;
 import java.net.SocketException;
 import java.net.UnknownHostException;
 
+import commands.Command;
+import commands.CommandWord;
+
 import android.app.Activity;
 import android.os.Bundle;
 import android.view.KeyEvent;
@@ -63,9 +66,9 @@ public class RemoteControlActivity extends Activity {
 		@Override
 		public void onClick(View v) {
 			if (playB.isChecked()) {
-				network.sendCommand("pause");
+				network.sendCommand(new Command(CommandWord.PAUSE));
 			} else {
-				network.sendCommand("play");
+				network.sendCommand(new Command(CommandWord.PLAY));
 			}
 		}
 	};
@@ -73,14 +76,14 @@ public class RemoteControlActivity extends Activity {
 	private OnClickListener nextClickListener = new OnClickListener() {
 		@Override
 		public void onClick(View v) {
-			network.sendCommand("next");
+			network.sendCommand(new Command(CommandWord.NEXT));
 		}
 	};
 
 	private OnClickListener previousClickListener = new OnClickListener() {
 		@Override
 		public void onClick(View v) {
-			network.sendCommand("previous");
+			network.sendCommand(new Command(CommandWord.PREVIOUS));
 		}
 	};
 	
@@ -88,14 +91,18 @@ public class RemoteControlActivity extends Activity {
 		@Override
 		public void onClick(View v) {
 			// Move forward 10seconds
-			network.sendCommand("move value=10000");
+			Command c = new Command(CommandWord.MOVE);
+			c.addParameter("value", "10000");
+			network.sendCommand(c);
 		}
 	};
 	
 	private OnClickListener backwardsClickListener = new OnClickListener() {
 		@Override
 		public void onClick(View v) {
-			network.sendCommand("move value=-10000");
+			Command c = new Command(CommandWord.MOVE);
+			c.addParameter("value", "-10000");
+			network.sendCommand(c);
 		}
 	};
 
@@ -107,13 +114,18 @@ public class RemoteControlActivity extends Activity {
 		case KeyEvent.KEYCODE_VOLUME_UP:
 			if (action == KeyEvent.ACTION_UP) {
 				System.out.println("Volume up");
-				network.sendCommand("volume up=5");
+				Command c = new Command(CommandWord.VOLUME);
+				c.addParameter("up", "5");
+				network.sendCommand(c);
 			}
 			return true;
 		case KeyEvent.KEYCODE_VOLUME_DOWN:
 			if (action == KeyEvent.ACTION_DOWN) {
 				System.out.println("Volume down !");
-				network.sendCommand("volume down=5");
+
+				Command c = new Command(CommandWord.VOLUME);
+				c.addParameter("down", "5");
+				network.sendCommand(c);
 			}
 			return true;
 		default:
