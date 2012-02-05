@@ -9,7 +9,19 @@ import org.freedesktop.dbus.exceptions.DBusException;
 
 import commands.Command;
 import commands.CommandParser;
-import dbus.DBusMPRIS;
+import dbus.mpris.DBusMPRIS;
+
+/** SERIALIZING DATA PASSED THROUGH
+ * OutputStream os = s.getOutputStream();  
+ObjectOutputStream oos = new ObjectOutputStream(os);  
+testobject to = new testobject(1,"object from client");  
+oos.writeObject(to);  
+oos.writeObject(new String("another object from the client"));  
+oos.close();  
+os.close();  
+ * @author user
+ *
+ */
 
 public class Server {
 

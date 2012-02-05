@@ -11,7 +11,7 @@ abstract public class DBus {
 	protected String objectPath = "/Player";
 	protected String serviceBusName = "org.mpris.vlc";
 	protected static DBusConnection conn = null;
-	boolean connected = false;
+	protected boolean connected = false;
 
 	public DBus() {
 	}
