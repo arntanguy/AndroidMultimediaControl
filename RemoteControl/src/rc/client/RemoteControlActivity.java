@@ -56,21 +56,25 @@ public class RemoteControlActivity extends Activity {
 	private OnClickListener playClickListener = new OnClickListener() {
 		@Override
 		public void onClick(View v) {
+			if (playB.isChecked()) {
+				network.sendCommand("pause");
+			} else {
 				network.sendCommand("play");
+			}
 		}
 	};
 
 	private OnClickListener nextClickListener = new OnClickListener() {
 		@Override
 		public void onClick(View v) {
-				network.sendCommand("next");
+			network.sendCommand("next");
 		}
 	};
 
 	private OnClickListener previousClickListener = new OnClickListener() {
 		@Override
 		public void onClick(View v) {
-				network.sendCommand("previous");
+			network.sendCommand("previous");
 		}
 	};
 

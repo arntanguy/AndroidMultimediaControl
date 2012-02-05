@@ -12,7 +12,8 @@ abstract public class DBus {
 	protected String objectPath = "/Player";
 	protected String serviceBusName = "org.mpris.vlc";
 	protected static DBusConnection conn = null;
-
+	boolean connected = false;
+	
 	public DBus() {
 	}
 	/**
@@ -33,6 +34,10 @@ abstract public class DBus {
 	abstract public void setVolume(int value);
 
 	abstract public void connect() throws DBusException;
+	
+	public boolean isConnected() {
+		return connected;
+	}
 
 	abstract public void disconnect();
 }

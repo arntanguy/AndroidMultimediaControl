@@ -6,7 +6,7 @@ import org.freedesktop.dbus.exceptions.DBusException;
 
 public class DBusMPRIS extends DBus {
 	MediaPlayer mediaPlayer;
-
+	
 	public DBusMPRIS() {
 		super();
 		objectPath = "/Player";
@@ -49,9 +49,15 @@ public class DBusMPRIS extends DBus {
 
 	@Override
 	public void connect() throws DBusException {
+		try {
 		conn = DBusConnection.getConnection(DBusConnection.SESSION);
 		mediaPlayer = (MediaPlayer) conn.getRemoteObject(serviceBusName,
 				objectPath);
+		} catch(DBusException e) {
+			connected = false;
+			throw e;
+		}
+		connected = true;
 	}
 
 	@Override
