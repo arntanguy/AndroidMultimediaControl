@@ -13,16 +13,17 @@ import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ToggleButton;
 
 public class RemoteControlActivity extends Activity {
 	private Network network;
 
-	private Button previousB;
-	private Button nextB;
+	private ImageButton previousB;
+	private ImageButton nextB;
 	private ToggleButton playB;
-	private Button forwardB;
-	private Button backwardB;
+	private ImageButton forwardB;
+	private ImageButton backwardB;
 
 	/** Called when the activity is first created. */
 	@Override
@@ -53,11 +54,12 @@ public class RemoteControlActivity extends Activity {
 		setContentView(R.layout.mediacontrols);
 		// Warning : findViewById will only return non null views if the content
 		// view is already set !!
-		previousB = (Button) findViewById(R.id.previousButton);
-		nextB = (Button) findViewById(R.id.nextButton);
+		previousB = (ImageButton) findViewById(R.id.previousButton);
+		nextB = (ImageButton) findViewById(R.id.nextButton);
 		playB = (ToggleButton) findViewById(R.id.playButton);
-		forwardB = (Button) findViewById(R.id.forwardButton);
-		backwardB = (Button) findViewById(R.id.backwardsButton);
+		forwardB = (ImageButton) findViewById(R.id.forwardButton);
+		backwardB = (ImageButton) findViewById(R.id.backwardsButton);
+
 
 		playB.setOnClickListener(playClickListener);
 		nextB.setOnClickListener(nextClickListener);

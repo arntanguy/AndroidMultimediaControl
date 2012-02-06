@@ -3,6 +3,7 @@ package dbus.mpris;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.freedesktop.MPRISStatus;
 import org.freedesktop.MediaPlayer;
 import org.freedesktop.dbus.DBusConnection;
 import org.freedesktop.dbus.Variant;
@@ -116,4 +117,9 @@ public class DBusMPRIS extends DBus {
 		}
 		return map;
 	}
+	
+	public MPRISStatus getStatus() {
+		return mediaPlayer.GetStatus();
+	}
+
 }

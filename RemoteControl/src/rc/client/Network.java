@@ -9,6 +9,8 @@ import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.Map;
 
+import org.freedesktop.MPRISStatus;
+
 import android.util.Log;
 
 import commands.Command;
@@ -100,6 +102,11 @@ public class Network {
 						errorC = (ErrorCommand) c;
 						Log.e(TAG, errorC.toString());
 						break;
+					
+					case STATUS:
+						//MPRISStatus status;
+						break;
+					
 
 					/*
 					 * Context context = getApplicationContext(); CharSequence

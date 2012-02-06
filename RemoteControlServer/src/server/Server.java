@@ -12,6 +12,7 @@ import commands.Command;
 import commands.CommandWord;
 import commands.ErrorCommand;
 import commands.MetaDataCommand;
+import commands.StatusCommand;
 
 import dbus.mpris.DBusMPRIS;
 
@@ -69,6 +70,17 @@ public class Server {
 			sendCommand(new ErrorCommand(CommandWord.ERROR_DBUS_DISCONNECTED, "DBUS not running", e.getMessage()));
 		}
 		System.out.println(dbus);
+		updateClientState();
+	}
+
+	private void updateClientState() {
+		/*MetaDataCommand metaDataC = new MetaDataCommand(CommandWord.META_DATA);
+		metaDataC.setMetaData(dbus.getMetaData());
+		sendCommand(metaDataC);
+		
+		StatusCommand statusC = new StatusCommand(CommandWord.STATUS, dbus.getStatus());
+		sendCommand(statusC);
+	*/
 	}
 
 	public void disconnect() throws IOException {
