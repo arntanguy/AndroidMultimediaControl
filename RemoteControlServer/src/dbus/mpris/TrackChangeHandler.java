@@ -10,7 +10,7 @@ import org.freedesktop.dbus.DBusSigHandler;
 import server.Server;
 
 import commands.CommandWord;
-import commands.TrackChangedCommand;
+import commands.MetaDataCommand;
 
 public class TrackChangeHandler implements DBusSigHandler<MediaPlayer.TrackChange> {
 	Server server;
@@ -22,7 +22,7 @@ public class TrackChangeHandler implements DBusSigHandler<MediaPlayer.TrackChang
 	@Override
 	public void handle(TrackChange tc) {
 		System.out.println("Sending command track_changed to client");
-		TrackChangedCommand c = new TrackChangedCommand(CommandWord.TRACK_CHANGED);
+		MetaDataCommand c = new MetaDataCommand(CommandWord.TRACK_CHANGED);
 		Map<String, String> map = new HashMap<String, String>(tc.METADATA.size());
 		for(String key : tc.METADATA.keySet()) {
 			map.put(key, (String)tc.METADATA.get(key).toString());

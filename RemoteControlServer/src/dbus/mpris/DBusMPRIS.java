@@ -1,7 +1,11 @@
 package dbus.mpris;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.freedesktop.MediaPlayer;
 import org.freedesktop.dbus.DBusConnection;
+import org.freedesktop.dbus.Variant;
 import org.freedesktop.dbus.exceptions.DBusException;
 
 import server.Server;
@@ -11,7 +15,7 @@ import dbus.DBus;
 public class DBusMPRIS extends DBus {
 	MediaPlayer mediaPlayer;
 	TrackChangeHandler handler;
-	
+
 	public DBusMPRIS(Server s) {
 		super(s);
 		objectPath = "/Player";
@@ -56,24 +60,24 @@ public class DBusMPRIS extends DBus {
 	@Override
 	public void connect() throws DBusException {
 		try {
-		conn = DBusConnection.getConnection(DBusConnection.SESSION);
-		mediaPlayer = (MediaPlayer) conn.getRemoteObject(serviceBusName,
-				objectPath);
-		conn.addSigHandler(MediaPlayer.TrackChange.class, handler);
-		} catch(DBusException e) {
+			conn = DBusConnection.getConnection(DBusConnection.SESSION);
+			mediaPlayer = (MediaPlayer) conn.getRemoteObject(serviceBusName,
+					objectPath);
+			conn.addSigHandler(MediaPlayer.TrackChange.class, handler);
+		} catch (DBusException e) {
 			connected = false;
 			throw e;
 		}
-		connected = true;
 	}
 
 	@Override
 	public void setVolume(int value) {
-		if(value == 0) return;
+		if (value == 0)
+			return;
 		int volume = mediaPlayer.VolumeGet();
-		if(volume + value > 100) { 
+		if (volume + value > 100) {
 			volume = 100;
-		} else if(volume+value < 0) {
+		} else if (volume + value < 0) {
 			volume = 0;
 		} else {
 			volume = volume + value;
@@ -85,15 +89,15 @@ public class DBusMPRIS extends DBus {
 	public void disconnect() {
 		conn.disconnect();
 	}
-	
+
 	@Override
 	public void setPosition(int pos) {
 		mediaPlayer.PositionSet(pos);
 	}
-	
+
 	@Override
 	public int getPosition() {
-		return 	mediaPlayer.PositionGet();
+		return mediaPlayer.PositionGet();
 	}
 
 	@Override
@@ -102,6 +106,12 @@ public class DBusMPRIS extends DBus {
 		return 0;
 	}
 
-	
-
+	public Map<String, String> getMetaData() {
+		Map<String, Variant> dmap = mediaPlayer.GetMetadata();
+		Map<String, String> map = new HashMap<String, String>(dmap.size());
+		for (String key : dmap.keySet()) {
+			map.put(key, dmap.toString());
+		}
+		return map;
+	}
 }

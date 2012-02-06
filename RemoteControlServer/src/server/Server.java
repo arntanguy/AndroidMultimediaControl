@@ -9,6 +9,9 @@ import java.net.Socket;
 import org.freedesktop.dbus.exceptions.DBusException;
 
 import commands.Command;
+import commands.CommandWord;
+import commands.ErrorCommand;
+import commands.MetaDataCommand;
 
 import dbus.mpris.DBusMPRIS;
 
@@ -60,7 +63,11 @@ public class Server {
 		// Receive message from client i.e Request from client
 		ois = new ObjectInputStream(sock.getInputStream());  
 
-		dbus.connect();
+		try {
+			dbus.connect();
+		} catch(DBusException e) {
+			sendCommand(new ErrorCommand(CommandWord.ERROR_DBUS_DISCONNECTED, "DBUS not running", e.getMessage()));
+		}
 		System.out.println(dbus);
 	}
 
@@ -88,7 +95,8 @@ public class Server {
 						dbus.connect();
 					} catch (DBusException e) {
 						System.out.println("DBUS Failed to connect");
-						e.printStackTrace();
+						System.out.println(e.getMessage());
+						sendCommand(new ErrorCommand(CommandWord.ERROR_DBUS_DISCONNECTED, "DBUS not running", e.getMessage()));
 					}
 				}
 				if (dbus.isConnected()) {
@@ -131,6 +139,13 @@ public class Server {
 							dbus.setVolume(-Integer.parseInt((String) d));
 						}
 						break;
+						
+					case META_DATA:
+						MetaDataCommand mc = new MetaDataCommand(CommandWord.META_DATA);
+						mc.setMetaData(dbus.getMetaData());
+						sendCommand(mc);
+						break;
+						
 					case QUIT:
 						disconnect();
 						run = false;

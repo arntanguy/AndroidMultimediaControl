@@ -4,16 +4,16 @@ import java.util.Map;
 
 import tools.SerializationTool;
 
-public class TrackChangedCommand extends Command {
+public class MetaDataCommand extends Command {
 	private static final long serialVersionUID = 1L;
 	
 	private String serializedMetaData = null;
 	
-	public TrackChangedCommand(CommandWord command) {
+	public MetaDataCommand(CommandWord command) {
 		super(command);
 	}
 
-	public TrackChangedCommand() {
+	public MetaDataCommand() {
 	}
 	
 	public void setMetaData(Map<String, String> map) {

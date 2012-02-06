@@ -3,7 +3,6 @@ package rc.client;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.io.OptionalDataException;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.net.SocketException;
@@ -13,7 +12,8 @@ import java.util.Map;
 import android.util.Log;
 
 import commands.Command;
-import commands.TrackChangedCommand;
+import commands.ErrorCommand;
+import commands.MetaDataCommand;
 
 public class Network {
 	private final static String TAG = "Network";
@@ -26,7 +26,7 @@ public class Network {
 	private String serverIp;
 	private static final int DEFAULT_PORT = 4242;
 	private int port;
-	
+
 	private CommandParser commandParser = null;
 
 	public Network(String ip, int port) {
@@ -60,7 +60,7 @@ public class Network {
 		// TODO really read, and not just
 		// only the greeting message
 		oos = new ObjectOutputStream(sock.getOutputStream());
-		
+
 		commandParser = new CommandParser();
 	}
 
@@ -70,29 +70,44 @@ public class Network {
 		sock.close();
 	}
 
-	public class CommandParser  implements Runnable {
+	public class CommandParser implements Runnable {
 		private boolean run = true;
+		private Command c = null;
+		private MetaDataCommand metaDataC = null;
+		private ErrorCommand errorC = null;
+
 		@Override
 		public void run() {
-			System.out.println("Run Thread");
+			Log.i(TAG, "Starting CommandParser thread");
 			while (run) {
-				Command c = null;
-					try {
-						c = (Command) ois.readObject();
-					} catch (Exception e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-				
+				c = null;
+				try {
+					c = (Command) ois.readObject();
+				} catch (Exception e) {
+				}
+
 				if (c != null) {
 					System.out.println("Command recieved");
 					switch (c.getCommand()) {
 					case TRACK_CHANGED:
-						TrackChangedCommand tc = (TrackChangedCommand) c;
-						Map<String, String> metaData = tc.getMetaData();
-						for(String key: metaData.keySet()) {
+						metaDataC = (MetaDataCommand) c;
+						Map<String, String> metaData = metaDataC.getMetaData();
+						for (String key : metaData.keySet()) {
 							System.out.println(key + "\t" + metaData.get(key));
 						}
+						break;
+					case ERROR_DBUS_DISCONNECTED:
+						errorC = (ErrorCommand) c;
+						Log.e(TAG, errorC.toString());
+						break;
+
+					/*
+					 * Context context = getApplicationContext(); CharSequence
+					 * text = "Hello toast!"; int duration = Toast.LENGTH_SHORT;
+					 * 
+					 * Toast toast = Toast.makeText(context, text, duration);
+					 * toast.show(); break;
+					 */
 					}
 				}
 			}
@@ -102,7 +117,7 @@ public class Network {
 	public CommandParser getCommandParser() {
 		return commandParser;
 	}
-	
+
 	public void sendCommand(Command c) {
 		if (oos != null) {
 			System.out.println("Sending command " + c);
