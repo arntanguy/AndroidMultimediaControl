@@ -68,6 +68,7 @@ public class DBusMPRIS extends DBus {
 			connected = false;
 			throw e;
 		}
+		connected = true;
 	}
 
 	@Override
@@ -75,6 +76,7 @@ public class DBusMPRIS extends DBus {
 		if (value == 0)
 			return;
 		int volume = mediaPlayer.VolumeGet();
+		System.out.println("Volume == "+volume);
 		if (volume + value > 100) {
 			volume = 100;
 		} else if (volume + value < 0) {
