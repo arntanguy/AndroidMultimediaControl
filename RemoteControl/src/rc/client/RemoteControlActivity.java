@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.net.SocketException;
 import java.net.UnknownHostException;
 
+import rc.network.Network;
+
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;

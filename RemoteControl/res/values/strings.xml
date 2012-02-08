@@ -10,5 +10,8 @@
     <string name="backwards">&lt;</string>
     <string name="playlist">Playlist</string>
     <string name="trackListActivityName">TrackListActivity</string>
+    <string name="connect">Connect</string>
+    <string name="defaultIP">192.168.1.xx</string>
+    <string name="port">4242</string>
 
 </resources>

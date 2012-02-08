@@ -1,4 +1,4 @@
-package rc.client;
+package rc.network;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -15,6 +15,7 @@ import commands.Command;
 import commands.ErrorCommand;
 import commands.MetaDataCommand;
 import commands.StatusCommand;
+
 import dbus.Status;
 
 public class Network {
@@ -28,7 +29,7 @@ public class Network {
 	private String serverIp;
 	private static final int DEFAULT_PORT = 4242;
 	private int port;
-
+	
 	private CommandParser commandParser = null;
 
 	public Network(String ip, int port) {
@@ -43,7 +44,15 @@ public class Network {
 	public Network() {
 		this("192.168.1.137", DEFAULT_PORT);
 	}
-
+	
+	public void setPort(int port) {
+		this.port = port;
+	}
+	
+	public void setIp(String ip) {
+		this.serverIp = ip;
+	}
+	
 	public void connect() throws SocketException, IOException,
 			UnknownHostException {
 		// Set the adress of the server
@@ -53,19 +62,11 @@ public class Network {
 		sock = new Socket(ip, port);
 		ois = new ObjectInputStream(sock.getInputStream());
 
-		try {
-			System.out.println((String) ois.readObject());
-		} catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} // XXX reads a line from the server
-		// TODO really read, and not just
-		// only the greeting message
 		oos = new ObjectOutputStream(sock.getOutputStream());
 
 		commandParser = new CommandParser();
 	}
-
+	
 	public void disconnect() throws IOException {
 		oos.close();
 		ois.close();
@@ -103,17 +104,16 @@ public class Network {
 						errorC = (ErrorCommand) c;
 						Log.e(TAG, errorC.toString());
 						break;
-					
+
 					case STATUS_CHANGED:
 						statusC = (StatusCommand) c;
 						Status s = statusC.getStatus();
 						Log.i(TAG, "Status changed");
 						break;
-						
+
 					case STATUS:
-						//MPRISStatus status;
+						// MPRISStatus status;
 						break;
-					
 
 					/*
 					 * Context context = getApplicationContext(); CharSequence
@@ -142,5 +142,9 @@ public class Network {
 				e.printStackTrace();
 			}
 		}
+	}
+	
+	public boolean isConnected() {
+		return (sock!=null) ? sock.isConnected(): false;
 	}
 }
