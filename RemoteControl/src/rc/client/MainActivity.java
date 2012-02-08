@@ -14,6 +14,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.GridView;
 import android.widget.Toast;
 
 import commands.Command;
@@ -22,9 +23,10 @@ import commands.CommandWord;
 public class MainActivity extends Activity {
 	private static final String TAG = "MainActivity";
 
-	Button connectB;
-	EditText ipAdressT;
-	EditText portT;
+	private Button connectB;
+	private EditText ipAdressT;
+	private EditText portT;
+	private GridView gridview;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -39,6 +41,11 @@ public class MainActivity extends Activity {
 
 		ipAdressT = (EditText) findViewById(R.id.ipAdressEditText);
 		portT = (EditText) findViewById(R.id.portEditText);
+		
+		gridview = (GridView) findViewById(R.id.gridview);
+		gridview.setAdapter(new ImageAdapter(this));
+		
+		
 		Toast.makeText(this, "Toast it !!! Roast it !", Toast.LENGTH_SHORT)
 				.show();
 
@@ -86,10 +93,11 @@ public class MainActivity extends Activity {
 			if (Global.network.isConnected()) {
 				Toast.makeText(MainActivity.this, "Connected",
 						Toast.LENGTH_SHORT).show();
+				gridview.setVisibility(View.VISIBLE);
 			} else {
 				Toast.makeText(MainActivity.this, "Network connection failed",
 						Toast.LENGTH_SHORT).show();
-
+				gridview.setVisibility(View.INVISIBLE);
 			}
 
 			Global.network.sendCommand(new Command(CommandWord.HELLO));
