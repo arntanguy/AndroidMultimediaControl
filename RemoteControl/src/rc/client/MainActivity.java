@@ -4,12 +4,9 @@ import java.io.IOException;
 import java.net.SocketException;
 import java.net.UnknownHostException;
 
-import commands.Command;
-import commands.CommandWord;
-
 import rc.network.Network;
-
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
@@ -18,6 +15,9 @@ import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
+
+import commands.Command;
+import commands.CommandWord;
 
 public class MainActivity extends Activity {
 	private static final String TAG = "MainActivity";
@@ -45,6 +45,8 @@ public class MainActivity extends Activity {
 	}
 
 	private class ConnectNetwork extends AsyncTask<String, Integer, Void> {
+		private ProgressDialog dialog = null;
+
 		protected Void doInBackground(String... IP) {
 			int nb = IP.length;
 			String ip = (nb > 0) ? IP[0] : "";
@@ -71,7 +73,7 @@ public class MainActivity extends Activity {
 			if (progress == 1) {
 				Toast.makeText(MainActivity.this, "Network connection failed!",
 						Toast.LENGTH_SHORT).show();
-			} else if (progress == 2){
+			} else if (progress == 2) {
 				Toast.makeText(MainActivity.this, "Unkown host!",
 						Toast.LENGTH_SHORT).show();
 			}
@@ -79,17 +81,24 @@ public class MainActivity extends Activity {
 
 		protected void onPostExecute(Void result) {
 			Log.i(TAG, "Connection finished ");
+
+			dialog.dismiss();
 			if (Global.network.isConnected()) {
 				Toast.makeText(MainActivity.this, "Connected",
 						Toast.LENGTH_SHORT).show();
 			} else {
-				Toast.makeText(MainActivity.this,
-						"Network connection failed", Toast.LENGTH_SHORT)
-						.show();
+				Toast.makeText(MainActivity.this, "Network connection failed",
+						Toast.LENGTH_SHORT).show();
 
 			}
 
 			Global.network.sendCommand(new Command(CommandWord.HELLO));
+		}
+
+		protected void onPreExecute() {
+			dialog = new ProgressDialog(MainActivity.this);
+			dialog.setMessage("Connecting...");
+			dialog.show();
 		}
 	}
 
