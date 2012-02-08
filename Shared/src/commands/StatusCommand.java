@@ -1,14 +1,14 @@
 package commands;
 
-import org.freedesktop.MPRISStatus;
+import dbus.Status;
 
 public class StatusCommand extends Command {
 
 	private static final long serialVersionUID = 1L;
 	
-	private MPRISStatus status;
+	private Status status;
 	
-	public StatusCommand(CommandWord command, MPRISStatus s) {
+	public StatusCommand(CommandWord command, Status s) {
 		this(command);
 		status = s;
 	}
@@ -20,11 +20,11 @@ public class StatusCommand extends Command {
 	public StatusCommand() {
 	}
 	
-	public void setStatus(MPRISStatus s) {
+	public void setStatus(Status s) {
 		status = s;
 	}
 	
-	public MPRISStatus getStatus() {
+	public Status getStatus() {
 		return status;
 	}
 

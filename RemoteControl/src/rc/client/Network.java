@@ -9,13 +9,13 @@ import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.Map;
 
-import org.freedesktop.MPRISStatus;
-
 import android.util.Log;
 
 import commands.Command;
 import commands.ErrorCommand;
 import commands.MetaDataCommand;
+import commands.StatusCommand;
+import dbus.Status;
 
 public class Network {
 	private final static String TAG = "Network";
@@ -76,6 +76,7 @@ public class Network {
 		private boolean run = true;
 		private Command c = null;
 		private MetaDataCommand metaDataC = null;
+		private StatusCommand statusC = null;
 		private ErrorCommand errorC = null;
 
 		@Override
@@ -103,6 +104,12 @@ public class Network {
 						Log.e(TAG, errorC.toString());
 						break;
 					
+					case STATUS_CHANGED:
+						statusC = (StatusCommand) c;
+						Status s = statusC.getStatus();
+						Log.i(TAG, "Status changed");
+						break;
+						
 					case STATUS:
 						//MPRISStatus status;
 						break;

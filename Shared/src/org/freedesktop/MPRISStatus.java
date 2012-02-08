@@ -13,6 +13,8 @@ import org.freedesktop.dbus.Position;
  */
 import org.freedesktop.dbus.Struct;
 
+import dbus.Status;
+
 public final class MPRISStatus extends Struct {
 	@Position(0)
 	public final int playingStatus;
@@ -28,5 +30,9 @@ public final class MPRISStatus extends Struct {
 		this.playingLinearity = playingLinearity;
 		this.repeatStatus = repeatStatus;
 		this.stopStatus = stopStatus;
+	}
+	
+	public Status toStatus() {
+		return new Status(playingStatus, playingLinearity, repeatStatus, stopStatus);
 	}
 }

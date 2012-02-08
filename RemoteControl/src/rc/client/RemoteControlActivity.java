@@ -4,17 +4,16 @@ import java.io.IOException;
 import java.net.SocketException;
 import java.net.UnknownHostException;
 
-import commands.Command;
-import commands.CommandWord;
-
 import android.app.Activity;
 import android.os.Bundle;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ToggleButton;
+
+import commands.Command;
+import commands.CommandWord;
 
 public class RemoteControlActivity extends Activity {
 	private Network network;
@@ -33,7 +32,8 @@ public class RemoteControlActivity extends Activity {
 		/**
 		 * XXX: Don't just hide errors, manage them !
 		 */
-		network = new Network("192.168.1.137", 4242);
+		//network = new Network("192.168.1.137", 4242);
+		network = new Network("157.169.101.67", 4242);
 		try {
 			network.connect();
 		} catch (UnknownHostException e) {

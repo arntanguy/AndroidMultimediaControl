@@ -16,12 +16,14 @@ import dbus.DBus;
 public class DBusMPRIS extends DBus {
 	MediaPlayer mediaPlayer;
 	TrackChangeHandler handler;
+	StatusChangeHandler statusHandler;
 
 	public DBusMPRIS(Server s) {
 		super(s);
 		objectPath = "/Player";
 		serviceBusName = "org.mpris.vlc";
 		handler = new TrackChangeHandler(server);
+		statusHandler = new StatusChangeHandler(server);
 	}
 
 	/**

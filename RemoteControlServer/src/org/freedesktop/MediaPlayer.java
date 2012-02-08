@@ -37,11 +37,11 @@ public interface MediaPlayer extends DBusInterface {
 	 * argument has the same meaning as the value returned by GetStatus.
 	 */
 	public static class StatusChange extends DBusSignal {
-		public final MPRISStatus a;
+		public final MPRISStatus STATUS;
 
 		public StatusChange(String path, MPRISStatus a) throws DBusException {
 			super(path, a);
-			this.a = a;
+			this.STATUS = a;
 		}
 	}
 
