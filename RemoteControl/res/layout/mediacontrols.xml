@@ -15,14 +15,14 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content" >
 
-       <ImageButton
+       <Button
             android:id="@+id/previousButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:background="@drawable/ic_media_previous" 
 		/>
 		
-        <ImageButton
+        <Button
             android:id="@+id/backwardsButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -37,14 +37,14 @@
             android:textOff=""
             android:text="" />
       
-        <ImageButton
+        <Button
             android:id="@+id/forwardButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:background="@drawable/ic_media_ff"
             android:scaleType="center" />
 
-        <ImageButton
+        <Button
             android:id="@+id/nextButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

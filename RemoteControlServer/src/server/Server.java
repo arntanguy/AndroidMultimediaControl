@@ -12,7 +12,6 @@ import commands.Command;
 import commands.CommandWord;
 import commands.ErrorCommand;
 import commands.MetaDataCommand;
-import commands.StatusCommand;
 
 import dbus.mpris.DBusMPRIS;
 

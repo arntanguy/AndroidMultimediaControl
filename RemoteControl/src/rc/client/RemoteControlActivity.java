@@ -9,7 +9,7 @@ import android.os.Bundle;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.widget.ImageButton;
+import android.widget.Button;
 import android.widget.ToggleButton;
 
 import commands.Command;
@@ -18,11 +18,11 @@ import commands.CommandWord;
 public class RemoteControlActivity extends Activity {
 	private Network network;
 
-	private ImageButton previousB;
-	private ImageButton nextB;
+	private Button previousB;
+	private Button nextB;
 	private ToggleButton playB;
-	private ImageButton forwardB;
-	private ImageButton backwardB;
+	private Button forwardB;
+	private Button backwardB;
 
 	/** Called when the activity is first created. */
 	@Override
@@ -32,8 +32,8 @@ public class RemoteControlActivity extends Activity {
 		/**
 		 * XXX: Don't just hide errors, manage them !
 		 */
-		//network = new Network("192.168.1.137", 4242);
-		network = new Network("157.169.101.67", 4242);
+		network = new Network("192.168.1.137", 4242);
+		//network = new Network("157.169.101.67", 4242);
 		try {
 			network.connect();
 		} catch (UnknownHostException e) {
@@ -54,11 +54,11 @@ public class RemoteControlActivity extends Activity {
 		setContentView(R.layout.mediacontrols);
 		// Warning : findViewById will only return non null views if the content
 		// view is already set !!
-		previousB = (ImageButton) findViewById(R.id.previousButton);
-		nextB = (ImageButton) findViewById(R.id.nextButton);
+		previousB = (Button) findViewById(R.id.previousButton);
+		nextB = (Button) findViewById(R.id.nextButton);
 		playB = (ToggleButton) findViewById(R.id.playButton);
-		forwardB = (ImageButton) findViewById(R.id.forwardButton);
-		backwardB = (ImageButton) findViewById(R.id.backwardsButton);
+		forwardB = (Button) findViewById(R.id.forwardButton);
+		backwardB = (Button) findViewById(R.id.backwardsButton);
 
 
 		playB.setOnClickListener(playClickListener);
