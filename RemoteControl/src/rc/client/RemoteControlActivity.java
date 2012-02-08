@@ -1,11 +1,5 @@
 package rc.client;
 
-import java.io.IOException;
-import java.net.SocketException;
-import java.net.UnknownHostException;
-
-import rc.network.Network;
-
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
@@ -34,28 +28,11 @@ public class RemoteControlActivity extends Activity {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
-		/**
-		 * XXX: Don't just hide errors, manage them !
-		 */
-		Global.network = new Network("192.168.1.137", 4242);
-		//Global.network = new Network("157.169.101.67", 4242);
-		try {
-			Global.network.connect();
-		} catch (UnknownHostException e) {
-			System.out.println("=== Unknown host " + e.getCause());
-			e.printStackTrace();
-		} catch (SocketException e) {
-			System.out.println("=== Problem with the socket ===");
-			e.printStackTrace();
-		} catch (IOException e) {
-			System.out.println("=== IOException ===");
-			e.printStackTrace();
-		}
-		
 		// Start the command parser thread
-        Thread t = new Thread(Global.network.getCommandParser(), "CommandParser Thread");
+		Thread t = new Thread(Global.network.getCommandParser(),
+				"CommandParser Thread");
 		t.start();
-        
+
 		setContentView(R.layout.mediacontrols);
 		// Warning : findViewById will only return non null views if the content
 		// view is already set !!
@@ -66,7 +43,6 @@ public class RemoteControlActivity extends Activity {
 		backwardB = (Button) findViewById(R.id.backwardsButton);
 		playListButton = (Button) findViewById(R.id.playListButton);
 
-
 		playB.setOnClickListener(playClickListener);
 		nextB.setOnClickListener(nextClickListener);
 		previousB.setOnClickListener(previousClickListener);
@@ -74,25 +50,28 @@ public class RemoteControlActivity extends Activity {
 		backwardB.setOnClickListener(backwardsClickListener);
 		playListButton.setOnClickListener(playListClickListener);
 	}
-	
+
 	private OnClickListener playListClickListener = new OnClickListener() {
 		@Override
 		public void onClick(View v) {
 			Log.i(TAG, "b2 pressed - about to launch sub-activity");
-			Intent intent = new Intent(RemoteControlActivity.this, TrackListActivity.class);
-			//Next create the bundle and initialize it
+			Intent intent = new Intent(RemoteControlActivity.this,
+					TrackListActivity.class);
+			// Next create the bundle and initialize it
 			Bundle bundle = new Bundle();
 
-			//Add the parameters to bundle as 
-			bundle.putString("NAME","my name");
+			// Add the parameters to bundle as
+			bundle.putString("NAME", "my name");
 
-			bundle.putString("COMPANY","wissen");
+			bundle.putString("COMPANY", "wissen");
 
-			//Add this bundle to the intent
+			// Add this bundle to the intent
 			intent.putExtras(bundle);
 			startActivity(intent);
 
-	        Log.i(TAG, "b2 pressed - sucessfully launched sub-activity (startSubActivity called)");
+			Log
+					.i(TAG,
+							"b2 pressed - sucessfully launched sub-activity (startSubActivity called)");
 		}
 	};
 	private OnClickListener playClickListener = new OnClickListener() {
@@ -119,7 +98,7 @@ public class RemoteControlActivity extends Activity {
 			Global.network.sendCommand(new Command(CommandWord.PREVIOUS));
 		}
 	};
-	
+
 	private OnClickListener forwardClickListener = new OnClickListener() {
 		@Override
 		public void onClick(View v) {
@@ -129,7 +108,7 @@ public class RemoteControlActivity extends Activity {
 			Global.network.sendCommand(c);
 		}
 	};
-	
+
 	private OnClickListener backwardsClickListener = new OnClickListener() {
 		@Override
 		public void onClick(View v) {
