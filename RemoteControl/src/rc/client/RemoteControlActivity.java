@@ -5,7 +5,9 @@ import java.net.SocketException;
 import java.net.UnknownHostException;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -16,13 +18,14 @@ import commands.Command;
 import commands.CommandWord;
 
 public class RemoteControlActivity extends Activity {
-	private Network network;
+	protected static final String TAG = "RemoteControlActivity";
 
 	private Button previousB;
 	private Button nextB;
 	private ToggleButton playB;
 	private Button forwardB;
 	private Button backwardB;
+	private Button playListButton;
 
 	/** Called when the activity is first created. */
 	@Override
@@ -32,10 +35,10 @@ public class RemoteControlActivity extends Activity {
 		/**
 		 * XXX: Don't just hide errors, manage them !
 		 */
-		network = new Network("192.168.1.137", 4242);
-		//network = new Network("157.169.101.67", 4242);
+		Global.network = new Network("192.168.1.137", 4242);
+		//Global.network = new Network("157.169.101.67", 4242);
 		try {
-			network.connect();
+			Global.network.connect();
 		} catch (UnknownHostException e) {
 			System.out.println("=== Unknown host " + e.getCause());
 			e.printStackTrace();
@@ -48,7 +51,7 @@ public class RemoteControlActivity extends Activity {
 		}
 		
 		// Start the command parser thread
-        Thread t = new Thread(network.getCommandParser(), "CommandParser Thread");
+        Thread t = new Thread(Global.network.getCommandParser(), "CommandParser Thread");
 		t.start();
         
 		setContentView(R.layout.mediacontrols);
@@ -59,6 +62,7 @@ public class RemoteControlActivity extends Activity {
 		playB = (ToggleButton) findViewById(R.id.playButton);
 		forwardB = (Button) findViewById(R.id.forwardButton);
 		backwardB = (Button) findViewById(R.id.backwardsButton);
+		playListButton = (Button) findViewById(R.id.playListButton);
 
 
 		playB.setOnClickListener(playClickListener);
@@ -66,15 +70,36 @@ public class RemoteControlActivity extends Activity {
 		previousB.setOnClickListener(previousClickListener);
 		forwardB.setOnClickListener(forwardClickListener);
 		backwardB.setOnClickListener(backwardsClickListener);
+		playListButton.setOnClickListener(playListClickListener);
 	}
+	
+	private OnClickListener playListClickListener = new OnClickListener() {
+		@Override
+		public void onClick(View v) {
+			Log.i(TAG, "b2 pressed - about to launch sub-activity");
+			Intent intent = new Intent(RemoteControlActivity.this, TrackListActivity.class);
+			//Next create the bundle and initialize it
+			Bundle bundle = new Bundle();
 
+			//Add the parameters to bundle as 
+			bundle.putString("NAME","my name");
+
+			bundle.putString("COMPANY","wissen");
+
+			//Add this bundle to the intent
+			intent.putExtras(bundle);
+			startActivity(intent);
+
+	        Log.i(TAG, "b2 pressed - sucessfully launched sub-activity (startSubActivity called)");
+		}
+	};
 	private OnClickListener playClickListener = new OnClickListener() {
 		@Override
 		public void onClick(View v) {
 			if (playB.isChecked()) {
-				network.sendCommand(new Command(CommandWord.PAUSE));
+				Global.network.sendCommand(new Command(CommandWord.PAUSE));
 			} else {
-				network.sendCommand(new Command(CommandWord.PLAY));
+				Global.network.sendCommand(new Command(CommandWord.PLAY));
 			}
 		}
 	};
@@ -82,14 +107,14 @@ public class RemoteControlActivity extends Activity {
 	private OnClickListener nextClickListener = new OnClickListener() {
 		@Override
 		public void onClick(View v) {
-			network.sendCommand(new Command(CommandWord.NEXT));
+			Global.network.sendCommand(new Command(CommandWord.NEXT));
 		}
 	};
 
 	private OnClickListener previousClickListener = new OnClickListener() {
 		@Override
 		public void onClick(View v) {
-			network.sendCommand(new Command(CommandWord.PREVIOUS));
+			Global.network.sendCommand(new Command(CommandWord.PREVIOUS));
 		}
 	};
 	
@@ -99,7 +124,7 @@ public class RemoteControlActivity extends Activity {
 			// Move forward 10seconds
 			Command c = new Command(CommandWord.MOVE);
 			c.addParameter("value", "10000");
-			network.sendCommand(c);
+			Global.network.sendCommand(c);
 		}
 	};
 	
@@ -108,7 +133,7 @@ public class RemoteControlActivity extends Activity {
 		public void onClick(View v) {
 			Command c = new Command(CommandWord.MOVE);
 			c.addParameter("value", "-10000");
-			network.sendCommand(c);
+			Global.network.sendCommand(c);
 		}
 	};
 
@@ -122,7 +147,7 @@ public class RemoteControlActivity extends Activity {
 				System.out.println("Volume up");
 				Command c = new Command(CommandWord.VOLUME);
 				c.addParameter("up", "5");
-				network.sendCommand(c);
+				Global.network.sendCommand(c);
 			}
 			return true;
 		case KeyEvent.KEYCODE_VOLUME_DOWN:
@@ -131,12 +156,11 @@ public class RemoteControlActivity extends Activity {
 
 				Command c = new Command(CommandWord.VOLUME);
 				c.addParameter("down", "5");
-				network.sendCommand(c);
+				Global.network.sendCommand(c);
 			}
 			return true;
 		default:
 			return super.dispatchKeyEvent(event);
 		}
 	}
-
 }

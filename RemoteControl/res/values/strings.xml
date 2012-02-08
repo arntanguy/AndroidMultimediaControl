@@ -8,5 +8,7 @@
     <string name="play">Play</string>
     <string name="forward">></string>
     <string name="backwards">&lt;</string>
+    <string name="playlist">Playlist</string>
+    <string name="trackListActivityName">TrackListActivity</string>
 
 </resources>

@@ -112,6 +112,9 @@ public class Server {
 				}
 				if (dbus.isConnected()) {
 					switch (c.getCommand()) {
+					case HELLO:
+						System.out.println("Hello from client");
+						break;
 					case PLAY:
 						System.out.println("Play");
 						dbus.togglePlayPause();
