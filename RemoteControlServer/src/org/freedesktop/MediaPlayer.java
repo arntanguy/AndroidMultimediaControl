@@ -165,4 +165,98 @@ public interface MediaPlayer extends DBusInterface {
 	 */
 	public int GetCaps();
 
+	
+	
+	
+	
+	/**
+	 * ===================================================================
+	 * ==================== TrackList interface ==========================
+	 * ===================================================================
+	 */
+
+	/**
+	 * Signal is emitted when the "TrackList" content has changed: 
+	 * - When one or more elements have been added When one or more elements 
+	 *   have been removed
+	 * - When the ordering of elements has changed The argument is the number 
+	 * 	 of elements in the TrackList after the change happened.
+	 */
+	public static class TrackListChange extends DBusSignal {
+		public final int a;
+
+		public TrackListChange(String path, int a) throws DBusException {
+			super(path, a);
+			this.a = a;
+		}
+	}
+
+	/**
+	 * Appends an URI in the TrackList.
+	 * 
+	 * @param string
+	 *            uri The uri of the item to append.
+	 * 
+	 * @param boolean playImmediatly TRUE if the item should be played
+	 *        immediately, FALSE otherwise
+	 * 
+	 * @return int success 0 means Success
+	 */
+	public int AddTrack(String uri, boolean playImmediatly);
+
+	/**
+	 * Removes an URI from the TrackList.
+	 * 
+	 * @param int position Position in the tracklist of the item to remove.
+	 */
+	public void DelTrack(int a);
+
+	/**
+	 * Gives all meta data available for element at given position in the
+	 * TrackList, counting from 0. Guidelines for field names are at
+	 * http://wiki.xmms2.xmms.se/wiki/MPRIS_Metadata . Each dict entry is
+	 * organized as follows string: Metadata item name variant: Metadata value.
+	 * Arguments: int: Position in the TrackList of the item of which the
+	 * metadata is requested Return value: string - variant dict: Metadata.
+	 * 
+	 * @param position
+	 *            Position in the tracklist
+	 * @return A map containing the metadata.
+	 */
+	public Map<String, Variant> GetMetadata(int a);
+
+	/**
+	 * Return the position of current URI in the TrackList The return value is
+	 * zero-based, so the position of the first URI in the TrackList is 0. The
+	 * behavior of this method is unspecified if there are zero elements in the
+	 * TrackList.
+	 * 
+	 * @return int Position in the TrackList of the active element.
+	 */
+	public int GetCurrentTrack();
+
+	/**
+	 * Number of elements in the TrackList
+	 * 
+	 * @return int Number of elements in the TrackList
+	 * 
+	 */
+	public int GetLength();
+
+	/**
+	 * Toggle playlist loop.
+	 * 
+	 * @param boolean TRUE to loop, FALSE to stop looping
+	 */
+	public void SetLoop(boolean a);
+
+	/**
+	 * Toggle playlist shuffle / random. It may or may not play tracks only
+	 * once. Arguments: boolean: TRUE to play randomly / shuffle playlist, FALSE
+	 * to play normally / reorder playlist
+	 * 
+	 * @param a
+	 */
+	public void SetRandom(boolean a);
+
 }
