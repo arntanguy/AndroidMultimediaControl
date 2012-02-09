@@ -158,4 +158,8 @@ public class Network {
 	public void addStatusListener(StatusListener listener) {
 		statusListeners.add(listener);
 	}
+
+	public void removeStatusListener(StatusListener listener) {
+		statusListeners.remove(listener);
+	}
 }

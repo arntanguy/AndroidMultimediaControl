@@ -61,6 +61,11 @@ public class MediaPlayerActivity extends Activity {
 		Global.network.addStatusListener(statusHandler);
 	}
 
+	@Override
+	public void onDestroy() {
+		Global.network.removeStatusListener(statusHandler);
+	}
+	
 	private OnClickListener playListClickListener = new OnClickListener() {
 		@Override
 		public void onClick(View v) {
