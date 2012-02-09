@@ -97,7 +97,7 @@ public class Network {
 				}
 
 				if (c != null) {
-					System.out.println("Command recieved");
+					System.out.println("Command recieved "+c.toString());
 					switch (c.getCommand()) {
 					case TRACK_CHANGED:
 						metaDataC = (MetaDataCommand) c;
@@ -124,7 +124,7 @@ public class Network {
 						}
 						break;
 
-					case CURRENT_TIME:
+					case POSITION:
 						oc = (ObjectCommand) c;
 						for(NetworkDataListener l : networkDataListeners) {
 							l.timeChanged(oc.getObject());

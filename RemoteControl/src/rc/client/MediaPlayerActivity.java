@@ -73,6 +73,11 @@ public class MediaPlayerActivity extends Activity {
 		
 		statusHandler = new NetworkDataHandler();
 		Global.network.addStatusListener(statusHandler);
+		
+		Global.network.sendCommand(new Command(CommandWord.STATUS));
+		Global.network.sendCommand(new Command(CommandWord.META_DATA));
+		Global.network.sendCommand(new Command(CommandWord.POSITION));
+
 	}
 
 	@Override
@@ -119,7 +124,7 @@ public class MediaPlayerActivity extends Activity {
 	private OnClickListener playClickListener = new OnClickListener() {
 		@Override
 		public void onClick(View v) {
-			Global.network.sendCommand(new Command(CommandWord.CURRENT_TIME));
+			Global.network.sendCommand(new Command(CommandWord.POSITION));
 			if (isPlaying) {
 				playB.setImageResource(R.drawable.ic_media_play);
 				Global.network.sendCommand(new Command(CommandWord.PAUSE));
@@ -149,18 +154,14 @@ public class MediaPlayerActivity extends Activity {
 		@Override
 		public void onClick(View v) {
 			// Move forward 10seconds
-			Command c = new Command(CommandWord.MOVE);
-			c.addParameter("value", "10000");
-			Global.network.sendCommand(c);
+			Global.network.sendCommand(new ObjectCommand(CommandWord.MOVE, 10000));
 		}
 	};
 
 	private OnClickListener backwardsClickListener = new OnClickListener() {
 		@Override
 		public void onClick(View v) {
-			Command c = new Command(CommandWord.MOVE);
-			c.addParameter("value", "-10000");
-			Global.network.sendCommand(c);
+			Global.network.sendCommand(new ObjectCommand(CommandWord.MOVE, -10000));
 		}
 	};
 
@@ -183,7 +184,7 @@ public class MediaPlayerActivity extends Activity {
 		
 		@Override
 		public void onStopTrackingTouch(SeekBar seekBar) {
-			Global.network.sendCommand(new ObjectCommand<Integer>(CommandWord.MOVE, seekBar.getProgress()));
+			Global.network.sendCommand(new ObjectCommand<Integer>(CommandWord.SET_POSITION, seekBar.getProgress()));
 		}
 		
 		@Override
@@ -228,6 +229,7 @@ public class MediaPlayerActivity extends Activity {
 		@Override
 		public void metaDataChanged(Map<String, String> metaData) {
 			if (metaData.get("length") != null) {
+				System.out.println(metaData.get("length"));
 				progressBar.setMax(Integer.parseInt((metaData.get("length"))));
 			}
 		}

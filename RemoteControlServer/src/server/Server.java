@@ -13,6 +13,7 @@ import commands.CommandWord;
 import commands.ErrorCommand;
 import commands.MetaDataCommand;
 import commands.ObjectCommand;
+import commands.StatusCommand;
 
 import dbus.mpris.DBusMPRIS;
 
@@ -93,6 +94,7 @@ public class Server {
 
 	public void parseCommands() throws IOException {
 		System.out.println("Parsing commands");
+		ObjectCommand<Integer> oc = null;
 		while (run) {
 			Command c = null;
 			try {
@@ -135,14 +137,18 @@ public class Server {
 						System.out.println("Previous");
 						dbus.previous();
 						break;
-					case CURRENT_TIME:
+					case POSITION:
 						sendCommand(new ObjectCommand<Integer>(
-								CommandWord.CURRENT_TIME, dbus.getPosition()));
+								CommandWord.POSITION, dbus.getPosition()));
+						break;
+					case SET_POSITION:
+						oc = (ObjectCommand<Integer>) c;
+						dbus.setPosition(oc.getObject());
 						break;
 					case MOVE:
-						ObjectCommand<Integer> oc = (ObjectCommand<Integer>) c;
-						dbus.setPosition(oc.getObject());
-					break;
+						oc = (ObjectCommand<Integer>) c;
+						dbus.setPosition(oc.getObject()+dbus.getPosition());
+						break;
 					case VOLUME:
 						System.out.println("Volume");
 						String o = c.getParameterValue("up");
@@ -161,6 +167,11 @@ public class Server {
 								CommandWord.META_DATA);
 						mc.setMetaData(dbus.getMetaData());
 						sendCommand(mc);
+						break;
+
+					case STATUS:
+						sendCommand(new StatusCommand(CommandWord.STATUS, dbus
+								.getStatus().toStatus()));
 						break;
 
 					case QUIT:

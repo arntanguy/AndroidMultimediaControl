@@ -9,11 +9,7 @@ import org.freedesktop.dbus.DBusConnection;
 import org.freedesktop.dbus.Variant;
 import org.freedesktop.dbus.exceptions.DBusException;
 
-import commands.CommandWord;
-import commands.ObjectCommand;
-
 import server.Server;
-
 import dbus.DBus;
 
 public class DBusMPRIS extends DBus {
@@ -120,7 +116,7 @@ public class DBusMPRIS extends DBus {
 		Map<String, Variant> dmap = mediaPlayer.GetMetadata();
 		Map<String, String> map = new HashMap<String, String>(dmap.size());
 		for (String key : dmap.keySet()) {
-			map.put(key, dmap.toString());
+			map.put(key, dmap.get(key).getValue().toString());
 		}
 		return map;
 	}
