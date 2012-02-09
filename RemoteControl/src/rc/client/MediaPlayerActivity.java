@@ -14,9 +14,11 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.ImageView;
 import android.widget.SeekBar;
+import android.widget.SeekBar.OnSeekBarChangeListener;
 
 import commands.Command;
 import commands.CommandWord;
+import commands.ObjectCommand;
 
 public class MediaPlayerActivity extends Activity {
 	protected static final String TAG = "MediaPlayerActivity";
@@ -67,7 +69,8 @@ public class MediaPlayerActivity extends Activity {
 		forwardB.setOnClickListener(forwardClickListener);
 		backwardB.setOnClickListener(backwardsClickListener);
 		playListButton.setOnClickListener(playListClickListener);
-
+		progressBar.setOnSeekBarChangeListener(progressBarChangeListener);
+		
 		statusHandler = new NetworkDataHandler();
 		Global.network.addStatusListener(statusHandler);
 	}
@@ -176,6 +179,27 @@ public class MediaPlayerActivity extends Activity {
 		}
 	};
 
+	private OnSeekBarChangeListener progressBarChangeListener = new OnSeekBarChangeListener() {
+		
+		@Override
+		public void onStopTrackingTouch(SeekBar seekBar) {
+			Global.network.sendCommand(new ObjectCommand<Integer>(CommandWord.MOVE, seekBar.getProgress()));
+		}
+		
+		@Override
+		public void onStartTrackingTouch(SeekBar seekBar) {
+			// TODO Auto-generated method stub
+			
+		}
+		
+		@Override
+		public void onProgressChanged(SeekBar seekBar, int progress,
+				boolean fromUser) {
+			// TODO Auto-generated method stub
+			
+		}
+	};
+	
 	private class NetworkDataHandler implements NetworkDataListener {
 		@Override
 		public void statusChanged(Status status) {
