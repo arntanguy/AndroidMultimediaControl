@@ -50,9 +50,10 @@ public class MainActivity extends Activity {
 		gridview = (GridView) findViewById(R.id.gridview);
 		gridview.setAdapter(new ImageAdapter(this));
 		gridview.setOnItemClickListener(itemClickListener);
+		
 		// XXX: generalize this
 		// Add vlc to view
-		ImageObject app = new ImageObject("vlc", R.drawable.sample_0);
+		ImageObject app = new ImageObject("vlc", R.drawable.vlc_launcher);
 		gridviewAdapter = (ImageAdapter) gridview.getAdapter();
 		gridviewAdapter.addItem(app);
 
@@ -140,7 +141,7 @@ public class MainActivity extends Activity {
 			ImageObject app = (ImageObject) gridviewAdapter.getItem(position);
 			if (app.getName() == "vlc") {
 				Intent intent = new Intent(MainActivity.this,
-						RemoteControlActivity.class);
+						MediaPlayerActivity.class);
 				startActivity(intent);
 			}
 

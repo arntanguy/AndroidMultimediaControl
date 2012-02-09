@@ -13,8 +13,8 @@ import android.widget.ToggleButton;
 import commands.Command;
 import commands.CommandWord;
 
-public class RemoteControlActivity extends Activity {
-	protected static final String TAG = "RemoteControlActivity";
+public class MediaPlayerActivity extends Activity {
+	protected static final String TAG = "MediaPlayerActivity";
 
 	private Button previousB;
 	private Button nextB;
@@ -55,7 +55,7 @@ public class RemoteControlActivity extends Activity {
 		@Override
 		public void onClick(View v) {
 			Log.i(TAG, "b2 pressed - about to launch sub-activity");
-			Intent intent = new Intent(RemoteControlActivity.this,
+			Intent intent = new Intent(MediaPlayerActivity.this,
 					TrackListActivity.class);
 			// Next create the bundle and initialize it
 			Bundle bundle = new Bundle();
