@@ -23,58 +23,62 @@
         android:layout_height="wrap_content"
         android:gravity="center_horizontal" >
 
-        <Button
+        <ImageView
             android:id="@+id/previousButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="@drawable/ic_media_previous"
+            android:background="@android:drawable/btn_default"
+            android:minHeight="50dip"
             android:minWidth="50dip"
-            android:minHeight="50dip" />
+            android:src="@drawable/ic_media_previous" />
 
-        <Button
+        <ImageView
             android:id="@+id/backwardsButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="@drawable/ic_media_rew"
+            android:background="@android:drawable/btn_default"
+            android:minHeight="50dip"
             android:minWidth="50dip"
-            android:minHeight="50dip" />
+            android:src="@drawable/ic_media_rew" />
 
-        <ToggleButton
+        <ImageView
             android:id="@+id/playButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="@drawable/play_pause_selector"
+            android:background="@android:drawable/btn_default"
+            android:minHeight="50dip"
+            android:minWidth="50dip"
+            android:src="@drawable/ic_media_play"
             android:text=""
             android:textOff=""
-            android:textOn="" 
-            android:minWidth="50dip"
-            android:minHeight="50dip"
-            />
+            android:textOn="" />
 
-        <Button
+        <ImageView
             android:id="@+id/forwardButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="@drawable/ic_media_ff"
-            android:scaleType="center"
+            android:background="@android:drawable/btn_default"
+            android:minHeight="50dip"
             android:minWidth="50dip"
-            android:minHeight="50dip" />
+            android:scaleType="center"
+            android:src="@drawable/ic_media_ff" />
 
-        <Button
+        <ImageView
             android:id="@+id/nextButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="@drawable/ic_media_next"
+            android:background="@android:drawable/btn_default"
+            android:minHeight="50dip"
             android:minWidth="50dip"
-            android:minHeight="50dip" />
+            android:src="@drawable/ic_media_next" />
     </LinearLayout>
 
-    <Button
+    <ImageView
         android:id="@+id/playListButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/playlist"
+        android:minHeight="50dip"
         android:minWidth="50dip"
-        android:minHeight="50dip" />
+        android:text="@string/playlist" />
 
 </LinearLayout>

@@ -5,27 +5,30 @@ import rc.network.StatusListener;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.widget.Button;
-import android.widget.ToggleButton;
-
+import android.widget.ImageView;
 import commands.Command;
 import commands.CommandWord;
 
 public class MediaPlayerActivity extends Activity {
 	protected static final String TAG = "MediaPlayerActivity";
 
-	private Button previousB;
-	private Button nextB;
-	private ToggleButton playB;
-	private Button forwardB;
-	private Button backwardB;
-	private Button playListButton;
+	// Need handler for callbacks to the UI thread
+    private final Handler uiHandler = new Handler();
+    
+	private ImageView previousB;
+	private ImageView nextB;
+	private ImageView playB;
+	private ImageView forwardB;
+	private ImageView backwardB;
+	private ImageView playListButton;
 
 	StatusHandler statusHandler;
+	boolean isPlaying = false;
 	
 	/** Called when the activity is first created. */
 	@Override
@@ -40,12 +43,12 @@ public class MediaPlayerActivity extends Activity {
 		setContentView(R.layout.mediacontrols);
 		// Warning : findViewById will only return non null views if the content
 		// view is already set !!
-		previousB = (Button) findViewById(R.id.previousButton);
-		nextB = (Button) findViewById(R.id.nextButton);
-		playB = (ToggleButton) findViewById(R.id.playButton);
-		forwardB = (Button) findViewById(R.id.forwardButton);
-		backwardB = (Button) findViewById(R.id.backwardsButton);
-		playListButton = (Button) findViewById(R.id.playListButton);
+		previousB = (ImageView) findViewById(R.id.previousButton);
+		nextB = (ImageView) findViewById(R.id.nextButton);
+		playB = (ImageView) findViewById(R.id.playButton);
+		forwardB = (ImageView) findViewById(R.id.forwardButton);
+		backwardB = (ImageView) findViewById(R.id.backwardsButton);
+		playListButton = (ImageView) findViewById(R.id.playListButton);
 
 		playB.setOnClickListener(playClickListener);
 		nextB.setOnClickListener(nextClickListener);
@@ -84,9 +87,11 @@ public class MediaPlayerActivity extends Activity {
 	private OnClickListener playClickListener = new OnClickListener() {
 		@Override
 		public void onClick(View v) {
-			if (playB.isChecked()) {
+			if (isPlaying) {
+				playB.setImageResource(R.drawable.ic_media_play);
 				Global.network.sendCommand(new Command(CommandWord.PAUSE));
 			} else {
+				playB.setImageResource(R.drawable.ic_media_pause);
 				Global.network.sendCommand(new Command(CommandWord.PLAY));
 			}
 		}
@@ -124,15 +129,34 @@ public class MediaPlayerActivity extends Activity {
 			Global.network.sendCommand(c);
 		}
 	};
+
+
+	private void setPlayPauseRessource() {
+		if(!isPlaying) {
+			playB.setImageResource(R.drawable.ic_media_play);
+		} else {
+			playB.setImageResource(R.drawable.ic_media_pause);
+		}
+	}
 	
+	 // Create runnable for updating ui according to the new state
+    final Runnable updateStatus = new Runnable() {
+        public void run() {
+            setPlayPauseRessource();
+        }
+    };
+    
 	private class StatusHandler implements StatusListener {
 		@Override
 		public void statusChanged(Status status) {
 				if(status.isPaused()) {
+					isPlaying = false;
 					Log.i(TAG, "Paused");
 				} else if(status.isPlaying()) {
+					isPlaying = true;
 					Log.i(TAG, "Playing");
 				}
+				uiHandler.post(updateStatus);
 		}
 		
 	}
