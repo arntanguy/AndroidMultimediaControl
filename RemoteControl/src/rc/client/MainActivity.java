@@ -52,7 +52,7 @@ public class MainActivity extends Activity {
 		gridview.setOnItemClickListener(itemClickListener);
 		// XXX: generalize this
 		// Add vlc to view
-		Application app = new Application("vlc", R.drawable.sample_0);
+		ImageObject app = new ImageObject("vlc", R.drawable.sample_0);
 		gridviewAdapter = (ImageAdapter) gridview.getAdapter();
 		gridviewAdapter.addItem(app);
 
@@ -137,7 +137,7 @@ public class MainActivity extends Activity {
 		public void onItemClick(AdapterView<?> parent, View v, int position,
 				long id) {
 			// Log.d(TAG,"Position Clicked ["+position+"] with item id ["+id+"]");
-			Application app = (Application) gridviewAdapter.getItem(position);
+			ImageObject app = (ImageObject) gridviewAdapter.getItem(position);
 			if (app.getName() == "vlc") {
 				Intent intent = new Intent(MainActivity.this,
 						RemoteControlActivity.class);

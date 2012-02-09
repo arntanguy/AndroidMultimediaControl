@@ -2,7 +2,7 @@ package rc.client;
 
 import java.util.ArrayList;
 
-import rc.client.Application;
+import rc.client.ImageObject;
 import android.content.Context;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,15 +16,15 @@ import android.widget.ImageView;
  */
 public class ImageAdapter extends BaseAdapter {
     private Context mContext;
-    private ArrayList<Application> apps;
+    private ArrayList<ImageObject> apps;
 
-    public ImageAdapter(Context c, ArrayList<Application> apps) {
+    public ImageAdapter(Context c, ArrayList<ImageObject> apps) {
     	this.apps = apps;
     	this.mContext = c;
     }
 
     public ImageAdapter(Context c) {
-    	this(c, new ArrayList<Application>());
+    	this(c, new ArrayList<ImageObject>());
     }
     
     public int getCount() {
@@ -46,39 +46,23 @@ public class ImageAdapter extends BaseAdapter {
         } else {
             imageView = (ImageView) convertView;
         }
-        for(Application app: apps) {
+        for(ImageObject app: apps) {
         	imageView.setImageResource(app.getLauncherRessource());
         }
-        //imageView.setImageResource(mThumbIds[position]);
         return imageView;
     }
     
     
-    public void addItems(ArrayList<Application> apps) {
-    	for(Application app : apps) {
+    public void addItems(ArrayList<ImageObject> apps) {
+    	for(ImageObject app : apps) {
     		apps.add(app);
     	}
     }
-    public void addItem(Application app) {
+    public void addItem(ImageObject app) {
     	apps.add(app);
     }
     @Override
 	public long getItemId(int arg0) {
 		return 0;
 	}
-    
-    // references to our images
-  /*  private Integer[] mThumbIds = {
-            R.drawable.sample_0, R.drawable.sample_3,
-            R.drawable.sample_4, R.drawable.sample_5,
-            R.drawable.sample_6, R.drawable.sample_7,
-            R.drawable.sample_0, R.drawable.sample_1,
-            R.drawable.sample_2, R.drawable.sample_3 */
-          /*  R.drawable.sample_4, R.drawable.sample_5,
-            R.drawable.sample_6, R.drawable.sample_7,
-            R.drawable.sample_0, R.drawable.sample_1,
-            R.drawable.sample_2, R.drawable.sample_3,
-            R.drawable.sample_4, R.drawable.sample_5,
-            R.drawable.sample_6, R.drawable.sample_7 */
-    //};
 }
