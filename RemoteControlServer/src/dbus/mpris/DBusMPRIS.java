@@ -9,6 +9,9 @@ import org.freedesktop.dbus.DBusConnection;
 import org.freedesktop.dbus.Variant;
 import org.freedesktop.dbus.exceptions.DBusException;
 
+import commands.CommandWord;
+import commands.ObjectCommand;
+
 import server.Server;
 
 import dbus.DBus;
@@ -35,6 +38,7 @@ public class DBusMPRIS extends DBus {
 		// If stopped, play
 		if (mediaPlayer.GetStatus().playingStatus == 2) {
 			mediaPlayer.Play();
+			
 		} else { // Toggle play/pause
 			mediaPlayer.Pause();
 		}

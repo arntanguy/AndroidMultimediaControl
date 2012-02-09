@@ -15,6 +15,7 @@ import android.util.Log;
 import commands.Command;
 import commands.ErrorCommand;
 import commands.MetaDataCommand;
+import commands.ObjectCommand;
 import commands.StatusCommand;
 
 import player.Status;
@@ -83,6 +84,7 @@ public class Network {
 		private MetaDataCommand metaDataC = null;
 		private StatusCommand statusC = null;
 		private ErrorCommand errorC = null;
+		private ObjectCommand<Integer> oc = null;
 
 		@Override
 		public void run() {
@@ -118,6 +120,18 @@ public class Network {
 						}
 						break;
 
+					case CURRENT_TIME:
+						oc = (ObjectCommand<Integer>) c;
+						for(StatusListener l : statusListeners) {
+							l.timeChanged(oc.getObject());
+						}
+					case META_DATA:
+						metaDataC = (MetaDataCommand) c;
+						Map<String, String> metaD = metaDataC.getMetaData();
+						for(StatusListener l : statusListeners) {
+							l.metaDataChanged(metaD);
+						}
+						break;
 					case STATUS:
 						// MPRISStatus status;
 						break;

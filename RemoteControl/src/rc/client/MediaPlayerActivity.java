@@ -1,5 +1,7 @@
 package rc.client;
 
+import java.util.Map;
+
 import player.Status;
 import rc.network.StatusListener;
 import android.app.Activity;
@@ -11,6 +13,8 @@ import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.ImageView;
+import android.widget.SeekBar;
+
 import commands.Command;
 import commands.CommandWord;
 
@@ -18,18 +22,23 @@ public class MediaPlayerActivity extends Activity {
 	protected static final String TAG = "MediaPlayerActivity";
 
 	// Need handler for callbacks to the UI thread
-    private final Handler uiHandler = new Handler();
-    
+	private final Handler uiHandler = new Handler();
+
+	// Handler used as a timer to show the current position in the track
+	private Handler mHandler = new Handler();
+	private long mStartTime = 0;
+
 	private ImageView previousB;
 	private ImageView nextB;
 	private ImageView playB;
 	private ImageView forwardB;
 	private ImageView backwardB;
 	private ImageView playListButton;
+	private SeekBar progressBar;
 
 	StatusHandler statusHandler;
 	boolean isPlaying = false;
-	
+
 	/** Called when the activity is first created. */
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -49,6 +58,8 @@ public class MediaPlayerActivity extends Activity {
 		forwardB = (ImageView) findViewById(R.id.forwardButton);
 		backwardB = (ImageView) findViewById(R.id.backwardsButton);
 		playListButton = (ImageView) findViewById(R.id.playListButton);
+		progressBar = (SeekBar) findViewById(R.id.progressBar);
+		progressBar.setMax(100000);
 
 		playB.setOnClickListener(playClickListener);
 		nextB.setOnClickListener(nextClickListener);
@@ -56,16 +67,29 @@ public class MediaPlayerActivity extends Activity {
 		forwardB.setOnClickListener(forwardClickListener);
 		backwardB.setOnClickListener(backwardsClickListener);
 		playListButton.setOnClickListener(playListClickListener);
-		
+
 		statusHandler = new StatusHandler();
 		Global.network.addStatusListener(statusHandler);
 	}
 
 	@Override
 	public void onDestroy() {
+		super.onDestroy();
 		Global.network.removeStatusListener(statusHandler);
 	}
-	
+
+	private Runnable mUpdateTimeTask = new Runnable() {
+		public void run() {
+			long oldStartTime = mStartTime;
+			mStartTime = System.currentTimeMillis();
+			long millis = mStartTime - oldStartTime;
+			Log.i(TAG, "Run thread " + millis);
+			progressBar.setProgress((int) (progressBar.getProgress() + millis));
+			// Schedule another call 1s later
+			mHandler.postDelayed(this, 1000);
+		}
+	};
+
 	private OnClickListener playListClickListener = new OnClickListener() {
 		@Override
 		public void onClick(View v) {
@@ -92,12 +116,14 @@ public class MediaPlayerActivity extends Activity {
 	private OnClickListener playClickListener = new OnClickListener() {
 		@Override
 		public void onClick(View v) {
+			Global.network.sendCommand(new Command(CommandWord.CURRENT_TIME));
 			if (isPlaying) {
 				playB.setImageResource(R.drawable.ic_media_play);
 				Global.network.sendCommand(new Command(CommandWord.PAUSE));
 			} else {
 				playB.setImageResource(R.drawable.ic_media_pause);
 				Global.network.sendCommand(new Command(CommandWord.PLAY));
+
 			}
 		}
 	};
@@ -135,35 +161,53 @@ public class MediaPlayerActivity extends Activity {
 		}
 	};
 
-
 	private void setPlayPauseRessource() {
-		if(!isPlaying) {
+		if (!isPlaying) {
 			playB.setImageResource(R.drawable.ic_media_play);
 		} else {
 			playB.setImageResource(R.drawable.ic_media_pause);
 		}
 	}
-	
-	 // Create runnable for updating ui according to the new state
-    final Runnable updateStatus = new Runnable() {
-        public void run() {
-            setPlayPauseRessource();
-        }
-    };
-    
+
+	// Create runnable for updating ui according to the new state
+	final Runnable updateStatus = new Runnable() {
+		public void run() {
+			setPlayPauseRessource();
+		}
+	};
+
 	private class StatusHandler implements StatusListener {
 		@Override
 		public void statusChanged(Status status) {
-				if(status.isPaused()) {
-					isPlaying = false;
-					Log.i(TAG, "Paused");
-				} else if(status.isPlaying()) {
-					isPlaying = true;
-					Log.i(TAG, "Playing");
-				}
-				uiHandler.post(updateStatus);
+			if (status.isPaused()) {
+				isPlaying = false;
+				Log.i(TAG, "Paused");
+				mHandler.removeCallbacks(mUpdateTimeTask);
+
+			} else if (status.isPlaying()) {
+				isPlaying = true;
+				Log.i(TAG, "Playing");
+				mStartTime = System.currentTimeMillis();
+				// Remove all existing callbacks, to ensure that only our
+				// own will be used
+				mHandler.removeCallbacks(mUpdateTimeTask);
+				mHandler.postDelayed(mUpdateTimeTask, 1000);
+			}
+			uiHandler.post(updateStatus);
 		}
-		
+
+		@Override
+		public void timeChanged(Integer newTime) {
+			progressBar.setProgress(newTime);
+		}
+
+		@Override
+		public void metaDataChanged(Map<String, String> metaData) {
+			if (metaData.get("length") != null) {
+				progressBar.setMax(Integer.parseInt((metaData.get("length"))));
+			}
+		}
+
 	}
 
 	@Override

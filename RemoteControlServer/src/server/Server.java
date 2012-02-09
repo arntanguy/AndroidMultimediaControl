@@ -12,13 +12,15 @@ import commands.Command;
 import commands.CommandWord;
 import commands.ErrorCommand;
 import commands.MetaDataCommand;
+import commands.ObjectCommand;
 
 import dbus.mpris.DBusMPRIS;
 
-/** SERIALIZING DATA PASSED THROUGH
+/**
+ * SERIALIZING DATA PASSED THROUGH
  * 
  * @author user
- *
+ * 
  */
 
 public class Server {
@@ -54,32 +56,32 @@ public class Server {
 
 		System.out.println("Client Connected  :" + sock);
 
-
 		// Send message to the client i.e Response
-		oos = new ObjectOutputStream(sock.getOutputStream());  
+		oos = new ObjectOutputStream(sock.getOutputStream());
 		oos.writeObject(new String("== Hello from SerializedServer ==="));
 
-
 		// Receive message from client i.e Request from client
-		ois = new ObjectInputStream(sock.getInputStream());  
+		ois = new ObjectInputStream(sock.getInputStream());
 
 		try {
 			dbus.connect();
-		} catch(DBusException e) {
-			sendCommand(new ErrorCommand(CommandWord.ERROR_DBUS_DISCONNECTED, "DBUS not running", e.getMessage()));
+		} catch (DBusException e) {
+			sendCommand(new ErrorCommand(CommandWord.ERROR_DBUS_DISCONNECTED,
+					"DBUS not running", e.getMessage()));
 		}
 		System.out.println(dbus);
 		updateClientState();
 	}
 
 	private void updateClientState() {
-		/*MetaDataCommand metaDataC = new MetaDataCommand(CommandWord.META_DATA);
-		metaDataC.setMetaData(dbus.getMetaData());
-		sendCommand(metaDataC);
-		
-		StatusCommand statusC = new StatusCommand(CommandWord.STATUS, dbus.getStatus());
-		sendCommand(statusC);
-	*/
+		/*
+		 * MetaDataCommand metaDataC = new
+		 * MetaDataCommand(CommandWord.META_DATA);
+		 * metaDataC.setMetaData(dbus.getMetaData()); sendCommand(metaDataC);
+		 * 
+		 * StatusCommand statusC = new StatusCommand(CommandWord.STATUS,
+		 * dbus.getStatus()); sendCommand(statusC);
+		 */
 	}
 
 	public void disconnect() throws IOException {
@@ -94,20 +96,22 @@ public class Server {
 		while (run) {
 			Command c = null;
 			try {
-				c = (Command)ois.readObject();
+				c = (Command) ois.readObject();
 			} catch (ClassNotFoundException e1) {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
 				c = null;
 			}
-			if(c!=null) {
+			if (c != null) {
 				if (!dbus.isConnected()) {
 					try {
 						dbus.connect();
 					} catch (DBusException e) {
 						System.out.println("DBUS Failed to connect");
 						System.out.println(e.getMessage());
-						sendCommand(new ErrorCommand(CommandWord.ERROR_DBUS_DISCONNECTED, "DBUS not running", e.getMessage()));
+						sendCommand(new ErrorCommand(
+								CommandWord.ERROR_DBUS_DISCONNECTED,
+								"DBUS not running", e.getMessage()));
 					}
 				}
 				if (dbus.isConnected()) {
@@ -132,13 +136,14 @@ public class Server {
 						dbus.previous();
 						break;
 					case CURRENT_TIME:
-						dbus.getPosition();
+						sendCommand(new ObjectCommand<Integer>(
+								CommandWord.CURRENT_TIME, dbus.getPosition()));
 						break;
 					case MOVE:
 						int pos = dbus.getPosition();
 						String p1 = c.getParameterValue("value");
-						if(p1 != null) {
-							dbus.setPosition(pos+Integer.parseInt(p1));
+						if (p1 != null) {
+							dbus.setPosition(pos + Integer.parseInt(p1));
 						}
 						System.out.println(Integer.parseInt("-12"));
 					case VOLUME:
@@ -153,13 +158,14 @@ public class Server {
 							dbus.setVolume(-Integer.parseInt((String) d));
 						}
 						break;
-						
+
 					case META_DATA:
-						MetaDataCommand mc = new MetaDataCommand(CommandWord.META_DATA);
+						MetaDataCommand mc = new MetaDataCommand(
+								CommandWord.META_DATA);
 						mc.setMetaData(dbus.getMetaData());
 						sendCommand(mc);
 						break;
-						
+
 					case QUIT:
 						disconnect();
 						run = false;
@@ -175,8 +181,9 @@ public class Server {
 		try {
 			oos.writeObject(command);
 		} catch (IOException e) {
-			System.err.println("=== Erreur de sérialization de la commande "+command+ "===");
+			System.err.println("=== Erreur de sérialization de la commande "
+					+ command + "===");
 			e.printStackTrace();
-		}  
+		}
 	}
 } // Server class

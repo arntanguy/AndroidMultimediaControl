@@ -11,7 +11,7 @@
         android:layout_height="309dp"
         android:src="@drawable/sample_1" />
 
-    <ProgressBar
+    <SeekBar
         android:id="@+id/progressBar"
         style="?android:attr/progressBarStyleHorizontal"
         android:layout_width="match_parent"
