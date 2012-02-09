@@ -13,7 +13,7 @@ import org.freedesktop.dbus.Position;
  */
 import org.freedesktop.dbus.Struct;
 
-import dbus.Status;
+import player.Status;
 
 public final class MPRISStatus extends Struct {
 	@Position(0)

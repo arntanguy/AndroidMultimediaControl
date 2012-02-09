@@ -67,6 +67,7 @@ public class DBusMPRIS extends DBus {
 			mediaPlayer = (MediaPlayer) conn.getRemoteObject(serviceBusName,
 					objectPath);
 			conn.addSigHandler(MediaPlayer.TrackChange.class, handler);
+			conn.addSigHandler(MediaPlayer.StatusChange.class, statusHandler);
 		} catch (DBusException e) {
 			connected = false;
 			throw e;

@@ -1,6 +1,6 @@
 package commands;
 
-import dbus.Status;
+import player.Status;
 
 public class StatusCommand extends Command {
 

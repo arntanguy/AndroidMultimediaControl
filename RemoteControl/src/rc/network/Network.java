@@ -7,6 +7,7 @@ import java.net.InetAddress;
 import java.net.Socket;
 import java.net.SocketException;
 import java.net.UnknownHostException;
+import java.util.ArrayList;
 import java.util.Map;
 
 import android.util.Log;
@@ -16,7 +17,7 @@ import commands.ErrorCommand;
 import commands.MetaDataCommand;
 import commands.StatusCommand;
 
-import dbus.Status;
+import player.Status;
 
 public class Network {
 	private final static String TAG = "Network";
@@ -32,9 +33,12 @@ public class Network {
 	
 	private CommandParser commandParser = null;
 
+	private ArrayList<StatusListener> statusListeners = null;
+	
 	public Network(String ip, int port) {
 		serverIp = ip;
 		this.port = port;
+		statusListeners = new ArrayList<StatusListener>();
 	}
 
 	public Network(String ip) {
@@ -42,7 +46,7 @@ public class Network {
 	}
 
 	public Network() {
-		this("192.168.1.137", DEFAULT_PORT);
+		this("", DEFAULT_PORT);
 	}
 	
 	public void setPort(int port) {
@@ -109,6 +113,9 @@ public class Network {
 						statusC = (StatusCommand) c;
 						Status s = statusC.getStatus();
 						Log.i(TAG, "Status changed");
+						for(StatusListener l : statusListeners) {
+							l.statusChanged(s);
+						}
 						break;
 
 					case STATUS:
@@ -146,5 +153,9 @@ public class Network {
 	
 	public boolean isConnected() {
 		return (sock!=null) ? sock.isConnected(): false;
+	}
+
+	public void addStatusListener(StatusListener listener) {
+		statusListeners.add(listener);
 	}
 }

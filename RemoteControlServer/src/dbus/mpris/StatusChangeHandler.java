@@ -19,7 +19,7 @@ public class StatusChangeHandler implements DBusSigHandler<MediaPlayer.StatusCha
 	
 	@Override
 	public void handle(StatusChange tc) {
-		System.out.println("Sending command track_changed to client");
+		System.out.println("Sending command status_changed to client");
 		StatusCommand c = new StatusCommand(CommandWord.STATUS_CHANGED);
 		MPRISStatus status = tc.STATUS;
 		c.setStatus(status.toStatus());

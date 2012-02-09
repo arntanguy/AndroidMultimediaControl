@@ -1,5 +1,7 @@
 package rc.client;
 
+import player.Status;
+import rc.network.StatusListener;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
@@ -23,6 +25,8 @@ public class MediaPlayerActivity extends Activity {
 	private Button backwardB;
 	private Button playListButton;
 
+	StatusHandler statusHandler;
+	
 	/** Called when the activity is first created. */
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -49,6 +53,9 @@ public class MediaPlayerActivity extends Activity {
 		forwardB.setOnClickListener(forwardClickListener);
 		backwardB.setOnClickListener(backwardsClickListener);
 		playListButton.setOnClickListener(playListClickListener);
+		
+		statusHandler = new StatusHandler();
+		Global.network.addStatusListener(statusHandler);
 	}
 
 	private OnClickListener playListClickListener = new OnClickListener() {
@@ -117,6 +124,18 @@ public class MediaPlayerActivity extends Activity {
 			Global.network.sendCommand(c);
 		}
 	};
+	
+	private class StatusHandler implements StatusListener {
+		@Override
+		public void statusChanged(Status status) {
+				if(status.isPaused()) {
+					Log.i(TAG, "Paused");
+				} else if(status.isPlaying()) {
+					Log.i(TAG, "Playing");
+				}
+		}
+		
+	}
 
 	@Override
 	public boolean dispatchKeyEvent(KeyEvent event) {
