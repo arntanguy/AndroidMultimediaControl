@@ -3,7 +3,7 @@ package rc.client;
 import java.util.Map;
 
 import player.Status;
-import rc.network.StatusListener;
+import rc.network.NetworkDataListener;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
@@ -36,7 +36,7 @@ public class MediaPlayerActivity extends Activity {
 	private ImageView playListButton;
 	private SeekBar progressBar;
 
-	StatusHandler statusHandler;
+	NetworkDataHandler statusHandler;
 	boolean isPlaying = false;
 
 	/** Called when the activity is first created. */
@@ -68,7 +68,7 @@ public class MediaPlayerActivity extends Activity {
 		backwardB.setOnClickListener(backwardsClickListener);
 		playListButton.setOnClickListener(playListClickListener);
 
-		statusHandler = new StatusHandler();
+		statusHandler = new NetworkDataHandler();
 		Global.network.addStatusListener(statusHandler);
 	}
 
@@ -176,7 +176,7 @@ public class MediaPlayerActivity extends Activity {
 		}
 	};
 
-	private class StatusHandler implements StatusListener {
+	private class NetworkDataHandler implements NetworkDataListener {
 		@Override
 		public void statusChanged(Status status) {
 			if (status.isPaused()) {
@@ -206,6 +206,12 @@ public class MediaPlayerActivity extends Activity {
 			if (metaData.get("length") != null) {
 				progressBar.setMax(Integer.parseInt((metaData.get("length"))));
 			}
+		}
+
+		@Override
+		public void trackChanged() {
+			mStartTime = System.currentTimeMillis();
+			progressBar.setProgress(0);
 		}
 
 	}

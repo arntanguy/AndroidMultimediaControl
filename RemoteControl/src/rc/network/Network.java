@@ -34,12 +34,12 @@ public class Network {
 	
 	private CommandParser commandParser = null;
 
-	private ArrayList<StatusListener> statusListeners = null;
+	private ArrayList<NetworkDataListener> networkDataListeners = null;
 	
 	public Network(String ip, int port) {
 		serverIp = ip;
 		this.port = port;
-		statusListeners = new ArrayList<StatusListener>();
+		networkDataListeners = new ArrayList<NetworkDataListener>();
 	}
 
 	public Network(String ip) {
@@ -105,6 +105,10 @@ public class Network {
 						for (String key : metaData.keySet()) {
 							System.out.println(key + "\t" + metaData.get(key));
 						}
+						for(NetworkDataListener l : networkDataListeners) {
+							l.metaDataChanged(metaData);
+							l.trackChanged();
+						}
 						break;
 					case ERROR_DBUS_DISCONNECTED:
 						errorC = (ErrorCommand) c;
@@ -115,20 +119,22 @@ public class Network {
 						statusC = (StatusCommand) c;
 						Status s = statusC.getStatus();
 						Log.i(TAG, "Status changed");
-						for(StatusListener l : statusListeners) {
+						for(NetworkDataListener l : networkDataListeners) {
 							l.statusChanged(s);
 						}
 						break;
 
 					case CURRENT_TIME:
-						oc = (ObjectCommand<Integer>) c;
-						for(StatusListener l : statusListeners) {
+						oc = (ObjectCommand) c;
+						for(NetworkDataListener l : networkDataListeners) {
 							l.timeChanged(oc.getObject());
 						}
+						break;
+						
 					case META_DATA:
 						metaDataC = (MetaDataCommand) c;
 						Map<String, String> metaD = metaDataC.getMetaData();
-						for(StatusListener l : statusListeners) {
+						for(NetworkDataListener l : networkDataListeners) {
 							l.metaDataChanged(metaD);
 						}
 						break;
@@ -169,11 +175,11 @@ public class Network {
 		return (sock!=null) ? sock.isConnected(): false;
 	}
 
-	public void addStatusListener(StatusListener listener) {
-		statusListeners.add(listener);
+	public void addStatusListener(NetworkDataListener listener) {
+		networkDataListeners.add(listener);
 	}
 
-	public void removeStatusListener(StatusListener listener) {
-		statusListeners.remove(listener);
+	public void removeStatusListener(NetworkDataListener listener) {
+		networkDataListeners.remove(listener);
 	}
 }

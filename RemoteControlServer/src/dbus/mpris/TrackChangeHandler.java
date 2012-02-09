@@ -25,7 +25,7 @@ public class TrackChangeHandler implements DBusSigHandler<MediaPlayer.TrackChang
 		MetaDataCommand c = new MetaDataCommand(CommandWord.TRACK_CHANGED);
 		Map<String, String> map = new HashMap<String, String>(tc.METADATA.size());
 		for(String key : tc.METADATA.keySet()) {
-			map.put(key, (String)tc.METADATA.get(key).toString());
+			map.put(key, tc.METADATA.get(key).getValue().toString());
 		}
 		c.setMetaData(map);
 		server.sendCommand(c);
