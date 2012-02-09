@@ -1,5 +1,8 @@
 package rc.client;
 
+import java.util.ArrayList;
+
+import rc.client.Application;
 import android.content.Context;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,21 +16,23 @@ import android.widget.ImageView;
  */
 public class ImageAdapter extends BaseAdapter {
     private Context mContext;
+    private ArrayList<Application> apps;
 
-    public ImageAdapter(Context c) {
-        mContext = c;
+    public ImageAdapter(Context c, ArrayList<Application> apps) {
+    	this.apps = apps;
+    	this.mContext = c;
     }
 
+    public ImageAdapter(Context c) {
+    	this(c, new ArrayList<Application>());
+    }
+    
     public int getCount() {
-        return mThumbIds.length;
+        return apps.size();
     }
 
     public Object getItem(int position) {
-        return null;
-    }
-
-    public long getItemId(int position) {
-        return 0;
+        return (position<apps.size()) ? apps.get(position) : null;
     }
 
     // create a new ImageView for each item referenced by the Adapter
@@ -41,23 +46,39 @@ public class ImageAdapter extends BaseAdapter {
         } else {
             imageView = (ImageView) convertView;
         }
-
-        imageView.setImageResource(mThumbIds[position]);
+        for(Application app: apps) {
+        	imageView.setImageResource(app.getLauncherRessource());
+        }
+        //imageView.setImageResource(mThumbIds[position]);
         return imageView;
     }
-
+    
+    
+    public void addItems(ArrayList<Application> apps) {
+    	for(Application app : apps) {
+    		apps.add(app);
+    	}
+    }
+    public void addItem(Application app) {
+    	apps.add(app);
+    }
+    @Override
+	public long getItemId(int arg0) {
+		return 0;
+	}
+    
     // references to our images
-    private Integer[] mThumbIds = {
-            R.drawable.sample_2, R.drawable.sample_3,
+  /*  private Integer[] mThumbIds = {
+            R.drawable.sample_0, R.drawable.sample_3,
             R.drawable.sample_4, R.drawable.sample_5,
             R.drawable.sample_6, R.drawable.sample_7,
             R.drawable.sample_0, R.drawable.sample_1,
-            R.drawable.sample_2, R.drawable.sample_3
+            R.drawable.sample_2, R.drawable.sample_3 */
           /*  R.drawable.sample_4, R.drawable.sample_5,
             R.drawable.sample_6, R.drawable.sample_7,
             R.drawable.sample_0, R.drawable.sample_1,
             R.drawable.sample_2, R.drawable.sample_3,
             R.drawable.sample_4, R.drawable.sample_5,
             R.drawable.sample_6, R.drawable.sample_7 */
-    };
+    //};
 }

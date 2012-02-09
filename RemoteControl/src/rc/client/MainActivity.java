@@ -29,7 +29,9 @@ public class MainActivity extends Activity {
 	private Button connectB;
 	private EditText ipAdressT;
 	private EditText portT;
+
 	private GridView gridview;
+	private ImageAdapter gridviewAdapter;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -48,6 +50,11 @@ public class MainActivity extends Activity {
 		gridview = (GridView) findViewById(R.id.gridview);
 		gridview.setAdapter(new ImageAdapter(this));
 		gridview.setOnItemClickListener(itemClickListener);
+		// XXX: generalize this
+		// Add vlc to view
+		Application app = new Application("vlc", R.drawable.sample_0);
+		gridviewAdapter = (ImageAdapter) gridview.getAdapter();
+		gridviewAdapter.addItem(app);
 
 		Toast.makeText(this, "Toast it !!! Roast it !", Toast.LENGTH_SHORT)
 				.show();
@@ -130,9 +137,12 @@ public class MainActivity extends Activity {
 		public void onItemClick(AdapterView<?> parent, View v, int position,
 				long id) {
 			// Log.d(TAG,"Position Clicked ["+position+"] with item id ["+id+"]");
-			Intent intent = new Intent(MainActivity.this,
-					RemoteControlActivity.class);
-			startActivity(intent);
+			Application app = (Application) gridviewAdapter.getItem(position);
+			if (app.getName() == "vlc") {
+				Intent intent = new Intent(MainActivity.this,
+						RemoteControlActivity.class);
+				startActivity(intent);
+			}
 
 		}
 	};
