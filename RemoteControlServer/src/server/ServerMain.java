@@ -4,7 +4,12 @@ import java.io.IOException;
 import org.freedesktop.dbus.exceptions.DBusException;
 
 
-
+/**
+ * Main entry point to the server.
+ * 
+ * @author TANGUY Arnaud
+ *
+ */
 public class ServerMain {
 	private static Server server;
 	

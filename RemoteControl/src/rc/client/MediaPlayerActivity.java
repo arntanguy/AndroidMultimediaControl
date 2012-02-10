@@ -20,6 +20,14 @@ import commands.Command;
 import commands.CommandWord;
 import commands.ObjectCommand;
 
+/**
+ * Creates a Multimedia player activity. It will contain informations regarding
+ * the file being playing, such as cover, metadata It will give access to
+ * standard audio controls such as play, pause, next...
+ * 
+ * @author TANGUY Arnaud
+ * 
+ */
 public class MediaPlayerActivity extends Activity {
 	protected static final String TAG = "MediaPlayerActivity";
 
@@ -28,7 +36,7 @@ public class MediaPlayerActivity extends Activity {
 
 	// Handler used as a timer to show the current position in the track
 	private Handler mHandler = new Handler();
-	private long mStartTime = 0;
+	private long startTime = 0;
 
 	private ImageView previousB;
 	private ImageView nextB;
@@ -38,20 +46,16 @@ public class MediaPlayerActivity extends Activity {
 	private ImageView playListButton;
 	private SeekBar progressBar;
 
-	NetworkDataHandler statusHandler;
-	boolean isPlaying = false;
+	// Will handle the data updated through the network
+	private NetworkDataHandler statusHandler;
+	private boolean isPlaying = false;
 
 	/** Called when the activity is first created. */
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
-		// Start the command parser thread
-		Thread t = new Thread(Global.network.getCommandParser(),
-				"CommandParser Thread");
-		t.start();
-
-		setContentView(R.layout.mediacontrols);
+		setContentView(R.layout.mediaplayer);
 		// Warning : findViewById will only return non null views if the content
 		// view is already set !!
 		previousB = (ImageView) findViewById(R.id.previousButton);
@@ -70,14 +74,21 @@ public class MediaPlayerActivity extends Activity {
 		backwardB.setOnClickListener(backwardsClickListener);
 		playListButton.setOnClickListener(playListClickListener);
 		progressBar.setOnSeekBarChangeListener(progressBarChangeListener);
-		
+
 		statusHandler = new NetworkDataHandler();
 		Global.network.addStatusListener(statusHandler);
-		
-		Global.network.sendCommand(new Command(CommandWord.STATUS));
-		Global.network.sendCommand(new Command(CommandWord.META_DATA));
-		Global.network.sendCommand(new Command(CommandWord.POSITION));
 
+		initializePlayer();
+	}
+
+	/**
+	 * Retrieve the full playing status from the running application : - Playing
+	 * state - Meta data (including length) - Current position
+	 */
+	private void initializePlayer() {
+		Global.network.sendCommand(new Command(CommandWord.GET_STATUS));
+		Global.network.sendCommand(new Command(CommandWord.GET_META_DATA));
+		Global.network.sendCommand(new Command(CommandWord.GET_POSITION));
 	}
 
 	@Override
@@ -86,11 +97,15 @@ public class MediaPlayerActivity extends Activity {
 		Global.network.removeStatusListener(statusHandler);
 	}
 
+	/**
+	 * Thread used to update the seekbar position without relying on the
+	 * network, only local time.
+	 */
 	private Runnable mUpdateTimeTask = new Runnable() {
 		public void run() {
-			long oldStartTime = mStartTime;
-			mStartTime = System.currentTimeMillis();
-			long millis = mStartTime - oldStartTime;
+			long oldStartTime = startTime;
+			startTime = System.currentTimeMillis();
+			long millis = startTime - oldStartTime;
 			Log.i(TAG, "Run thread " + millis);
 			progressBar.setProgress((int) (progressBar.getProgress() + millis));
 			// Schedule another call 1s later
@@ -98,6 +113,9 @@ public class MediaPlayerActivity extends Activity {
 		}
 	};
 
+	/**
+	 * Opens the playlist activity
+	 */
 	private OnClickListener playListClickListener = new OnClickListener() {
 		@Override
 		public void onClick(View v) {
@@ -121,10 +139,15 @@ public class MediaPlayerActivity extends Activity {
 							"b2 pressed - sucessfully launched sub-activity (startSubActivity called)");
 		}
 	};
+
+	/**
+	 * Toggle Play/Pause commands. Handles the switching of images between
+	 * play/pause on the button
+	 */
 	private OnClickListener playClickListener = new OnClickListener() {
 		@Override
 		public void onClick(View v) {
-			Global.network.sendCommand(new Command(CommandWord.POSITION));
+			Global.network.sendCommand(new Command(CommandWord.GET_POSITION));
 			if (isPlaying) {
 				playB.setImageResource(R.drawable.ic_media_play);
 				Global.network.sendCommand(new Command(CommandWord.PAUSE));
@@ -139,29 +162,33 @@ public class MediaPlayerActivity extends Activity {
 	private OnClickListener nextClickListener = new OnClickListener() {
 		@Override
 		public void onClick(View v) {
-			Global.network.sendCommand(new Command(CommandWord.NEXT));
+			Global.network.sendCommand(new Command(CommandWord.GOTO_NEXT));
 		}
 	};
 
 	private OnClickListener previousClickListener = new OnClickListener() {
 		@Override
 		public void onClick(View v) {
-			Global.network.sendCommand(new Command(CommandWord.PREVIOUS));
+			Global.network.sendCommand(new Command(CommandWord.GOTO_PREVIOUS));
 		}
 	};
 
+	// XXX don't hardcode the forward value
 	private OnClickListener forwardClickListener = new OnClickListener() {
 		@Override
 		public void onClick(View v) {
 			// Move forward 10seconds
-			Global.network.sendCommand(new ObjectCommand(CommandWord.MOVE, 10000));
+			Global.network.sendCommand(new ObjectCommand(CommandWord.MOVE,
+					10000));
 		}
 	};
 
+	// XXX don't hardcode the backwards value
 	private OnClickListener backwardsClickListener = new OnClickListener() {
 		@Override
 		public void onClick(View v) {
-			Global.network.sendCommand(new ObjectCommand(CommandWord.MOVE, -10000));
+			Global.network.sendCommand(new ObjectCommand(CommandWord.MOVE,
+					-10000));
 		}
 	};
 
@@ -180,27 +207,33 @@ public class MediaPlayerActivity extends Activity {
 		}
 	};
 
+	/**
+	 * Manages the changes on the seekbar, to update its status with the
+	 * application one over the network instance.
+	 */
 	private OnSeekBarChangeListener progressBarChangeListener = new OnSeekBarChangeListener() {
-		
+
 		@Override
 		public void onStopTrackingTouch(SeekBar seekBar) {
-			Global.network.sendCommand(new ObjectCommand<Integer>(CommandWord.SET_POSITION, seekBar.getProgress()));
+			Global.network.sendCommand(new ObjectCommand<Integer>(
+					CommandWord.SET_POSITION, seekBar.getProgress()));
 		}
-		
+
 		@Override
 		public void onStartTrackingTouch(SeekBar seekBar) {
-			// TODO Auto-generated method stub
-			
 		}
-		
+
 		@Override
 		public void onProgressChanged(SeekBar seekBar, int progress,
 				boolean fromUser) {
-			// TODO Auto-generated method stub
-			
 		}
 	};
-	
+
+	/**
+	 * NetworkDataHandler is an observer for the Network class. It will recieve
+	 * new data when available, status update on the player state, and various
+	 * informations about the network.
+	 */
 	private class NetworkDataHandler implements NetworkDataListener {
 		@Override
 		public void statusChanged(Status status) {
@@ -212,7 +245,7 @@ public class MediaPlayerActivity extends Activity {
 			} else if (status.isPlaying()) {
 				isPlaying = true;
 				Log.i(TAG, "Playing");
-				mStartTime = System.currentTimeMillis();
+				startTime = System.currentTimeMillis();
 				// Remove all existing callbacks, to ensure that only our
 				// own will be used
 				mHandler.removeCallbacks(mUpdateTimeTask);
@@ -236,12 +269,15 @@ public class MediaPlayerActivity extends Activity {
 
 		@Override
 		public void trackChanged() {
-			mStartTime = System.currentTimeMillis();
+			startTime = System.currentTimeMillis();
 			progressBar.setProgress(0);
 		}
 
 	}
 
+	/**
+	 * Used to control hardware keys, in this case the volume keys.
+	 */
 	@Override
 	public boolean dispatchKeyEvent(KeyEvent event) {
 		int action = event.getAction();
@@ -250,18 +286,15 @@ public class MediaPlayerActivity extends Activity {
 		case KeyEvent.KEYCODE_VOLUME_UP:
 			if (action == KeyEvent.ACTION_UP) {
 				System.out.println("Volume up");
-				Command c = new Command(CommandWord.VOLUME);
-				c.addParameter("up", "5");
-				Global.network.sendCommand(c);
+				Global.network.sendCommand(new ObjectCommand<Integer>(
+						CommandWord.SET_VOLUME, 5));
 			}
 			return true;
 		case KeyEvent.KEYCODE_VOLUME_DOWN:
 			if (action == KeyEvent.ACTION_DOWN) {
 				System.out.println("Volume down !");
-
-				Command c = new Command(CommandWord.VOLUME);
-				c.addParameter("down", "5");
-				Global.network.sendCommand(c);
+				Global.network.sendCommand(new ObjectCommand<Integer>(
+						CommandWord.SET_VOLUME, -5));
 			}
 			return true;
 		default:

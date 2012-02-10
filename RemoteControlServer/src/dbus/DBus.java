@@ -5,16 +5,26 @@ import org.freedesktop.dbus.exceptions.DBusException;
 
 import server.Server;
 
+/**
+ * Provides an abstraction level to the various DBus underlying implementations
+ * of the different softwares. It provides common functions available in all
+ * multimedia players.
+ * 
+ * @author TANGUY Arnaud
+ * 
+ */
 abstract public class DBus {
 
 	// dbus-send --print-reply --session --dest=org.mpris.vlc /Player
 	// org.freedesktop.MediaPlayer.Pause
 
-	protected String objectPath = "/Player";
-	protected String serviceBusName = "org.mpris.vlc";
+	// The path to the /Player, or /TrackList
+	protected String objectPath;
+	// The service bus name, for instance org.mpris.vlc
+	protected String serviceBusName;
 	protected static DBusConnection conn = null;
 	protected boolean connected = false;
-	
+
 	protected Server server;
 
 	public DBus(Server s) {

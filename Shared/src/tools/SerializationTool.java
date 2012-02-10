@@ -6,6 +6,12 @@ import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * A little helper to provide some much needed functions used for serialization
+ * 
+ * @author TANGUY Arnaud
+ * 
+ */
 public class SerializationTool {
 	public static String mapToString(Map<String, String> map) {
 		StringBuilder stringBuilder = new StringBuilder();

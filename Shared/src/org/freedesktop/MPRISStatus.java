@@ -15,6 +15,13 @@ import org.freedesktop.dbus.Struct;
 
 import player.Status;
 
+/**
+ * Represent the status of MPRIS-based players
+ * The toStatus function is meant to generalize this type in a more general way.
+ * 
+ * @author TANGUY Arnaud
+ *
+ */
 public final class MPRISStatus extends Struct {
 	@Position(0)
 	public final int playingStatus;

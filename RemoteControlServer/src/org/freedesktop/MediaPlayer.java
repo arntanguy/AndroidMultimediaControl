@@ -8,8 +8,6 @@ import org.freedesktop.dbus.DBusSignal;
 import org.freedesktop.dbus.Variant;
 import org.freedesktop.dbus.exceptions.DBusException;
 
-// dbus-send --print-reply --session --dest=org.mpris.vlc /Player org.freedesktop.MediaPlayer.Pause
-
 /**
  * This interface describes the capabilities of players implementing the DBUS
  * MPIS interface. This interface is meant to use most of the multimedia players

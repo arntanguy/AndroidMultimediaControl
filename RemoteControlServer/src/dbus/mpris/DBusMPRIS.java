@@ -12,6 +12,15 @@ import org.freedesktop.dbus.exceptions.DBusException;
 import server.Server;
 import dbus.DBus;
 
+/**
+ * Implementation of the MPRIS dbus standard. This standard is meant to
+ * uniformize the use of dbus through the multimedia applications implementing
+ * the protocol. Thus, this class will work with a lot of players, such as VLC,
+ * Quodlibet, Clementine, and many others.
+ * 
+ * @author TANGUY Arnaud
+ * 
+ */
 public class DBusMPRIS extends DBus {
 	MediaPlayer mediaPlayer;
 	TrackChangeHandler handler;
@@ -34,7 +43,7 @@ public class DBusMPRIS extends DBus {
 		// If stopped, play
 		if (mediaPlayer.GetStatus().playingStatus == 2) {
 			mediaPlayer.Play();
-			
+
 		} else { // Toggle play/pause
 			mediaPlayer.Pause();
 		}
@@ -80,7 +89,7 @@ public class DBusMPRIS extends DBus {
 		if (value == 0)
 			return;
 		int volume = mediaPlayer.VolumeGet();
-		System.out.println("Volume == "+volume);
+		System.out.println("Volume == " + volume);
 		if (volume + value > 100) {
 			volume = 100;
 		} else if (volume + value < 0) {
@@ -120,7 +129,7 @@ public class DBusMPRIS extends DBus {
 		}
 		return map;
 	}
-	
+
 	public MPRISStatus getStatus() {
 		return mediaPlayer.GetStatus();
 	}

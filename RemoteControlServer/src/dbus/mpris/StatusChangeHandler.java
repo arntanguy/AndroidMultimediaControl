@@ -10,13 +10,22 @@ import server.Server;
 import commands.CommandWord;
 import commands.StatusCommand;
 
-public class StatusChangeHandler implements DBusSigHandler<MediaPlayer.StatusChange> {
+/**
+ * This class is used as an handler for DBus signal fired by the player when a
+ * status change occurs. Status changes are fired by actions such as putting the
+ * player in pause...
+ * 
+ * @author TANGUY Arnaud
+ * 
+ */
+public class StatusChangeHandler implements
+		DBusSigHandler<MediaPlayer.StatusChange> {
 	Server server;
-	
+
 	public StatusChangeHandler(Server s) {
 		server = s;
 	}
-	
+
 	@Override
 	public void handle(StatusChange tc) {
 		System.out.println("Sending command status_changed to client");

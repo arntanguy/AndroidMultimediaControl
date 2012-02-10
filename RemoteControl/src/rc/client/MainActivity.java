@@ -50,7 +50,7 @@ public class MainActivity extends Activity {
 		gridview = (GridView) findViewById(R.id.gridview);
 		gridview.setAdapter(new ImageAdapter(this));
 		gridview.setOnItemClickListener(itemClickListener);
-		
+
 		// XXX: generalize this
 		// Add vlc to view
 		ImageObject app = new ImageObject("vlc", R.drawable.vlc_launcher);
@@ -59,12 +59,33 @@ public class MainActivity extends Activity {
 
 		Toast.makeText(this, "Toast it !!! Roast it !", Toast.LENGTH_SHORT)
 				.show();
-
 	}
 
+	/**
+	 * Establish a connection to the server in an asynchronous way. Thus, it
+	 * will not block the interface while connecting, and allow the use of
+	 * progress bar for instance. The UI is updated from the function
+	 * onProgressUpdate since it runs in the UI thread, as opposed of the rest
+	 * of the class, running in its own thread
+	 */
 	private class ConnectNetwork extends AsyncTask<String, Integer, Void> {
 		private ProgressDialog dialog = null;
 
+		/**
+		 * Called before the execution of doInBackground, used to set up dialogs
+		 * for instance
+		 */
+		protected void onPreExecute() {
+			dialog = new ProgressDialog(MainActivity.this);
+			dialog.setMessage("Connecting...");
+			dialog.show();
+		}
+
+		/**
+		 * Effectively handles the creation of the connection. This task may
+		 * take some time according to the network capabilities, thus the
+		 * threading
+		 */
 		protected Void doInBackground(String... IP) {
 			int nb = IP.length;
 			String ip = (nb > 0) ? IP[0] : "";
@@ -86,6 +107,11 @@ public class MainActivity extends Activity {
 			return null;
 		}
 
+		/**
+		 * Update the UI on the status of the connection
+		 * 
+		 * @param progress
+		 */
 		@SuppressWarnings("unused")
 		protected void onProgressUpdate(Integer progress) {
 			Log.i(TAG, "Progress");
@@ -98,6 +124,12 @@ public class MainActivity extends Activity {
 			}
 		}
 
+		/**
+		 * Called once the doInBackground thread ends, manages the UI. On
+		 * success, shows the GridView used to manage the list of available
+		 * application, effectively giving the user access to the rest of the
+		 * application.
+		 */
 		protected void onPostExecute(Void result) {
 			Log.i(TAG, "Connection finished ");
 
@@ -106,6 +138,12 @@ public class MainActivity extends Activity {
 				Toast.makeText(MainActivity.this, "Connected",
 						Toast.LENGTH_SHORT).show();
 				gridview.setVisibility(View.VISIBLE);
+
+				// Start the command parser thread
+				Thread t = new Thread(Global.network.getCommandParser(),
+						"CommandParser Thread");
+				t.start();
+
 			} else {
 				Toast.makeText(MainActivity.this, "Network connection failed",
 						Toast.LENGTH_SHORT).show();
@@ -114,13 +152,7 @@ public class MainActivity extends Activity {
 
 			Global.network.sendCommand(new Command(CommandWord.HELLO));
 		}
-
-		protected void onPreExecute() {
-			dialog = new ProgressDialog(MainActivity.this);
-			dialog.setMessage("Connecting...");
-			dialog.show();
-		}
-	}
+	} // ConnectNetwork (AsyncTask)
 
 	private OnClickListener connectClickListener = new OnClickListener() {
 		@Override
@@ -133,6 +165,9 @@ public class MainActivity extends Activity {
 		}
 	};
 
+	/**
+	 * On click on an application icon, start the associated activity.
+	 */
 	private OnItemClickListener itemClickListener = new OnItemClickListener() {
 		@Override
 		public void onItemClick(AdapterView<?> parent, View v, int position,

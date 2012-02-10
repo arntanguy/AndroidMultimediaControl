@@ -18,9 +18,11 @@ import commands.StatusCommand;
 import dbus.mpris.DBusMPRIS;
 
 /**
- * SERIALIZING DATA PASSED THROUGH
+ * This class links the server with the client. It is charged with establishing
+ * the connections, parsing the commands, and interacting with the multimedia
+ * players.
  * 
- * @author user
+ * @author TANGUY Arnaud
  * 
  */
 
@@ -40,13 +42,22 @@ public class Server {
 	public Server(int port) throws DBusException {
 		PORT = port;
 		dbus = new DBusMPRIS(this);
+		System.out
+				.println("======================= Server ======================");
+		System.out.println(" Waiting for command...");
 	}
 
 	public Server() throws DBusException {
 		this(4242);
-		System.out.println(" Waiting for command !! ");
 	}
 
+	/**
+	 * Initialize a Server socket, then wait for a client to connect. Create the
+	 * link to DBUS.
+	 * 
+	 * @throws IOException
+	 * @throws DBusException
+	 */
 	public void connect() throws IOException, DBusException {
 		// Initializing the ServerSocket
 		sersock = new ServerSocket(PORT);
@@ -70,19 +81,6 @@ public class Server {
 			sendCommand(new ErrorCommand(CommandWord.ERROR_DBUS_DISCONNECTED,
 					"DBUS not running", e.getMessage()));
 		}
-		System.out.println(dbus);
-		updateClientState();
-	}
-
-	private void updateClientState() {
-		/*
-		 * MetaDataCommand metaDataC = new
-		 * MetaDataCommand(CommandWord.META_DATA);
-		 * metaDataC.setMetaData(dbus.getMetaData()); sendCommand(metaDataC);
-		 * 
-		 * StatusCommand statusC = new StatusCommand(CommandWord.STATUS,
-		 * dbus.getStatus()); sendCommand(statusC);
-		 */
 	}
 
 	public void disconnect() throws IOException {
@@ -92,6 +90,13 @@ public class Server {
 		sersock.close();
 	}
 
+	/**
+	 * Parse commands received from the server, apply commands to the
+	 * application though the use of communication wrappers, encapsuling dbus,
+	 * mplayer api...
+	 * 
+	 * @throws IOException
+	 */
 	public void parseCommands() throws IOException {
 		System.out.println("Parsing commands");
 		ObjectCommand<Integer> oc = null;
@@ -129,49 +134,46 @@ public class Server {
 						System.out.println("Pause");
 						dbus.togglePlayPause();
 						break;
-					case NEXT:
+					case GOTO_NEXT:
 						System.out.println("Next");
 						dbus.next();
 						break;
-					case PREVIOUS:
+					case GOTO_PREVIOUS:
 						System.out.println("Previous");
 						dbus.previous();
 						break;
-					case POSITION:
+					case GET_POSITION:
 						sendCommand(new ObjectCommand<Integer>(
-								CommandWord.POSITION, dbus.getPosition()));
+								CommandWord.GET_POSITION, dbus.getPosition()));
 						break;
 					case SET_POSITION:
 						oc = (ObjectCommand<Integer>) c;
-						dbus.setPosition(oc.getObject());
+						if (oc != null)
+							dbus.setPosition(oc.getObject());
 						break;
 					case MOVE:
 						oc = (ObjectCommand<Integer>) c;
-						dbus.setPosition(oc.getObject()+dbus.getPosition());
+						if (oc != null)
+							dbus.setPosition(oc.getObject()
+									+ dbus.getPosition());
 						break;
-					case VOLUME:
+					case SET_VOLUME:
 						System.out.println("Volume");
-						String o = c.getParameterValue("up");
-						if (o != null) {
-							dbus.setVolume(Integer.parseInt(o));
-							System.out.println("up=" + o);
-						}
-						String d = c.getParameterValue("down");
-						if (d != null) {
-							dbus.setVolume(-Integer.parseInt((String) d));
-						}
+						oc = (ObjectCommand<Integer>) c;
+						if (oc != null)
+							dbus.setVolume(oc.getObject());
 						break;
 
-					case META_DATA:
+					case GET_META_DATA:
 						MetaDataCommand mc = new MetaDataCommand(
-								CommandWord.META_DATA);
+								CommandWord.GET_META_DATA);
 						mc.setMetaData(dbus.getMetaData());
 						sendCommand(mc);
 						break;
 
-					case STATUS:
-						sendCommand(new StatusCommand(CommandWord.STATUS, dbus
-								.getStatus().toStatus()));
+					case GET_STATUS:
+						sendCommand(new StatusCommand(CommandWord.GET_STATUS,
+								dbus.getStatus().toStatus()));
 						break;
 
 					case QUIT:
@@ -185,6 +187,10 @@ public class Server {
 
 	}
 
+	/**
+	 * Sends a Command (or sub-class) to the client.
+	 * @param command
+	 */
 	public void sendCommand(Command command) {
 		try {
 			oos.writeObject(command);
