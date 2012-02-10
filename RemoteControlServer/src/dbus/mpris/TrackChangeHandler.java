@@ -3,6 +3,8 @@ package dbus.mpris;
 import java.util.HashMap;
 import java.util.Map;
 
+import media.MetaData;
+
 import org.freedesktop.MediaPlayer;
 import org.freedesktop.MediaPlayer.TrackChange;
 import org.freedesktop.dbus.DBusSigHandler;
@@ -36,7 +38,7 @@ public class TrackChangeHandler implements
 		for (String key : tc.METADATA.keySet()) {
 			map.put(key, tc.METADATA.get(key).getValue().toString());
 		}
-		c.setMetaData(map);
+		c.setMetaData(new MetaData(map));
 		server.sendCommand(c);
 	}
 }

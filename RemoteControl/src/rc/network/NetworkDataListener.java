@@ -1,7 +1,6 @@
 package rc.network;
 
-import java.util.Map;
-
+import media.MetaData;
 import player.Status;
 
 /**
@@ -17,7 +16,8 @@ public interface NetworkDataListener {
 
 	public void timeChanged(Integer object);
 
-	public void metaDataChanged(Map<String, String> metaData);
+	public void metaDataChanged(MetaData metaData);
 
 	public void trackChanged();
+
 }

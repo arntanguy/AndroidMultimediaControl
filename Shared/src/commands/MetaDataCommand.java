@@ -1,13 +1,11 @@
 package commands;
 
-import java.util.Map;
-
-import tools.SerializationTool;
+import media.MetaData;
 
 public class MetaDataCommand extends Command {
 	private static final long serialVersionUID = 1L;
-	
-	private String serializedMetaData = null;
+
+	private MetaData metaData;
 	
 	public MetaDataCommand(CommandWord command) {
 		super(command);
@@ -15,12 +13,12 @@ public class MetaDataCommand extends Command {
 
 	public MetaDataCommand() {
 	}
-	
-	public void setMetaData(Map<String, String> map) {
-		serializedMetaData = SerializationTool.mapToString((Map<String, String>) map);
+
+	public void setMetaData(MetaData map) {
+		metaData = map;
 	}
-	
-	public Map<String, String> getMetaData() {
-		return SerializationTool.stringToMap(serializedMetaData);
+
+	public MetaData getMetaData() {
+		return metaData;
 	}
 }

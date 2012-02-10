@@ -3,6 +3,8 @@ package dbus.mpris;
 import java.util.HashMap;
 import java.util.Map;
 
+import media.MetaData;
+
 import org.freedesktop.MPRISStatus;
 import org.freedesktop.MediaPlayer;
 import org.freedesktop.dbus.DBusConnection;
@@ -121,13 +123,13 @@ public class DBusMPRIS extends DBus {
 		return 0;
 	}
 
-	public Map<String, String> getMetaData() {
+	public MetaData getMetaData() {
 		Map<String, Variant> dmap = mediaPlayer.GetMetadata();
 		Map<String, String> map = new HashMap<String, String>(dmap.size());
 		for (String key : dmap.keySet()) {
 			map.put(key, dmap.get(key).getValue().toString());
 		}
-		return map;
+		return new MetaData(map);
 	}
 
 	public MPRISStatus getStatus() {

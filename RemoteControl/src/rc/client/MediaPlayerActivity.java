@@ -2,6 +2,8 @@ package rc.client;
 
 import java.util.Map;
 
+import media.MetaData;
+
 import player.Status;
 import rc.network.NetworkDataListener;
 import android.app.Activity;
@@ -14,6 +16,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.ImageView;
 import android.widget.SeekBar;
+import android.widget.TextView;
 import android.widget.SeekBar.OnSeekBarChangeListener;
 
 import commands.Command;
@@ -45,6 +48,8 @@ public class MediaPlayerActivity extends Activity {
 	private ImageView backwardB;
 	private ImageView playListButton;
 	private SeekBar progressBar;
+	private TextView trackNameTextView;
+	private TextView artistNameTextView;
 
 	// Will handle the data updated through the network
 	private NetworkDataHandler statusHandler;
@@ -65,7 +70,8 @@ public class MediaPlayerActivity extends Activity {
 		backwardB = (ImageView) findViewById(R.id.backwardsButton);
 		playListButton = (ImageView) findViewById(R.id.playListButton);
 		progressBar = (SeekBar) findViewById(R.id.progressBar);
-		progressBar.setMax(100000);
+		trackNameTextView = (TextView) findViewById(R.id.trackNameTextView);
+		artistNameTextView = (TextView) findViewById(R.id.artistNameTextView);
 
 		playB.setOnClickListener(playClickListener);
 		nextB.setOnClickListener(nextClickListener);
@@ -206,6 +212,20 @@ public class MediaPlayerActivity extends Activity {
 			setPlayPauseRessource();
 		}
 	};
+	
+	private class UpdateMetadata implements Runnable {
+		private MetaData metaData = null;
+		
+		public UpdateMetadata(MetaData metaData) {
+			this.metaData = metaData;
+		}
+		
+		@Override
+		public void run() {
+			artistNameTextView.setText(metaData.getArtist());
+			trackNameTextView.setText(metaData.getTitleFromLocation());
+		}
+	}
 
 	/**
 	 * Manages the changes on the seekbar, to update its status with the
@@ -260,10 +280,10 @@ public class MediaPlayerActivity extends Activity {
 		}
 
 		@Override
-		public void metaDataChanged(Map<String, String> metaData) {
-			if (metaData.get("length") != null) {
-				System.out.println(metaData.get("length"));
-				progressBar.setMax(Integer.parseInt((metaData.get("length"))));
+		public void metaDataChanged(MetaData metaData) {
+			if (metaData.getLength() != 0) {
+				progressBar.setMax(metaData.getLength());
+				uiHandler.post(new UpdateMetadata(metaData));
 			}
 		}
 
@@ -272,7 +292,6 @@ public class MediaPlayerActivity extends Activity {
 			startTime = System.currentTimeMillis();
 			progressBar.setProgress(0);
 		}
-
 	}
 
 	/**

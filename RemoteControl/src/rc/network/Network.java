@@ -10,6 +10,8 @@ import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Map;
 
+import media.MetaData;
+
 import android.util.Log;
 
 import commands.Command;
@@ -124,10 +126,8 @@ public class Network {
 					switch (c.getCommand()) {
 					case TRACK_CHANGED:
 						metaDataC = (MetaDataCommand) c;
-						Map<String, String> metaData = metaDataC.getMetaData();
-						for (String key : metaData.keySet()) {
-							System.out.println(key + "\t" + metaData.get(key));
-						}
+						MetaData metaData = metaDataC.getMetaData();
+						System.out.println(metaData);
 						for (NetworkDataListener l : networkDataListeners) {
 							l.metaDataChanged(metaData);
 							l.trackChanged();
@@ -156,7 +156,7 @@ public class Network {
 
 					case GET_META_DATA:
 						metaDataC = (MetaDataCommand) c;
-						Map<String, String> metaD = metaDataC.getMetaData();
+						MetaData metaD = metaDataC.getMetaData();
 						for (NetworkDataListener l : networkDataListeners) {
 							l.metaDataChanged(metaD);
 						}

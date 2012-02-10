@@ -13,5 +13,7 @@
     <string name="connect">Connect</string>
     <string name="defaultIP">192.168.1.xx</string>
     <string name="port">4242</string>
+    <string name="noTrackName">Nothing playing</string>
+    <string name="unknownArtist">Unknown artist</string>
 
 </resources>
