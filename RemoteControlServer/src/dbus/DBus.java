@@ -4,6 +4,7 @@ import org.freedesktop.dbus.DBusConnection;
 import org.freedesktop.dbus.exceptions.DBusException;
 
 import server.Server;
+import server.ServerThreadConnexion;
 
 /**
  * Provides an abstraction level to the various DBus underlying implementations
@@ -25,10 +26,10 @@ abstract public class DBus {
 	protected static DBusConnection conn = null;
 	protected boolean connected = false;
 
-	protected Server server;
+	protected ServerThreadConnexion server;
 
-	public DBus(Server s) {
-		server = s;
+	public DBus(ServerThreadConnexion serverThreadConnexion) {
+		server = serverThreadConnexion;
 	}
 
 	/**

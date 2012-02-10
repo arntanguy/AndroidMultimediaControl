@@ -10,6 +10,7 @@ import org.freedesktop.dbus.Variant;
 import org.freedesktop.dbus.exceptions.DBusException;
 
 import server.Server;
+import server.ServerThreadConnexion;
 import dbus.DBus;
 
 /**
@@ -26,8 +27,8 @@ public class DBusMPRIS extends DBus {
 	TrackChangeHandler handler;
 	StatusChangeHandler statusHandler;
 
-	public DBusMPRIS(Server s) {
-		super(s);
+	public DBusMPRIS(ServerThreadConnexion serverThreadConnexion) {
+		super(serverThreadConnexion);
 		objectPath = "/Player";
 		serviceBusName = "org.mpris.vlc";
 		handler = new TrackChangeHandler(server);
