@@ -6,6 +6,7 @@ import org.freedesktop.MediaPlayer.StatusChange;
 import org.freedesktop.dbus.DBusSigHandler;
 
 import server.Server;
+import server.ServerThreadConnexion;
 
 import commands.CommandWord;
 import commands.StatusCommand;
@@ -20,10 +21,10 @@ import commands.StatusCommand;
  */
 public class StatusChangeHandler implements
 		DBusSigHandler<MediaPlayer.StatusChange> {
-	Server server;
+	ServerThreadConnexion server;
 
-	public StatusChangeHandler(Server s) {
-		server = s;
+	public StatusChangeHandler(ServerThreadConnexion server2) {
+		server = server2;
 	}
 
 	@Override

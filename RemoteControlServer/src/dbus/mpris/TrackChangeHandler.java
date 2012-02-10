@@ -10,6 +10,7 @@ import org.freedesktop.MediaPlayer.TrackChange;
 import org.freedesktop.dbus.DBusSigHandler;
 
 import server.Server;
+import server.ServerThreadConnexion;
 
 import commands.CommandWord;
 import commands.MetaDataCommand;
@@ -23,10 +24,10 @@ import commands.MetaDataCommand;
  */
 public class TrackChangeHandler implements
 		DBusSigHandler<MediaPlayer.TrackChange> {
-	Server server;
+	ServerThreadConnexion server;
 
-	public TrackChangeHandler(Server s) {
-		server = s;
+	public TrackChangeHandler(ServerThreadConnexion server2) {
+		server = server2;
 	}
 
 	@Override
