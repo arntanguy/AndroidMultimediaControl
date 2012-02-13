@@ -1,7 +1,5 @@
 package rc.client;
 
-import java.util.Map;
-
 import media.MetaData;
 
 import player.Status;
@@ -86,6 +84,22 @@ public class MediaPlayerActivity extends Activity {
 
 		initializePlayer();
 	}
+	
+	
+	@Override
+	public void onResume() {
+		super.onResume();
+		Global.network.sendCommand(new Command(CommandWord.GET_STATUS));
+		Global.network.sendCommand(new Command(CommandWord.GET_META_DATA));
+		Global.network.sendCommand(new Command(CommandWord.GET_POSITION));
+	}
+	
+	@Override
+	public void onDestroy() {
+		super.onDestroy();
+		Global.network.removeStatusListener(statusHandler);
+	}
+
 
 	/**
 	 * Retrieve the full playing status from the running application : - Playing
@@ -97,12 +111,6 @@ public class MediaPlayerActivity extends Activity {
 		Global.network.sendCommand(new Command(CommandWord.GET_POSITION));
 	}
 
-	@Override
-	public void onDestroy() {
-		super.onDestroy();
-		Global.network.removeStatusListener(statusHandler);
-	}
-
 	/**
 	 * Thread used to update the seekbar position without relying on the
 	 * network, only local time.
@@ -112,7 +120,6 @@ public class MediaPlayerActivity extends Activity {
 			long oldStartTime = startTime;
 			startTime = System.currentTimeMillis();
 			long millis = startTime - oldStartTime;
-			Log.i(TAG, "Run thread " + millis);
 			progressBar.setProgress((int) (progressBar.getProgress() + millis));
 			// Schedule another call 1s later
 			mHandler.postDelayed(this, 1000);
@@ -257,6 +264,7 @@ public class MediaPlayerActivity extends Activity {
 	private class NetworkDataHandler implements NetworkDataListener {
 		@Override
 		public void statusChanged(Status status) {
+			Log.i(TAG, "Status changed");
 			if (status.isPaused()) {
 				isPlaying = false;
 				Log.i(TAG, "Paused");
@@ -289,6 +297,8 @@ public class MediaPlayerActivity extends Activity {
 
 		@Override
 		public void trackChanged() {
+			Global.network.sendCommand(new Command(CommandWord.GET_STATUS));
+			uiHandler.post(updateStatus);
 			startTime = System.currentTimeMillis();
 			progressBar.setProgress(0);
 		}

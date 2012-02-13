@@ -108,6 +108,7 @@ public class Network {
 		private Command c = null;
 		private MetaDataCommand metaDataC = null;
 		private StatusCommand statusC = null;
+		private Status status = null;
 		private ErrorCommand errorC = null;
 		private ObjectCommand<Integer> oc = null;
 
@@ -140,10 +141,10 @@ public class Network {
 
 					case STATUS_CHANGED:
 						statusC = (StatusCommand) c;
-						Status s = statusC.getStatus();
+						status = statusC.getStatus();
 						Log.i(TAG, "Status changed");
 						for (NetworkDataListener l : networkDataListeners) {
-							l.statusChanged(s);
+							l.statusChanged(status);
 						}
 						break;
 
@@ -161,6 +162,15 @@ public class Network {
 							l.metaDataChanged(metaD);
 						}
 						break;
+					case GET_STATUS:
+						statusC = (StatusCommand) c;
+						status = statusC.getStatus();
+						Log.i(TAG, "Status changed");
+						for (NetworkDataListener l : networkDataListeners) {
+							l.statusChanged(status);
+						}
+						break;
+						
 					}
 				}
 			} // while

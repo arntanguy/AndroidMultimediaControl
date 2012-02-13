@@ -5,7 +5,6 @@ import org.freedesktop.MediaPlayer;
 import org.freedesktop.MediaPlayer.StatusChange;
 import org.freedesktop.dbus.DBusSigHandler;
 
-import server.Server;
 import server.ServerThreadConnexion;
 
 import commands.CommandWord;
