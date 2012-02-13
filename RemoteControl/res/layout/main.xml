@@ -9,7 +9,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content" >
 
-        <EditText
+        <AutoCompleteTextView
             android:id="@+id/ipAdressEditText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -18,7 +18,7 @@
             android:text="@string/defaultIP" >
 
             <requestFocus />
-        </EditText>
+        </AutoCompleteTextView>
 
         <EditText
             android:id="@+id/portEditText"

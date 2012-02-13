@@ -3,17 +3,24 @@ package rc.client;
 import java.io.IOException;
 import java.net.SocketException;
 import java.net.UnknownHostException;
+import java.util.ArrayList;
+import java.util.HashMap;
 
 import rc.network.Network;
+import tools.SerializationTool;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.GridView;
@@ -27,11 +34,18 @@ public class MainActivity extends Activity {
 	private static final String TAG = "MainActivity";
 
 	private Button connectB;
-	private EditText ipAdressT;
+	private AutoCompleteTextView ipAdressT;
 	private EditText portT;
 
 	private GridView gridview;
 	private ImageAdapter gridviewAdapter;
+
+	// Get the app's shared preferences
+	private SharedPreferences preferences;
+
+	private HashMap<String, String> ipTable;
+
+	private SharedPreferences.Editor preferencesEditor;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -44,7 +58,7 @@ public class MainActivity extends Activity {
 		connectB = (Button) findViewById(R.id.connectButton);
 		connectB.setOnClickListener(connectClickListener);
 
-		ipAdressT = (EditText) findViewById(R.id.ipAdressEditText);
+		ipAdressT = (AutoCompleteTextView) findViewById(R.id.ipAdressEditText);
 		portT = (EditText) findViewById(R.id.portEditText);
 
 		gridview = (GridView) findViewById(R.id.gridview);
@@ -56,6 +70,23 @@ public class MainActivity extends Activity {
 		ImageObject app = new ImageObject("vlc", R.drawable.vlc_launcher);
 		gridviewAdapter = (ImageAdapter) gridview.getAdapter();
 		gridviewAdapter.addItem(app);
+
+		ipTable = new HashMap<String, String>();
+
+		preferences = PreferenceManager.getDefaultSharedPreferences(this);
+		preferencesEditor = preferences.edit();
+
+		ipTable = (HashMap<String, String>) SerializationTool
+				.stringToMap(preferences.getString("ip", "fail"));
+		System.out.println(ipTable.keySet());
+
+		ArrayList<String> prefIP = new ArrayList<String>(ipTable.size());
+		for (String s : ipTable.keySet()) {
+			prefIP.add(s);
+		}
+		ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
+				android.R.layout.simple_dropdown_item_1line, prefIP);
+		ipAdressT.setAdapter(adapter);
 
 		Toast.makeText(this, "Toast it !!! Roast it !", Toast.LENGTH_SHORT)
 				.show();
@@ -144,6 +175,11 @@ public class MainActivity extends Activity {
 						"CommandParser Thread");
 				t.start();
 
+				ipTable.put(ipAdressT.getText().toString(), "");
+				System.out.println(ipTable.keySet());
+				preferencesEditor.putString("ip", SerializationTool
+						.mapToString(ipTable));
+				preferencesEditor.commit();
 			} else {
 				Toast.makeText(MainActivity.this, "Network connection failed",
 						Toast.LENGTH_SHORT).show();
