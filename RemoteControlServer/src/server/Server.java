@@ -3,8 +3,13 @@ package server;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.net.InetAddress;
+import java.net.NetworkInterface;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.ArrayList;
+import java.util.Enumeration;
+import java.util.List;
 
 import org.freedesktop.dbus.exceptions.DBusException;
 
@@ -19,23 +24,23 @@ import org.freedesktop.dbus.exceptions.DBusException;
 
 public class Server {
 
-	// port number should be more than 1024
-	public int PORT = 4242;
+    // port number should be more than 1024
+    public int PORT = 4242;
 
 
-	private ServerSocket sersock = null;
-	private Socket sock = null;
+    private ServerSocket sersock = null;
+    private Socket sock = null;
 
-	private ObjectOutputStream oos;
-	private ObjectInputStream ois;
+    private ObjectOutputStream oos;
+    private ObjectInputStream ois;
 
-	public Server(int port)    {
-		PORT = port;
-		
-		System.out.println("======================= Server ======================");
+    public Server(int port)    {
+        PORT = port;
 
-		// Initializing the ServerSocket
-		try {
+        System.out.println("======================= Server ======================");
+
+        // Initializing the ServerSocket
+        try {
             sersock = new ServerSocket(PORT);
         } catch (IOException e) {
             // TODO Auto-generated catch block
@@ -43,43 +48,77 @@ public class Server {
             System.err.println("impossible de lancer le serveur");
             System.exit(-1);
         }
-	}
 
-	public Server() throws DBusException {
-		this(4242);
-	}
+        //System.out.println(sersock.getInetAddress());
+        getIps();
+    }
 
-	/**
-	 * Initialize a Server socket, then wait for a client to connect. Create the
-	 * link to DBUS.
-	 * 
-	 * @throws IOException
-	 * @throws DBusException
-	 */
-	public void waitConnect() {
+    public List<String> getIps(){
+        List<String> ips = new ArrayList<String>();
 
-		// makes a socket connection to particular client after
-		// which two way communication take place
-		
-		while (true)  {
-		    try {
+        try{
+            Enumeration<NetworkInterface> interfaces = NetworkInterface.getNetworkInterfaces();
+
+            while (interfaces.hasMoreElements()) {  // carte reseau trouvee
+                NetworkInterface interfaceN = (NetworkInterface)interfaces.nextElement(); 
+                Enumeration<InetAddress> ienum = interfaceN.getInetAddresses();
+                while (ienum.hasMoreElements()) {  // retourne l adresse IPv4 et IPv6
+                    InetAddress ia = ienum.nextElement();
+                    String adress = ia.getHostAddress().toString();
+
+                    if( adress.length() < 16){          //On s'assure ainsi que l'adresse IP est bien IPv4
+                        if (!adress.startsWith("127")) {
+                            System.out.println("adresse publique du serveur : " + ia.getHostAddress());
+                        } 
+                    }
+
+                    ips.add(adress);        
+                }
+            }
+        }
+        catch(Exception e){
+            System.out.println("pas de carte reseau");
+            e.printStackTrace();
+        }
+
+        return ips;
+    }
+
+    public Server() throws DBusException {
+        this(4242);
+    }
+
+    /**
+     * Initialize a Server socket, then wait for a client to connect. Create the
+     * link to DBUS.
+     * 
+     * @throws IOException
+     * @throws DBusException
+     */
+    public void waitConnect() {
+
+        // makes a socket connection to particular client after
+        // which two way communication take place
+
+        while (true)  {
+            try {
                 new ServerThreadConnexion(sersock.accept(), this);
             } catch (IOException e) {
                 // TODO Auto-generated catch block
                 System.err.println("Impossible d'accepter une nouvelle connexion");
                 e.printStackTrace();
             }
-		}
+        }
 
-		
-	}
 
-	public static void main(String[] args) {
+    }
+
+    public static void main(String[] args) {
         // Initialiser le serveur
         Server serv = new Server(4242);
-        
+
         serv.waitConnect();
-        
+
     }
 
 
