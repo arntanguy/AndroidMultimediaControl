@@ -5,6 +5,7 @@ import media.TrackList;
 import player.Status;
 import rc.network.NetworkDataListener;
 import android.app.ListActivity;
+import android.app.ProgressDialog;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
@@ -20,10 +21,12 @@ public class TrackListActivity extends ListActivity {
 	private final Handler uiHandler = new Handler();
 
 	// overwrite the toString method of object to show what you want
-	private ArrayAdapter<String> adapter;
+	private ArrayAdapter<MetaData> adapter;
 
 	private NetworkDataHandler trackListHandler;
 
+	private ProgressDialog dialog;
+	
 	/** Called when the activity is first created. */
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -31,8 +34,12 @@ public class TrackListActivity extends ListActivity {
 		super.onCreate(savedInstanceState);
 
 		Global.network.sendCommand(new Command(CommandWord.GET_TRACKLIST));
+		
+		dialog = new ProgressDialog(TrackListActivity.this);
+		dialog.setMessage("Fetching...");
+		dialog.show();
 
-		adapter = new ArrayAdapter<String>(this,
+		adapter = new ArrayAdapter<MetaData>(this,
 				android.R.layout.simple_list_item_1);
 		setListAdapter(adapter);
 
@@ -66,6 +73,7 @@ public class TrackListActivity extends ListActivity {
 		public void trackListChanged(TrackList trackList) {
 			Log.i(TAG, "Track list changed " + trackList.getTrackList());
 			uiHandler.post(new UpdateTrackList(trackList));
+			dialog.dismiss();
 		}
 
 	}
@@ -82,7 +90,7 @@ public class TrackListActivity extends ListActivity {
 		public void run() {
 			adapter.clear();
 			for (MetaData md : trackList.getTrackList()) {
-				adapter.add(md.getTitleFromLocation());
+				adapter.add(md);
 			}
 			adapter.notifyDataSetChanged();
 		}

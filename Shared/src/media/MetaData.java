@@ -31,7 +31,8 @@ public class MetaData implements Serializable {
 	}
 
 	public String getTitle() {
-		return metaData.get("title");
+		//return metaData.get("title");
+		return getTitleFromLocation();
 	}
 
 	public String getLocation() {
@@ -76,10 +77,6 @@ public class MetaData implements Serializable {
 	}
 
 	public String toString() {
-		String result = "";
-		for (String key : metaData.keySet()) {
-			result += key + ": " + metaData.get(key) + "\n";
-		}
-		return result;
+		return getTitle();
 	}
 }
