@@ -1,6 +1,14 @@
 package dbus;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import media.MetaData;
+import media.TrackList;
+
+import org.freedesktop.MPRISStatus;
 import org.freedesktop.dbus.DBusConnection;
+import org.freedesktop.dbus.Variant;
 import org.freedesktop.dbus.exceptions.DBusException;
 
 import server.Server;
@@ -61,4 +69,24 @@ abstract public class DBus {
 	abstract public int getPosition();
 
 	abstract public int getTotalLenght();
+	
+	abstract public MetaData getMetaData();
+	
+	abstract public MetaData getMetaData(int a);
+
+	abstract public MPRISStatus getStatus();
+	
+	abstract public int addTrack(String uri, boolean playImmediatly);
+	
+	abstract public void DelTrack(int a);
+	
+	abstract public int getCurrentTrack();
+
+	abstract public int getLength();
+
+	abstract public void setLoop(boolean a);
+
+	abstract public void setRandom(boolean a);
+	
+	abstract public TrackList getTrackList();
 }

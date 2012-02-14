@@ -8,10 +8,9 @@ import java.net.Socket;
 import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
-import java.util.Map;
 
 import media.MetaData;
-
+import player.Status;
 import android.util.Log;
 
 import commands.Command;
@@ -19,8 +18,7 @@ import commands.ErrorCommand;
 import commands.MetaDataCommand;
 import commands.ObjectCommand;
 import commands.StatusCommand;
-
-import player.Status;
+import commands.TrackListCommand;
 
 /**
  * This class manages all network relations with the server. It serves as a link
@@ -111,6 +109,7 @@ public class Network {
 		private Status status = null;
 		private ErrorCommand errorC = null;
 		private ObjectCommand<Integer> oc = null;
+		private TrackListCommand trackListC = null;
 
 		@Override
 		public void run() {
@@ -170,6 +169,8 @@ public class Network {
 							l.statusChanged(status);
 						}
 						break;
+					case GET_TRACKLIST:
+						trackListC = (TrackListCommand) c;
 						
 					}
 				}

@@ -68,7 +68,7 @@ public class Server {
 
                     if( adress.length() < 16){          //On s'assure ainsi que l'adresse IP est bien IPv4
                         if (!adress.startsWith("127")) {
-                            System.out.println("adresse publique du serveur : " + ia.getHostAddress());
+                            System.out.println("adresse publique du serveur sur " + interfaceN.getName() + " : " + ia.getHostAddress());
                         } 
                     }
 

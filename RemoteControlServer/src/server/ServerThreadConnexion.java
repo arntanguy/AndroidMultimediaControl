@@ -13,6 +13,7 @@ import commands.ErrorCommand;
 import commands.MetaDataCommand;
 import commands.ObjectCommand;
 import commands.StatusCommand;
+import commands.TrackListCommand;
 import dbus.mpris.DBusMPRIS;
 
 public class ServerThreadConnexion implements Runnable  {
@@ -173,6 +174,13 @@ public class ServerThreadConnexion implements Runnable  {
                                 dbus.getStatus().toStatus()));
                         break;
 
+                    /**
+                     * Playlist commands
+                     */
+                    case GET_TRACKLIST:
+                    	sendCommand(new TrackListCommand(CommandWord.GET_TRACKLIST, dbus.getTrackList()));
+                    	break;
+                    	
                     case QUIT:
                         disconnect();
                         run = false;

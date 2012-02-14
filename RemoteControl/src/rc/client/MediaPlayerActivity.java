@@ -1,6 +1,7 @@
 package rc.client;
 
 import media.MetaData;
+import media.TrackList;
 
 import player.Status;
 import rc.network.NetworkDataListener;
@@ -301,6 +302,11 @@ public class MediaPlayerActivity extends Activity {
 			uiHandler.post(updateStatus);
 			startTime = System.currentTimeMillis();
 			progressBar.setProgress(0);
+		}
+
+		@Override
+		public void trackListChanged(TrackList trackList) {
+			// Do nothing here
 		}
 	}
 

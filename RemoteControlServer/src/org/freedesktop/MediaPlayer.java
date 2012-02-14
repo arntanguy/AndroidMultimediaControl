@@ -163,10 +163,6 @@ public interface MediaPlayer extends DBusInterface {
 	 */
 	public int GetCaps();
 
-	
-	
-	
-	
 	/**
 	 * ===================================================================
 	 * ==================== TrackList interface ==========================
@@ -174,11 +170,10 @@ public interface MediaPlayer extends DBusInterface {
 	 */
 
 	/**
-	 * Signal is emitted when the "TrackList" content has changed: 
-	 * - When one or more elements have been added When one or more elements 
-	 *   have been removed
-	 * - When the ordering of elements has changed The argument is the number 
-	 * 	 of elements in the TrackList after the change happened.
+	 * Signal is emitted when the "TrackList" content has changed: - When one or
+	 * more elements have been added When one or more elements have been removed
+	 * - When the ordering of elements has changed The argument is the number of
+	 * elements in the TrackList after the change happened.
 	 */
 	public static class TrackListChange extends DBusSignal {
 		public final int a;
