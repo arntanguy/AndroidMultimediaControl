@@ -254,7 +254,8 @@ public class ConnectActivity extends Activity {
 	private void alterAdapter() {
 		System.out.println("alter " + ipAdressT.getText().toString());
 		if (ipAdressT.getText().toString().isEmpty()) {
-			partialNames = searchNames;
+			partialNames.clear();
+			partialNames.addAll(searchNames);
 		} else {
 			partialNames.clear();
 			for (int i = 0; i < searchNames.size(); i++) {
