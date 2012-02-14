@@ -43,9 +43,11 @@ public class SerializationTool {
 		for (String nameValuePair : nameValuePairs) {
 			String[] nameValue = nameValuePair.split("=");
 			try {
+				if(nameValue.length > 1) {
 				map.put(URLDecoder.decode(nameValue[0], "UTF-8"),
 						nameValue.length > 1 ? URLDecoder.decode(nameValue[1],
 								"UTF-8") : "");
+				}
 			} catch (UnsupportedEncodingException e) {
 				throw new RuntimeException(
 						"This method requires UTF-8 encoding support", e);

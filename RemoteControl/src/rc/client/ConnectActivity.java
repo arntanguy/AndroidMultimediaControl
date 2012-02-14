@@ -6,6 +6,7 @@ import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import rc.client.R;
 import rc.network.Network;
 import tools.SerializationTool;
 import android.app.Activity;
@@ -15,36 +16,41 @@ import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.GridView;
+import android.widget.ListView;
 import android.widget.Toast;
 import android.widget.AdapterView.OnItemClickListener;
 
 import commands.Command;
 import commands.CommandWord;
 
-public class MainActivity extends Activity {
-	private static final String TAG = "MainActivity";
+public class ConnectActivity extends Activity {
+	public static final String TAG = "ConnectActivity";
 
-	private Button connectB;
-	private AutoCompleteTextView ipAdressT;
+	// Trucated list, according to text entry
+	private ArrayList<String> partialNames = new ArrayList<String>();
+	private ArrayList<String> searchNames = null;
+	private HashMap<String, String> ipTable = null;
+
+	// Field where user enters his search criteria
+	private EditText ipAdressT;
 	private EditText portT;
+	private Button connectB;
 
-	private GridView gridview;
-	private ImageAdapter gridviewAdapter;
+	// List of names matching criteria are listed here
+	private ListView ipList;
+	private ArrayAdapter<String> adapter;
 
 	// Get the app's shared preferences
 	private SharedPreferences preferences;
-
-	private HashMap<String, String> ipTable;
-
 	private SharedPreferences.Editor preferencesEditor;
 
 	@Override
@@ -53,43 +59,57 @@ public class MainActivity extends Activity {
 		Global.network = new Network();
 		Global.network.setPort(4242);
 
-		setContentView(R.layout.main);
+		setContentView(R.layout.connect);
 
+		ipAdressT = (EditText) findViewById(R.id.ipAdressTextEdit);
+		ipAdressT.addTextChangedListener(textChangedWatcher);
+
+		portT = (EditText) findViewById(R.id.portTextEdit);
 		connectB = (Button) findViewById(R.id.connectButton);
-		connectB.setOnClickListener(connectClickListener);
 
-		ipAdressT = (AutoCompleteTextView) findViewById(R.id.ipAdressEditText);
-		portT = (EditText) findViewById(R.id.portEditText);
-
-		gridview = (GridView) findViewById(R.id.gridview);
-		gridview.setAdapter(new ImageAdapter(this));
-		gridview.setOnItemClickListener(itemClickListener);
-
-		// XXX: generalize this
-		// Add vlc to view
-		ImageObject app = new ImageObject("vlc", R.drawable.vlc_launcher);
-		gridviewAdapter = (ImageAdapter) gridview.getAdapter();
-		gridviewAdapter.addItem(app);
-
-		ipTable = new HashMap<String, String>();
+		ipList = (ListView) findViewById(R.id.ipListView);
+		adapter = new ArrayAdapter<String>(this,
+				android.R.layout.simple_list_item_1, partialNames);
+		ipList.setAdapter(adapter);
+		ipList.setOnItemClickListener(itemClickListener);
 
 		preferences = PreferenceManager.getDefaultSharedPreferences(this);
 		preferencesEditor = preferences.edit();
 
+		ipTable = new HashMap<String, String>();
 		ipTable = (HashMap<String, String>) SerializationTool
 				.stringToMap(preferences.getString("ip", "fail"));
 		System.out.println(ipTable.keySet());
 
-		ArrayList<String> prefIP = new ArrayList<String>(ipTable.size());
+		searchNames = new ArrayList<String>(ipTable.size());
 		for (String s : ipTable.keySet()) {
-			prefIP.add(s);
+			searchNames.add(s);
 		}
-		ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
-				android.R.layout.simple_dropdown_item_1line, prefIP);
-		ipAdressT.setAdapter(adapter);
+		System.out.println(searchNames);
+
+		alterAdapter();
+		connectB.setOnClickListener(connectClickListener);
 
 		Toast.makeText(this, "Toast it !!! Roast it !", Toast.LENGTH_SHORT)
 				.show();
+	}
+
+	private OnClickListener connectClickListener = new OnClickListener() {
+		@Override
+		public void onClick(View v) {
+			connect();
+		}
+	};
+
+	private void connect() {
+		connect(ipAdressT.getText().toString(), portT.getText().toString());
+	}
+
+	private void connect(String ip, String port) {
+		Global.network.setIp(ip);
+		Global.network.setPort(Integer.parseInt(port));
+
+		new ConnectNetwork().execute(ip);
 	}
 
 	/**
@@ -107,7 +127,7 @@ public class MainActivity extends Activity {
 		 * for instance
 		 */
 		protected void onPreExecute() {
-			dialog = new ProgressDialog(MainActivity.this);
+			dialog = new ProgressDialog(ConnectActivity.this);
 			dialog.setMessage("Connecting...");
 			dialog.show();
 		}
@@ -147,10 +167,11 @@ public class MainActivity extends Activity {
 		protected void onProgressUpdate(Integer progress) {
 			Log.i(TAG, "Progress");
 			if (progress == 1) {
-				Toast.makeText(MainActivity.this, "Network connection failed!",
-						Toast.LENGTH_SHORT).show();
+				Toast.makeText(ConnectActivity.this,
+						"Network connection failed!", Toast.LENGTH_SHORT)
+						.show();
 			} else if (progress == 2) {
-				Toast.makeText(MainActivity.this, "Unkown host!",
+				Toast.makeText(ConnectActivity.this, "Unkown host!",
 						Toast.LENGTH_SHORT).show();
 			}
 		}
@@ -166,56 +187,90 @@ public class MainActivity extends Activity {
 
 			dialog.dismiss();
 			if (Global.network.isConnected()) {
-				Toast.makeText(MainActivity.this, "Connected",
+				Toast.makeText(ConnectActivity.this, "Connected",
 						Toast.LENGTH_SHORT).show();
-				gridview.setVisibility(View.VISIBLE);
 
 				// Start the command parser thread
 				Thread t = new Thread(Global.network.getCommandParser(),
 						"CommandParser Thread");
 				t.start();
 
-				ipTable.put(ipAdressT.getText().toString(), "");
+				ipTable.put(ipAdressT.getText().toString(), portT.getText()
+						.toString());
 				System.out.println(ipTable.keySet());
 				preferencesEditor.putString("ip", SerializationTool
 						.mapToString(ipTable));
+				// save preferences
 				preferencesEditor.commit();
+				alterAdapter();
+
+				// Start application choice activity
+				startApplicationSelectorActivity();
+
 			} else {
-				Toast.makeText(MainActivity.this, "Network connection failed",
-						Toast.LENGTH_SHORT).show();
-				gridview.setVisibility(View.INVISIBLE);
+				Toast.makeText(ConnectActivity.this,
+						"Network connection failed", Toast.LENGTH_SHORT).show();
 			}
 
 			Global.network.sendCommand(new Command(CommandWord.HELLO));
 		}
 	} // ConnectNetwork (AsyncTask)
 
-	private OnClickListener connectClickListener = new OnClickListener() {
-		@Override
-		public void onClick(View v) {
-			Global.network.setIp(ipAdressT.getText().toString());
-			Global.network
-					.setPort(Integer.parseInt(portT.getText().toString()));
+	private TextWatcher textChangedWatcher = new TextWatcher() {
 
-			new ConnectNetwork().execute(ipAdressT.getText().toString());
+		// As the user types in the search field, the list is
+		@Override
+		public void onTextChanged(CharSequence arg0, int arg1, int arg2,
+				int arg3) {
+			alterAdapter();
+		}
+
+		@Override
+		public void afterTextChanged(Editable arg0) {
+		}
+
+		@Override
+		public void beforeTextChanged(CharSequence arg0, int arg1, int arg2,
+				int arg3) {
 		}
 	};
 
 	/**
-	 * On click on an application icon, start the associated activity.
+	 * We click on a server ip, start the application choice activity.
 	 */
 	private OnItemClickListener itemClickListener = new OnItemClickListener() {
 		@Override
 		public void onItemClick(AdapterView<?> parent, View v, int position,
 				long id) {
-			// Log.d(TAG,"Position Clicked ["+position+"] with item id ["+id+"]");
-			ImageObject app = (ImageObject) gridviewAdapter.getItem(position);
-			if (app.getName() == "vlc") {
-				Intent intent = new Intent(MainActivity.this,
-						MediaPlayerActivity.class);
-				startActivity(intent);
-			}
-
+			String ip = (String) adapter.getItem(position);
+			System.out.println("ip " + ip + "\tport "
+					+ portT.getText().toString());
+			connect(ip, portT.getText().toString());
 		}
 	};
+
+	// Filters list of contacts based on user search criteria. If no information
+	// is filled in, contact list will be fully shown
+	private void alterAdapter() {
+		System.out.println("alter " + ipAdressT.getText().toString());
+		if (ipAdressT.getText().toString().isEmpty()) {
+			partialNames = searchNames;
+		} else {
+			partialNames.clear();
+			for (int i = 0; i < searchNames.size(); i++) {
+				if (searchNames.get(i).toString().toLowerCase().contains(
+						ipAdressT.getText().toString().toLowerCase())) {
+					partialNames.add(searchNames.get(i).toString());
+				}
+			}
+		}
+		adapter.notifyDataSetChanged();
+		System.out.println("partial " + partialNames);
+	}
+
+	private void startApplicationSelectorActivity() {
+		Intent intent = new Intent(this, ApplicationSelectorActivity.class);
+		startActivity(intent);
+	}
+
 }
