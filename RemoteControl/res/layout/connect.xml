@@ -14,13 +14,14 @@
             android:id="@+id/ipAdressTextEdit"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/defaultIP" />
+            android:singleLine="true" />
 
         <EditText
             android:id="@+id/portTextEdit"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/port" >
+            android:text="@string/port"
+            android:singleLine="true" >
 
             <requestFocus />
         </EditText>

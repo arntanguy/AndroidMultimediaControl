@@ -127,7 +127,7 @@ public class Network {
 					case TRACK_CHANGED:
 						metaDataC = (MetaDataCommand) c;
 						MetaData metaData = metaDataC.getMetaData();
-						System.out.println(metaData);
+						Log.i(TAG,metaData.toString());
 						for (NetworkDataListener l : networkDataListeners) {
 							l.metaDataChanged(metaData);
 							l.trackChanged();
@@ -171,7 +171,12 @@ public class Network {
 						break;
 					case GET_TRACKLIST:
 						trackListC = (TrackListCommand) c;
-						
+						Log.i(TAG, "Command tracklist recieved");
+						Log.i(TAG, trackListC.getTrackList().toString());
+						for (NetworkDataListener l : networkDataListeners) {
+							l.trackListChanged(trackListC.getTrackList());
+						}
+						break;
 					}
 				}
 			} // while
@@ -190,7 +195,7 @@ public class Network {
 	 */
 	public void sendCommand(Command c) {
 		if (oos != null) {
-			System.out.println("Sending command " + c);
+			Log.i(TAG, "Sending command " + c);
 			try {
 				oos.writeObject(c);
 			} catch (IOException e) {

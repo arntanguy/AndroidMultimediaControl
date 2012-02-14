@@ -24,15 +24,13 @@ public class TrackList implements Serializable {
 	}
 
 	/**
-	 * This is the default implementation of writeObject. Customise if
+	 * This is the default implementation of writeObject. Customize if
 	 * necessary.
 	 */
 	private void writeObject(ObjectOutputStream aOutputStream)
 			throws IOException {
 		aOutputStream.defaultWriteObject();
-		for (MetaData md : trackList) {
-			aOutputStream.writeObject(md);
-		}
+		aOutputStream.writeObject(trackList);
 	}
 
 	/**
@@ -44,10 +42,6 @@ public class TrackList implements Serializable {
 		// always perform the default de-serialization first
 		aInputStream.defaultReadObject();
 
-		trackList = new ArrayList<MetaData>();
-		MetaData md = null;
-		while ((md = (MetaData) aInputStream.readObject()) != null) {
-			trackList.add(md);
-		}
+		trackList = (ArrayList<MetaData>) aInputStream.readObject();
 	}
 }

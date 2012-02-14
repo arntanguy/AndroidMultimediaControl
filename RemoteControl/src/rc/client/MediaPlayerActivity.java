@@ -85,8 +85,7 @@ public class MediaPlayerActivity extends Activity {
 
 		initializePlayer();
 	}
-	
-	
+
 	@Override
 	public void onResume() {
 		super.onResume();
@@ -94,13 +93,12 @@ public class MediaPlayerActivity extends Activity {
 		Global.network.sendCommand(new Command(CommandWord.GET_META_DATA));
 		Global.network.sendCommand(new Command(CommandWord.GET_POSITION));
 	}
-	
+
 	@Override
 	public void onDestroy() {
 		super.onDestroy();
 		Global.network.removeStatusListener(statusHandler);
 	}
-
 
 	/**
 	 * Retrieve the full playing status from the running application : - Playing
@@ -220,14 +218,14 @@ public class MediaPlayerActivity extends Activity {
 			setPlayPauseRessource();
 		}
 	};
-	
+
 	private class UpdateMetadata implements Runnable {
 		private MetaData metaData = null;
-		
+
 		public UpdateMetadata(MetaData metaData) {
 			this.metaData = metaData;
 		}
-		
+
 		@Override
 		public void run() {
 			artistNameTextView.setText(metaData.getArtist());

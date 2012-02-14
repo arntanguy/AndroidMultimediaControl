@@ -176,7 +176,7 @@ public class DBusMPRIS extends DBus {
 	
 	public TrackList getTrackList() {
 		TrackList t = new TrackList();
-		for(int i=1; i<getLength(); i++) {
+		for(int i=0; i<getLength(); i++) {
 			t.addTrack(getMetaData(i));
 		}
 		return t;

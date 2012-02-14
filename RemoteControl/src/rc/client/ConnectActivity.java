@@ -79,7 +79,6 @@ public class ConnectActivity extends Activity {
 		ipTable = new HashMap<String, String>();
 		ipTable = (HashMap<String, String>) SerializationTool
 				.stringToMap(preferences.getString("ip", "fail"));
-		System.out.println(ipTable.keySet());
 
 		searchNames = new ArrayList<String>(ipTable.size());
 		for (String s : ipTable.keySet()) {
@@ -197,7 +196,6 @@ public class ConnectActivity extends Activity {
 
 				ipTable.put(ipAdressT.getText().toString(), portT.getText()
 						.toString());
-				System.out.println(ipTable.keySet());
 				preferencesEditor.putString("ip", SerializationTool
 						.mapToString(ipTable));
 				// save preferences
@@ -252,7 +250,7 @@ public class ConnectActivity extends Activity {
 	// Filters list of contacts based on user search criteria. If no information
 	// is filled in, contact list will be fully shown
 	private void alterAdapter() {
-		System.out.println("alter " + ipAdressT.getText().toString());
+		Log.i(TAG, "alter " + ipAdressT.getText().toString());
 		if (ipAdressT.getText().toString().isEmpty()) {
 			partialNames.clear();
 			partialNames.addAll(searchNames);
@@ -266,7 +264,7 @@ public class ConnectActivity extends Activity {
 			}
 		}
 		adapter.notifyDataSetChanged();
-		System.out.println("partial " + partialNames);
+		Log.i(TAG, "partial " + partialNames);
 	}
 
 	private void startApplicationSelectorActivity() {
