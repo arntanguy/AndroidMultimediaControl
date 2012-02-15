@@ -36,8 +36,8 @@ public class ConnectActivity extends Activity {
 	public static final String TAG = "ConnectActivity";
 
 	// Trucated list, according to text entry
-	private ArrayList<String> partialNames = new ArrayList<String>();
-	private ArrayList<String> searchNames = null;
+	private ArrayList<IpItem> partialNames = new ArrayList<IpItem>();
+	private ArrayList<IpItem> searchNames = null;
 	private HashMap<String, String> ipTable = null;
 
 	// Field where user enters his search criteria
@@ -47,7 +47,7 @@ public class ConnectActivity extends Activity {
 
 	// List of names matching criteria are listed here
 	private ListView ipList;
-	private ArrayAdapter<String> adapter;
+	private ArrayAdapter<IpItem> adapter;
 
 	// Get the app's shared preferences
 	private SharedPreferences preferences;
@@ -68,7 +68,7 @@ public class ConnectActivity extends Activity {
 		connectB = (Button) findViewById(R.id.connectButton);
 
 		ipList = (ListView) findViewById(R.id.ipListView);
-		adapter = new ArrayAdapter<String>(this,
+		adapter = new ArrayAdapter<IpItem>(this,
 				android.R.layout.simple_list_item_1, partialNames);
 		ipList.setAdapter(adapter);
 		ipList.setOnItemClickListener(itemClickListener);
@@ -80,9 +80,9 @@ public class ConnectActivity extends Activity {
 		ipTable = (HashMap<String, String>) SerializationTool
 				.stringToMap(preferences.getString("ip", "fail"));
 
-		searchNames = new ArrayList<String>(ipTable.size());
+		searchNames = new ArrayList<IpItem>(ipTable.size());
 		for (String s : ipTable.keySet()) {
-			searchNames.add(s);
+			searchNames.add(new IpItem(s, Integer.parseInt(ipTable.get(s))));
 		}
 		System.out.println(searchNames);
 
@@ -101,12 +101,12 @@ public class ConnectActivity extends Activity {
 	};
 
 	private void connect() {
-		connect(ipAdressT.getText().toString(), portT.getText().toString());
+		connect(ipAdressT.getText().toString(), Integer.parseInt(portT.getText().toString()));
 	}
 
-	private void connect(String ip, String port) {
+	private void connect(String ip, int i) {
 		Global.network.setIp(ip);
-		Global.network.setPort(Integer.parseInt(port));
+		Global.network.setPort(i);
 
 		new ConnectNetwork().execute(ip);
 	}
@@ -240,10 +240,9 @@ public class ConnectActivity extends Activity {
 		@Override
 		public void onItemClick(AdapterView<?> parent, View v, int position,
 				long id) {
-			String ip = (String) adapter.getItem(position);
-			System.out.println("ip " + ip + "\tport "
-					+ portT.getText().toString());
-			connect(ip, portT.getText().toString());
+			IpItem ip = (IpItem) adapter.getItem(position);
+			connect(ip.getIp(), ip.getPort());
+			System.out.println("ip " + ip.toString());
 		}
 	};
 
@@ -259,7 +258,7 @@ public class ConnectActivity extends Activity {
 			for (int i = 0; i < searchNames.size(); i++) {
 				if (searchNames.get(i).toString().toLowerCase().contains(
 						ipAdressT.getText().toString().toLowerCase())) {
-					partialNames.add(searchNames.get(i).toString());
+					partialNames.add(searchNames.get(i));
 				}
 			}
 		}

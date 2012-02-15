@@ -64,6 +64,15 @@ public class SerializationTool {
 		return map;
 	}
 
+	public static String toString(Serializable o) throws IOException {
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		ObjectOutputStream oos = new ObjectOutputStream(baos);
+		oos.writeObject(o);
+		oos.close();
+		return baos.toString();
+	}
+
+	
 	public static byte[] toByteArray(Serializable o) throws IOException {
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
 		ObjectOutputStream oos = new ObjectOutputStream(baos);
@@ -72,14 +81,13 @@ public class SerializationTool {
 		return baos.toByteArray();
 	}
 
-	public static Object fromByteArray(byte[] yourBytes) throws IOException,
-			ClassNotFoundException {
-		ByteArrayInputStream bis = new ByteArrayInputStream(yourBytes);
-		ObjectInput in = new ObjectInputStream(bis);
-		Object o = in.readObject();
-
-		bis.close();
-		in.close();
-		return o;
+	static public Object fromByteArray(byte[] str) throws IOException, ClassNotFoundException {
+		Object out = null;
+		if (str != null) {
+				ByteArrayInputStream bios = new ByteArrayInputStream(str);
+				ObjectInputStream ois = new ObjectInputStream(bios);
+				out = ois.readObject();
+		}
+		return out;
 	}
 }

@@ -73,6 +73,12 @@ public class TrackListActivity extends ListActivity {
 	}
 
 	@Override
+	public void onDestroy() {
+		super.onDestroy();
+		Global.network.removeStatusListener(trackListHandler);
+	}
+	
+	@Override
 	protected void onListItemClick(ListView l, View v, int position, long id) {
 		Log.i(TAG, "Position: " + position);
 		Global.network.sendCommand(new ObjectCommand<Integer>(
