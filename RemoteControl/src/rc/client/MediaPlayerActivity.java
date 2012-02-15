@@ -1,14 +1,10 @@
 package rc.client;
 
-import java.io.IOException;
-
 import media.MetaData;
 import media.TrackList;
 import player.Status;
 import rc.network.NetworkDataListener;
-import tools.SerializationTool;
 import android.app.Activity;
-import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
@@ -47,7 +43,6 @@ public class MediaPlayerActivity extends Activity {
 	private ImageView playB;
 	private ImageView forwardB;
 	private ImageView backwardB;
-	private ImageView playListButton;
 	private SeekBar progressBar;
 	private TextView trackNameTextView;
 	private TextView artistNameTextView;
@@ -70,7 +65,6 @@ public class MediaPlayerActivity extends Activity {
 		playB = (ImageView) findViewById(R.id.playButton);
 		forwardB = (ImageView) findViewById(R.id.forwardButton);
 		backwardB = (ImageView) findViewById(R.id.backwardsButton);
-		playListButton = (ImageView) findViewById(R.id.playListButton);
 		progressBar = (SeekBar) findViewById(R.id.progressBar);
 		trackNameTextView = (TextView) findViewById(R.id.trackNameTextView);
 		artistNameTextView = (TextView) findViewById(R.id.artistNameTextView);
@@ -80,7 +74,6 @@ public class MediaPlayerActivity extends Activity {
 		previousB.setOnClickListener(previousClickListener);
 		forwardB.setOnClickListener(forwardClickListener);
 		backwardB.setOnClickListener(backwardsClickListener);
-		playListButton.setOnClickListener(playListClickListener);
 		progressBar.setOnSeekBarChangeListener(progressBarChangeListener);
 
 		statusHandler = new NetworkDataHandler();
@@ -132,27 +125,21 @@ public class MediaPlayerActivity extends Activity {
 	/**
 	 * Opens the playlist activity
 	 */
-	private OnClickListener playListClickListener = new OnClickListener() {
-		@Override
-		public void onClick(View v) {
-			Intent intent = new Intent(MediaPlayerActivity.this,
-					TrackListActivity.class);
-			// Next create the bundle and initialize it
-			Bundle bundle = new Bundle();
-
-			try {
-				bundle.putByteArray("tracklist", SerializationTool
-						.toByteArray(trackList));
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-
-			// Add this bundle to the intent
-			intent.putExtras(bundle);
-			startActivity(intent);
-		}
-	};
+	// XXX: Use the cached trackList with the tabs
+	/*
+	 * private OnClickListener playListClickListener = new OnClickListener() {
+	 * 
+	 * @Override public void onClick(View v) { Intent intent = new
+	 * Intent(MediaPlayerActivity.this, TrackListActivity.class); // Next create
+	 * the bundle and initialize it Bundle bundle = new Bundle();
+	 * 
+	 * try { bundle.putByteArray("tracklist", SerializationTool
+	 * .toByteArray(trackList)); } catch (IOException e) { // TODO
+	 * Auto-generated catch block e.printStackTrace(); }
+	 * 
+	 * // Add this bundle to the intent intent.putExtras(bundle);
+	 * startActivity(intent); } };
+	 */
 
 	/**
 	 * Toggle Play/Pause commands. Handles the switching of images between

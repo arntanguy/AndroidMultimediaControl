@@ -6,12 +6,10 @@ import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import rc.client.R;
 import rc.network.Network;
 import tools.SerializationTool;
 import android.app.Activity;
 import android.app.ProgressDialog;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -101,7 +99,8 @@ public class ConnectActivity extends Activity {
 	};
 
 	private void connect() {
-		connect(ipAdressT.getText().toString(), Integer.parseInt(portT.getText().toString()));
+		connect(ipAdressT.getText().toString(), Integer.parseInt(portT
+				.getText().toString()));
 	}
 
 	private void connect(String ip, int i) {
@@ -267,8 +266,12 @@ public class ConnectActivity extends Activity {
 	}
 
 	private void startApplicationSelectorActivity() {
-		Intent intent = new Intent(this, ApplicationSelectorActivity.class);
-		startActivity(intent);
+		Log.i(TAG, "startApplicationSelectorActivity()");
+		
+		  TabWidgetActivity ParentActivity;
+          ParentActivity = (TabWidgetActivity) this.getParent();
+          // XXX: don't hardcode tab position
+          ParentActivity.setTab(1);
 	}
 
 }

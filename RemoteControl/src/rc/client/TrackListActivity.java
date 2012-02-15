@@ -42,15 +42,17 @@ public class TrackListActivity extends ListActivity {
 		super.onCreate(savedInstanceState);
 
 		Bundle extras = getIntent().getExtras();
-		try {
-			trackList = (TrackList) SerializationTool.fromByteArray(extras
-					.getByteArray("tracklist"));
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		if (extras != null) {
+			try {
+				trackList = (TrackList) SerializationTool.fromByteArray(extras
+						.getByteArray("tracklist"));
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (ClassNotFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
 
 		if (trackList != null) {
@@ -77,7 +79,7 @@ public class TrackListActivity extends ListActivity {
 		super.onDestroy();
 		Global.network.removeStatusListener(trackListHandler);
 	}
-	
+
 	@Override
 	protected void onListItemClick(ListView l, View v, int position, long id) {
 		Log.i(TAG, "Position: " + position);
@@ -111,8 +113,11 @@ public class TrackListActivity extends ListActivity {
 		@Override
 		public void trackListChanged(TrackList trackList) {
 			Log.i(TAG, "Track list changed " + trackList.getTrackList());
-			uiHandler.post(new UpdateTrackList(trackList));
+			if (trackList != null) {
+				uiHandler.post(new UpdateTrackList(trackList));
+			}
 			dialog.dismiss();
+
 		}
 
 	}

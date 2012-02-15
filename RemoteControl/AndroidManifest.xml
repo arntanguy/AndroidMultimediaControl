@@ -14,7 +14,8 @@
         android:label="@string/app_name" >
         <activity
             android:label="@string/app_name"
-            android:name=".ConnectActivity" >
+            android:name=".TabWidgetActivity"
+            android:theme="@android:style/Theme.NoTitleBar" >
             <intent-filter >
                 <action android:name="android.intent.action.MAIN" />
 
@@ -23,21 +24,32 @@
         </activity>
         <activity
             android:label="@string/app_name"
-            android:name=".MediaPlayerActivity" >
+            android:name=".ConnectActivity"
+            android:theme="@android:style/Theme.NoTitleBar" >
             <intent-filter >
                 <action android:name="android.intent.action.ALL_APPS" />
             </intent-filter>
         </activity>
         <activity
             android:label="@string/app_name"
-            android:name=".ApplicationSelectorActivity" >
+            android:name=".MediaPlayerActivity"
+            android:theme="@android:style/Theme.NoTitleBar" >
+            <intent-filter >
+                <action android:name="android.intent.action.ALL_APPS" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:label="@string/app_name"
+            android:name=".ApplicationSelectorActivity"
+            android:theme="@android:style/Theme.NoTitleBar" >
             <intent-filter >
                 <action android:name="android.intent.action.ALL_APPS" />
             </intent-filter>
         </activity>
         <activity
             android:label="@string/trackListActivityName"
-            android:name=".TrackListActivity" >
+            android:name=".TrackListActivity"
+            android:theme="@android:style/Theme.NoTitleBar" >
             <intent-filter >
                 <action android:name="android.intent.action.VIEW" />
             </intent-filter>

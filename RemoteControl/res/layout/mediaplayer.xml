@@ -117,13 +117,6 @@
                 android:minHeight="50dip"
                 android:minWidth="50dip"
                 android:src="@drawable/ic_media_next" />
-
-            <ImageView
-                android:id="@+id/playListButton"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:background="@android:drawable/btn_default"
-                android:src="@drawable/ic_media_previous" />
         </LinearLayout>
     </LinearLayout>
 
