@@ -16,5 +16,7 @@
     <string name="noTrackName">Nothing playing</string>
     <string name="unknownArtist">Unknown artist</string>
     <string name="empty"></string>
+    <string name="connect_table_layout_ip_label">Ip adress</string>
+    <string name="connect_table_layout_port_label">Port</string>
 
 </resources>

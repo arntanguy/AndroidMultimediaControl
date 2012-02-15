@@ -10,27 +10,46 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content" >
 
-        <EditText
-            android:id="@+id/ipAdressTextEdit"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:singleLine="true" />
+        <TableLayout
+            xmlns:android="http://schemas.android.com/apk/res/android"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:stretchColumns="1" >
 
-        <EditText
-            android:id="@+id/portTextEdit"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/port"
-            android:singleLine="true" >
+            <TableRow >
 
-            <requestFocus />
-        </EditText>
+                <TextView
+                    android:padding="3dip"
+                    android:text="@string/connect_table_layout_ip_label" />
 
-        <Button
-            android:id="@+id/connectButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/connect" />
+                <EditText
+                    android:id="@+id/ipAdressTextEdit"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:singleLine="true" />
+            </TableRow>
+
+            <TableRow >
+
+                <TextView
+                    android:padding="3dip"
+                    android:text="@string/connect_table_layout_port_label" />
+
+                <EditText
+                    android:id="@+id/portTextEdit"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:singleLine="true"
+                    android:text="@string/port" >
+                </EditText>
+            </TableRow>
+
+            <Button
+                android:id="@+id/connectButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/connect" />
+        </TableLayout>
     </LinearLayout>
 
     <ListView
