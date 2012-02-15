@@ -1,17 +1,12 @@
 package dbus;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import media.MetaData;
 import media.TrackList;
 
 import org.freedesktop.MPRISStatus;
 import org.freedesktop.dbus.DBusConnection;
-import org.freedesktop.dbus.Variant;
 import org.freedesktop.dbus.exceptions.DBusException;
 
-import server.Server;
 import server.ServerThreadConnexion;
 
 /**
@@ -81,6 +76,8 @@ abstract public class DBus {
 	abstract public void DelTrack(int a);
 	
 	abstract public int getCurrentTrack();
+	
+	abstract public void setTrack(int nb);
 
 	abstract public int getLength();
 

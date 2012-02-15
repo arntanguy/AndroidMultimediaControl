@@ -21,13 +21,11 @@ public class ServerThreadConnexion implements Runnable {
 	private Socket socket;
 	private ObjectOutputStream oos;
 	private ObjectInputStream ois;
-	private Server serveur;
 	private boolean run = true;
 	private DBusMPRIS dbus = null;
 
 	public ServerThreadConnexion(Socket client, Server serv) {
 		this.socket = client;
-		this.serveur = serv;
 
 		// Initialiser et démarrer le thread en charge de la connexion avec le
 		// client
@@ -187,7 +185,11 @@ public class ServerThreadConnexion implements Runnable {
 						sendCommand(new TrackListCommand(
 								CommandWord.GET_TRACKLIST, dbus.getTrackList()));
 						break;
-
+					case SET_TRACK:
+						oc = (ObjectCommand<Integer>) c;
+						dbus.setTrack(oc.getObject());
+						break;
+						
 					case QUIT:
 						disconnect();
 						run = false;

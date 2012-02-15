@@ -30,7 +30,7 @@ public class DBusMPRIS extends DBus {
 	private TrackChangeHandler handler;
 	private StatusChangeHandler statusHandler;
 	private final static String trackListObjectPath = "/TrackList";
-	
+
 	public DBusMPRIS(ServerThreadConnexion serverThreadConnexion) {
 		super(serverThreadConnexion);
 		objectPath = "/Player";
@@ -140,15 +140,15 @@ public class DBusMPRIS extends DBus {
 	public MPRISStatus getStatus() {
 		return mediaPlayer.GetStatus();
 	}
-	
+
 	public int addTrack(String uri, boolean playImmediatly) {
 		return trackList.AddTrack(uri, playImmediatly);
 	}
-	
+
 	public void DelTrack(int a) {
-			trackList.DelTrack(a);
+		trackList.DelTrack(a);
 	}
-	
+
 	public MetaData getMetaData(int a) {
 		Map<String, Variant> dmap = trackList.GetMetadata(a);
 		Map<String, String> map = new HashMap<String, String>(dmap.size());
@@ -173,13 +173,27 @@ public class DBusMPRIS extends DBus {
 	public void setRandom(boolean a) {
 		trackList.SetRandom(a);
 	}
-	
+
 	public TrackList getTrackList() {
 		TrackList t = new TrackList();
-		for(int i=0; i<getLength(); i++) {
+		for (int i = 0; i < getLength(); i++) {
 			t.addTrack(getMetaData(i));
 		}
 		return t;
+	}
+
+	@Override
+	public void setTrack(int nb) {
+		int current = getCurrentTrack();
+		if (current > nb) {
+			for (int i = 0; i < current - nb; i++) {
+				mediaPlayer.Prev();
+			}
+		} else {
+			for (int i = 0; i < nb - current; i++) {
+				mediaPlayer.Next();
+			}
+		}
 	}
 
 }

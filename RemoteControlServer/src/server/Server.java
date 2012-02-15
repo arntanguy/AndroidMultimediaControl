@@ -1,12 +1,9 @@
 package server;
 
 import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.net.ServerSocket;
-import java.net.Socket;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
@@ -27,12 +24,7 @@ public class Server {
     // port number should be more than 1024
     public int PORT = 4242;
 
-
     private ServerSocket sersock = null;
-    private Socket sock = null;
-
-    private ObjectOutputStream oos;
-    private ObjectInputStream ois;
 
     public Server(int port)    {
         PORT = port;

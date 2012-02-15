@@ -9,10 +9,13 @@ import android.app.ProgressDialog;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
+import android.view.View;
 import android.widget.ArrayAdapter;
+import android.widget.ListView;
 
 import commands.Command;
 import commands.CommandWord;
+import commands.ObjectCommand;
 
 public class TrackListActivity extends ListActivity {
 	private static final String TAG = "TrackListActivity";
@@ -42,9 +45,17 @@ public class TrackListActivity extends ListActivity {
 		adapter = new ArrayAdapter<MetaData>(this,
 				android.R.layout.simple_list_item_1);
 		setListAdapter(adapter);
+		
 
 		trackListHandler = new NetworkDataHandler();
 		Global.network.addStatusListener(trackListHandler);
+	}
+
+	@Override
+	protected void onListItemClick(ListView l, View v, int position, long id) {
+		Log.i(TAG, "Position: "+position);
+		Global.network.sendCommand(new ObjectCommand<Integer>(CommandWord.SET_TRACK, position));
+		super.onListItemClick(l, v, position, id);
 	}
 
 	/**
@@ -94,6 +105,5 @@ public class TrackListActivity extends ListActivity {
 			}
 			adapter.notifyDataSetChanged();
 		}
-
 	}
 }
