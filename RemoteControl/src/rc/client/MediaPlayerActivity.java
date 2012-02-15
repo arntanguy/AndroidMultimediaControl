@@ -1,10 +1,12 @@
 package rc.client;
 
+import java.io.IOException;
+
 import media.MetaData;
 import media.TrackList;
-
 import player.Status;
 import rc.network.NetworkDataListener;
+import tools.SerializationTool;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
@@ -53,6 +55,7 @@ public class MediaPlayerActivity extends Activity {
 	// Will handle the data updated through the network
 	private NetworkDataHandler statusHandler;
 	private boolean isPlaying = false;
+	protected TrackList trackList = null;
 
 	/** Called when the activity is first created. */
 	@Override
@@ -92,6 +95,7 @@ public class MediaPlayerActivity extends Activity {
 		Global.network.sendCommand(new Command(CommandWord.GET_STATUS));
 		Global.network.sendCommand(new Command(CommandWord.GET_META_DATA));
 		Global.network.sendCommand(new Command(CommandWord.GET_POSITION));
+		Global.network.sendCommand(new Command(CommandWord.GET_TRACKLIST));
 	}
 
 	@Override
@@ -131,24 +135,22 @@ public class MediaPlayerActivity extends Activity {
 	private OnClickListener playListClickListener = new OnClickListener() {
 		@Override
 		public void onClick(View v) {
-			Log.i(TAG, "b2 pressed - about to launch sub-activity");
 			Intent intent = new Intent(MediaPlayerActivity.this,
 					TrackListActivity.class);
 			// Next create the bundle and initialize it
 			Bundle bundle = new Bundle();
 
-			// Add the parameters to bundle as
-			bundle.putString("NAME", "my name");
-
-			bundle.putString("COMPANY", "wissen");
+			try {
+				bundle.putByteArray("tracklist", SerializationTool
+						.toByteArray(trackList));
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 
 			// Add this bundle to the intent
 			intent.putExtras(bundle);
 			startActivity(intent);
-
-			Log
-					.i(TAG,
-							"b2 pressed - sucessfully launched sub-activity (startSubActivity called)");
 		}
 	};
 
@@ -304,7 +306,7 @@ public class MediaPlayerActivity extends Activity {
 
 		@Override
 		public void trackListChanged(TrackList trackList) {
-			// Do nothing here
+			MediaPlayerActivity.this.trackList = trackList;
 		}
 	}
 

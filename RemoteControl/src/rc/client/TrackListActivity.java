@@ -1,9 +1,12 @@
 package rc.client;
 
+import java.io.IOException;
+
 import media.MetaData;
 import media.TrackList;
 import player.Status;
 import rc.network.NetworkDataListener;
+import tools.SerializationTool;
 import android.app.ListActivity;
 import android.app.ProgressDialog;
 import android.os.Bundle;
@@ -29,23 +32,41 @@ public class TrackListActivity extends ListActivity {
 	private NetworkDataHandler trackListHandler;
 
 	private ProgressDialog dialog;
-	
+
+	private TrackList trackList = null;
+
 	/** Called when the activity is first created. */
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		Log.i(TAG, "Creating activity");
 		super.onCreate(savedInstanceState);
 
-		Global.network.sendCommand(new Command(CommandWord.GET_TRACKLIST));
-		
-		dialog = new ProgressDialog(TrackListActivity.this);
-		dialog.setMessage("Fetching...");
-		dialog.show();
+		Bundle extras = getIntent().getExtras();
+		try {
+			trackList = (TrackList) SerializationTool.fromByteArray(extras
+					.getByteArray("tracklist"));
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 
-		adapter = new ArrayAdapter<MetaData>(this,
-				android.R.layout.simple_list_item_1);
+		if (trackList != null) {
+			adapter = new ArrayAdapter<MetaData>(this,
+					android.R.layout.simple_list_item_1, trackList
+							.getTrackList());
+		} else {
+			adapter = new ArrayAdapter<MetaData>(this,
+					android.R.layout.simple_list_item_1);
+			Global.network.sendCommand(new Command(CommandWord.GET_TRACKLIST));
+
+			dialog = new ProgressDialog(TrackListActivity.this);
+			dialog.setMessage("Fetching...");
+			dialog.show();
+		}
 		setListAdapter(adapter);
-		
 
 		trackListHandler = new NetworkDataHandler();
 		Global.network.addStatusListener(trackListHandler);
@@ -53,8 +74,9 @@ public class TrackListActivity extends ListActivity {
 
 	@Override
 	protected void onListItemClick(ListView l, View v, int position, long id) {
-		Log.i(TAG, "Position: "+position);
-		Global.network.sendCommand(new ObjectCommand<Integer>(CommandWord.SET_TRACK, position));
+		Log.i(TAG, "Position: " + position);
+		Global.network.sendCommand(new ObjectCommand<Integer>(
+				CommandWord.SET_TRACK, position));
 		super.onListItemClick(l, v, position, id);
 	}
 

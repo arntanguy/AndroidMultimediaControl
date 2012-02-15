@@ -1,5 +1,12 @@
 package tools;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.ObjectInput;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
@@ -43,10 +50,10 @@ public class SerializationTool {
 		for (String nameValuePair : nameValuePairs) {
 			String[] nameValue = nameValuePair.split("=");
 			try {
-				if(nameValue.length > 1) {
-				map.put(URLDecoder.decode(nameValue[0], "UTF-8"),
-						nameValue.length > 1 ? URLDecoder.decode(nameValue[1],
-								"UTF-8") : "");
+				if (nameValue.length > 1) {
+					map.put(URLDecoder.decode(nameValue[0], "UTF-8"),
+							nameValue.length > 1 ? URLDecoder.decode(
+									nameValue[1], "UTF-8") : "");
 				}
 			} catch (UnsupportedEncodingException e) {
 				throw new RuntimeException(
@@ -55,5 +62,24 @@ public class SerializationTool {
 		}
 
 		return map;
+	}
+
+	public static byte[] toByteArray(Serializable o) throws IOException {
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		ObjectOutputStream oos = new ObjectOutputStream(baos);
+		oos.writeObject(o);
+		oos.close();
+		return baos.toByteArray();
+	}
+
+	public static Object fromByteArray(byte[] yourBytes) throws IOException,
+			ClassNotFoundException {
+		ByteArrayInputStream bis = new ByteArrayInputStream(yourBytes);
+		ObjectInput in = new ObjectInputStream(bis);
+		Object o = in.readObject();
+
+		bis.close();
+		in.close();
+		return o;
 	}
 }
