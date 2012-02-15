@@ -29,6 +29,7 @@ public class DBusMPRIS extends DBus {
 	private MediaPlayer trackList;
 	private TrackChangeHandler handler;
 	private StatusChangeHandler statusHandler;
+	private TrackListChangeHandler trackListChangeHandler;
 	private final static String trackListObjectPath = "/TrackList";
 
 	public DBusMPRIS(ServerThreadConnexion serverThreadConnexion) {
@@ -37,6 +38,7 @@ public class DBusMPRIS extends DBus {
 		serviceBusName = "org.mpris.vlc";
 		handler = new TrackChangeHandler(server);
 		statusHandler = new StatusChangeHandler(server);
+		trackListChangeHandler = new TrackListChangeHandler(server);
 	}
 
 	/**
@@ -84,6 +86,7 @@ public class DBusMPRIS extends DBus {
 					trackListObjectPath);
 			conn.addSigHandler(MediaPlayer.TrackChange.class, handler);
 			conn.addSigHandler(MediaPlayer.StatusChange.class, statusHandler);
+			conn.addSigHandler(MediaPlayer.TrackListChange.class, trackListChangeHandler);
 		} catch (DBusException e) {
 			connected = false;
 			throw e;

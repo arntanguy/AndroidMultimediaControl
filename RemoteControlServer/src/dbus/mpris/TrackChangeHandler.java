@@ -9,7 +9,6 @@ import org.freedesktop.MediaPlayer;
 import org.freedesktop.MediaPlayer.TrackChange;
 import org.freedesktop.dbus.DBusSigHandler;
 
-import server.Server;
 import server.ServerThreadConnexion;
 
 import commands.CommandWord;
