@@ -89,6 +89,7 @@ public class ConnectActivity extends Activity {
 
 		Toast.makeText(this, "Toast it !!! Roast it !", Toast.LENGTH_SHORT)
 				.show();
+		
 	}
 
 	private OnClickListener connectClickListener = new OnClickListener() {
@@ -192,7 +193,7 @@ public class ConnectActivity extends Activity {
 				Thread t = new Thread(Global.network.getCommandParser(),
 						"CommandParser Thread");
 				t.start();
-
+				
 				ipTable.put(ipAdressT.getText().toString(), portT.getText()
 						.toString());
 				preferencesEditor.putString("ip", SerializationTool
@@ -274,4 +275,5 @@ public class ConnectActivity extends Activity {
           ParentActivity.setTab(1);
 	}
 
+	
 }
