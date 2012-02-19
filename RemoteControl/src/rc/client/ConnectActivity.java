@@ -89,7 +89,7 @@ public class ConnectActivity extends Activity {
 
 		Toast.makeText(this, "Toast it !!! Roast it !", Toast.LENGTH_SHORT)
 				.show();
-		
+
 	}
 
 	private OnClickListener connectClickListener = new OnClickListener() {
@@ -100,8 +100,8 @@ public class ConnectActivity extends Activity {
 	};
 
 	private void connect() {
-		connect(ipAdressT.getText().toString(), Integer.parseInt(portT
-				.getText().toString()));
+		connect(ipAdressT.getText().toString(),
+				Integer.parseInt(portT.getText().toString()));
 	}
 
 	private void connect(String ip, int i) {
@@ -193,11 +193,11 @@ public class ConnectActivity extends Activity {
 				Thread t = new Thread(Global.network.getCommandParser(),
 						"CommandParser Thread");
 				t.start();
-				
+
 				ipTable.put(ipAdressT.getText().toString(), portT.getText()
 						.toString());
-				preferencesEditor.putString("ip", SerializationTool
-						.mapToString(ipTable));
+				preferencesEditor.putString("ip",
+						SerializationTool.mapToString(ipTable));
 				// save preferences
 				preferencesEditor.commit();
 				alterAdapter();
@@ -256,8 +256,8 @@ public class ConnectActivity extends Activity {
 		} else {
 			partialNames.clear();
 			for (int i = 0; i < searchNames.size(); i++) {
-				if (searchNames.get(i).toString().toLowerCase().contains(
-						ipAdressT.getText().toString().toLowerCase())) {
+				if (searchNames.get(i).toString().toLowerCase()
+						.contains(ipAdressT.getText().toString().toLowerCase())) {
 					partialNames.add(searchNames.get(i));
 				}
 			}
@@ -268,12 +268,8 @@ public class ConnectActivity extends Activity {
 
 	private void startApplicationSelectorActivity() {
 		Log.i(TAG, "startApplicationSelectorActivity()");
-		
-		  TabWidgetActivity ParentActivity;
-          ParentActivity = (TabWidgetActivity) this.getParent();
-          // XXX: don't hardcode tab position
-          ParentActivity.setTab(1);
+		((TabWidgetActivity) this.getParent())
+				.setTab(TabWidgetActivity.APPLICATIONTAB);
 	}
 
-	
 }

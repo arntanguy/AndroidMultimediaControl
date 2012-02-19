@@ -43,9 +43,9 @@ public class ApplicationSelectorActivity extends Activity {
 			// Log.d(TAG,"Position Clicked ["+position+"] with item id ["+id+"]");
 			ImageObject app = (ImageObject) gridviewAdapter.getItem(position);
 			if (app.getName() == "vlc") {
-				Intent intent = new Intent(ApplicationSelectorActivity.this,
-						MediaPlayerActivity.class);
-				startActivity(intent);
+				((TabWidgetActivity) ApplicationSelectorActivity.this
+						.getParent()).setTab(TabWidgetActivity.PLAYTAB);
+				;
 			}
 
 		}

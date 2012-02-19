@@ -1,9 +1,12 @@
 package rc.client;
 
+import java.io.IOException;
+
 import media.MetaData;
 import media.TrackList;
 import player.Status;
 import rc.network.NetworkDataListener;
+import tools.SerializationTool;
 import android.app.Activity;
 import android.os.Bundle;
 import android.os.Handler;
@@ -121,25 +124,6 @@ public class MediaPlayerActivity extends Activity {
 			mHandler.postDelayed(this, 1000);
 		}
 	};
-
-	/**
-	 * Opens the playlist activity
-	 */
-	// XXX: Use the cached trackList with the tabs
-	/*
-	 * private OnClickListener playListClickListener = new OnClickListener() {
-	 * 
-	 * @Override public void onClick(View v) { Intent intent = new
-	 * Intent(MediaPlayerActivity.this, TrackListActivity.class); // Next create
-	 * the bundle and initialize it Bundle bundle = new Bundle();
-	 * 
-	 * try { bundle.putByteArray("tracklist", SerializationTool
-	 * .toByteArray(trackList)); } catch (IOException e) { // TODO
-	 * Auto-generated catch block e.printStackTrace(); }
-	 * 
-	 * // Add this bundle to the intent intent.putExtras(bundle);
-	 * startActivity(intent); } };
-	 */
 
 	/**
 	 * Toggle Play/Pause commands. Handles the switching of images between
@@ -294,6 +278,20 @@ public class MediaPlayerActivity extends Activity {
 		@Override
 		public void trackListChanged(TrackList trackList) {
 			MediaPlayerActivity.this.trackList = trackList;
+			Bundle bundle = new Bundle();
+			try {
+				bundle.putByteArray("tracklist",
+						SerializationTool.toByteArray(trackList));
+			} catch (IOException e) {
+				Log.e(TAG,
+						"Failed to send tracklist bundle, tracklist will not be cached !!\n"
+								+ e.getMessage());
+			}
+			// If the tracklist changed, sends meta data to the other
+			// activities, so that everything is up to date, without having to
+			// fetch it manually !
+			((TabWidgetActivity) MediaPlayerActivity.this.getParent())
+					.sendMetaDataBundle(bundle);
 		}
 	}
 
@@ -322,5 +320,9 @@ public class MediaPlayerActivity extends Activity {
 		default:
 			return super.dispatchKeyEvent(event);
 		}
+	}
+
+	public TrackList getTrackList() {
+		return trackList;
 	}
 }

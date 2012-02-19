@@ -50,7 +50,8 @@ public class MetaData implements Serializable {
 	}
 
 	public int getLength() {
-		return Integer.parseInt(metaData.get("length"));
+		String length = metaData.get("length");
+		return (metaData!=null) ? Integer.parseInt(length) : 0;
 	}
 
 	/**

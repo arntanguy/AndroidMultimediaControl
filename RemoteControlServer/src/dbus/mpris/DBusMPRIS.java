@@ -86,7 +86,8 @@ public class DBusMPRIS extends DBus {
 					trackListObjectPath);
 			conn.addSigHandler(MediaPlayer.TrackChange.class, handler);
 			conn.addSigHandler(MediaPlayer.StatusChange.class, statusHandler);
-			conn.addSigHandler(MediaPlayer.TrackListChange.class, trackListChangeHandler);
+			conn.addSigHandler(MediaPlayer.TrackListChange.class,
+					trackListChangeHandler);
 		} catch (DBusException e) {
 			connected = false;
 			throw e;
