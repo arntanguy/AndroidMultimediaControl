@@ -120,6 +120,8 @@ public class ConnectActivity extends Activity {
 	 */
 	private class ConnectNetwork extends AsyncTask<String, Integer, Void> {
 		private ProgressDialog dialog = null;
+		private String ip;
+		private String port;
 
 		/**
 		 * Called before the execution of doInBackground, used to set up dialogs
@@ -139,9 +141,10 @@ public class ConnectActivity extends Activity {
 		protected Void doInBackground(String... IP) {
 			int nb = IP.length;
 			String ip = (nb > 0) ? IP[0] : "";
+			this.ip = ip;
+			this.port = portT.getText().toString();
 			Global.network.setIp(ip);
-			Global.network
-					.setPort(Integer.parseInt(portT.getText().toString()));
+			Global.network.setPort(Integer.parseInt(port));
 			try {
 				Global.network.connect();
 			} catch (SocketException e) {
@@ -194,8 +197,7 @@ public class ConnectActivity extends Activity {
 						"CommandParser Thread");
 				t.start();
 
-				ipTable.put(ipAdressT.getText().toString(), portT.getText()
-						.toString());
+				ipTable.put(ip, port);
 				preferencesEditor.putString("ip",
 						SerializationTool.mapToString(ipTable));
 				// save preferences
