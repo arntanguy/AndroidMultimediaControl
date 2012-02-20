@@ -1,8 +1,5 @@
 package rc.client;
 
-import commands.CommandWord;
-import commands.ObjectCommand;
-
 import android.app.Activity;
 import android.os.Bundle;
 import android.util.Log;
@@ -10,6 +7,9 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.GridView;
+
+import commands.CommandWord;
+import commands.ObjectCommand;
 
 public class ApplicationSelectorActivity extends Activity {
 	private static final String TAG = "ChoseApplicationActivity";

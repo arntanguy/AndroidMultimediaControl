@@ -32,6 +32,9 @@ abstract public class DBus implements ApplicationControlInterface {
 
 	protected ServerThreadConnexion server;
 
+	public DBus() {		
+	}
+	
 	public DBus(ServerThreadConnexion serverThreadConnexion) {
 		server = serverThreadConnexion;
 	}

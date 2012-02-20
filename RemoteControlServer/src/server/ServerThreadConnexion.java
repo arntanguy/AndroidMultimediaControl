@@ -1,20 +1,19 @@
 package server;
 
+import general.ApplicationControlInterface;
+import general.Factory;
+
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 
-import org.freedesktop.dbus.exceptions.DBusException;
-
 import commands.Command;
 import commands.CommandWord;
-import commands.ErrorCommand;
 import commands.MetaDataCommand;
 import commands.ObjectCommand;
 import commands.StatusCommand;
 import commands.TrackListCommand;
-import dbus.mpris.DBusMPRIS;
 
 public class ServerThreadConnexion implements Runnable {
 	private Thread tread;
@@ -22,7 +21,12 @@ public class ServerThreadConnexion implements Runnable {
 	private ObjectOutputStream oos;
 	private ObjectInputStream ois;
 	private boolean run = true;
-	private DBusMPRIS dbus = null;
+
+	// Factory used to create the appropriate object according to an application
+	private Factory factory = null;
+
+	// Interface through wich all links with applications will be handled
+	private ApplicationControlInterface applicationControl = null;
 
 	public ServerThreadConnexion(Socket client, Server serv) {
 		this.socket = client;
@@ -31,6 +35,7 @@ public class ServerThreadConnexion implements Runnable {
 		// client
 		tread = new Thread(this);
 		tread.start();
+		factory = new Factory(this);
 	}
 
 	@Override
@@ -53,15 +58,6 @@ public class ServerThreadConnexion implements Runnable {
 		} catch (IOException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
-		}
-
-		// TODO délocaliser dans parsecommand pour lancer le wrapper adapté
-		try {
-			dbus = new DBusMPRIS(this);
-			dbus.connect();
-		} catch (DBusException e) {
-			sendCommand(new ErrorCommand(CommandWord.ERROR_DBUS_DISCONNECTED,
-					"DBUS not running", e.getMessage()));
 		}
 
 		// Lancer l'écoute et l'analyse des commandes
@@ -90,8 +86,8 @@ public class ServerThreadConnexion implements Runnable {
 
 	/**
 	 * Parse commands received from the server, apply commands to the
-	 * application though the use of communication wrappers, encapsuling dbus,
-	 * mplayer api...
+	 * application though the use of communication wrappers, encapsuling
+	 * applicationControl, mplayer api...
 	 * 
 	 * @throws IOException
 	 */
@@ -108,70 +104,77 @@ public class ServerThreadConnexion implements Runnable {
 				c = null;
 			}
 			if (c != null) {
-				if (!dbus.isConnected()) {
-					try {
-						dbus.connect();
-					} catch (DBusException e) {
-						System.out.println("DBUS Failed to connect");
-						System.out.println(e.getMessage());
-						sendCommand(new ErrorCommand(
-								CommandWord.ERROR_DBUS_DISCONNECTED,
-								"DBUS not running", e.getMessage()));
+				if (applicationControl == null) {
+					if (c.getCommand() == CommandWord.SET_APPLICATION) {
+						System.out.println("Set application "
+								+ c.getCommand().toString());
+						ObjectCommand<String> appC = (ObjectCommand) c;
+						applicationControl = factory.getApplicationControl(appC
+								.getObject());
+						try {
+							applicationControl.connect();
+						} catch (Exception e) {
+							System.err
+									.println("Failed to establish connection with "
+											+ appC.getObject());
+							e.printStackTrace();
+						}
 					}
-				}
-				if (dbus.isConnected()) {
+				} else {
 					switch (c.getCommand()) {
 					case HELLO:
 						System.out.println("Hello from client");
 						break;
+
 					case PLAY:
 						System.out.println("Play");
-						dbus.togglePlayPause();
+						applicationControl.togglePlayPause();
 						break;
 					case PAUSE:
 						System.out.println("Pause");
-						dbus.togglePlayPause();
+						applicationControl.togglePlayPause();
 						break;
 					case GOTO_NEXT:
 						System.out.println("Next");
-						dbus.next();
+						applicationControl.next();
 						break;
 					case GOTO_PREVIOUS:
 						System.out.println("Previous");
-						dbus.previous();
+						applicationControl.previous();
 						break;
 					case GET_POSITION:
 						sendCommand(new ObjectCommand<Integer>(
-								CommandWord.GET_POSITION, dbus.getPosition()));
+								CommandWord.GET_POSITION,
+								applicationControl.getPosition()));
 						break;
 					case SET_POSITION:
 						oc = (ObjectCommand<Integer>) c;
 						if (oc != null)
-							dbus.setPosition(oc.getObject());
+							applicationControl.setPosition(oc.getObject());
 						break;
 					case MOVE:
 						oc = (ObjectCommand<Integer>) c;
 						if (oc != null)
-							dbus.setPosition(oc.getObject()
-									+ dbus.getPosition());
+							applicationControl.setPosition(oc.getObject()
+									+ applicationControl.getPosition());
 						break;
 					case SET_VOLUME:
 						System.out.println("Volume");
 						oc = (ObjectCommand<Integer>) c;
 						if (oc != null)
-							dbus.setVolume(oc.getObject());
+							applicationControl.setVolume(oc.getObject());
 						break;
 
 					case GET_META_DATA:
 						MetaDataCommand mc = new MetaDataCommand(
 								CommandWord.GET_META_DATA);
-						mc.setMetaData(dbus.getMetaData());
+						mc.setMetaData(applicationControl.getMetaData());
 						sendCommand(mc);
 						break;
 
 					case GET_STATUS:
 						sendCommand(new StatusCommand(CommandWord.GET_STATUS,
-								dbus.getStatus()));
+								applicationControl.getStatus()));
 						break;
 
 					/**
@@ -180,16 +183,17 @@ public class ServerThreadConnexion implements Runnable {
 					case GET_TRACKLIST:
 						System.out
 								.println("Sending command get_tracklist to android");
-						System.out.println(dbus.getTrackList().getTrackList()
-								.toString());
+						System.out.println(applicationControl.getTrackList()
+								.getTrackList().toString());
 						sendCommand(new TrackListCommand(
-								CommandWord.GET_TRACKLIST, dbus.getTrackList()));
+								CommandWord.GET_TRACKLIST,
+								applicationControl.getTrackList()));
 						break;
 					case SET_TRACK:
 						oc = (ObjectCommand<Integer>) c;
-						dbus.setTrack(oc.getObject());
+						applicationControl.setTrack(oc.getObject());
 						break;
-						
+
 					case QUIT:
 						disconnect();
 						run = false;
