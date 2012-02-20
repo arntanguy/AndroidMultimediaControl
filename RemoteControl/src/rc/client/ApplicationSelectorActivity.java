@@ -31,10 +31,10 @@ public class ApplicationSelectorActivity extends Activity {
 		// XXX: generalize this
 		// Add vlc to view
 		ImageObject app = new ImageObject("vlc", R.drawable.vlc_launcher);
-		ImageObject app2 = new ImageObject("quodlibet", R.drawable.quodlibet_launcher);
+		//ImageObject app2 = new ImageObject("quodlibet", R.drawable.quodlibet_launcher);
 		gridviewAdapter = (ImageAdapter) gridview.getAdapter();
 		gridviewAdapter.addItem(app);
-		gridviewAdapter.addItem(app2);
+		//gridviewAdapter.addItem(app2);
 	}
 
 	/**

@@ -15,7 +15,7 @@ import org.freedesktop.dbus.exceptions.DBusException;
  * the connections, parsing the commands, and interacting with the multimedia
  * players.
  * 
- * @author TANGUY Arnaud
+ * @author TANGUY Arnaud & LESTEL Guillaume
  * 
  */
 
@@ -25,6 +25,8 @@ public class Server {
     public int PORT = 4242;
 
     private ServerSocket sersock = null;
+    
+    private ServerUDP servEcoute;
 
     public Server(int port)    {
         PORT = port;
@@ -41,8 +43,11 @@ public class Server {
             System.exit(-1);
         }
 
-        //System.out.println(sersock.getInetAddress());
+        // Afficher l'ip du serveur
         getIps();
+        
+        // Lancer le serveur UDP
+        servEcoute = new ServerUDP(port+1);
     }
 
     public List<String> getIps(){
