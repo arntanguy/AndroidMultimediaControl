@@ -1,17 +1,19 @@
 package dbus.mpris;
 
+import general.ApplicationControlInterface;
+
 import java.util.HashMap;
 import java.util.Map;
 
 import media.MetaData;
 import media.TrackList;
 
-import org.freedesktop.MPRISStatus;
 import org.freedesktop.MediaPlayer;
 import org.freedesktop.dbus.DBusConnection;
 import org.freedesktop.dbus.Variant;
 import org.freedesktop.dbus.exceptions.DBusException;
 
+import player.Status;
 import server.ServerThreadConnexion;
 import dbus.DBus;
 
@@ -24,19 +26,21 @@ import dbus.DBus;
  * @author TANGUY Arnaud
  * 
  */
-public class DBusMPRIS extends DBus {
-	private MediaPlayer mediaPlayer;
-	private MediaPlayer trackList;
-	private TrackChangeHandler handler;
-	private StatusChangeHandler statusHandler;
-	private TrackListChangeHandler trackListChangeHandler;
-	private final static String trackListObjectPath = "/TrackList";
-
+public class DBusMPRIS extends DBus implements ApplicationControlInterface {
+	protected MediaPlayer mediaPlayer;
+	protected MediaPlayer trackList;
+	
+	protected TrackChangeHandler handler;
+	protected StatusChangeHandler statusHandler;
+	protected TrackListChangeHandler trackListChangeHandler;
+	
+	protected static String trackListObjectPath;
+	
 	public DBusMPRIS(ServerThreadConnexion serverThreadConnexion) {
 		super(serverThreadConnexion);
-		objectPath = "/Player";
-		//serviceBusName = "org.mpris.vlc";
-		serviceBusName = "org.mpris.quodlibet";
+		playerPath = "/Player";
+		trackListObjectPath = "/TrackList";
+		serviceBusName = "org.mpris.vlc";
 		handler = new TrackChangeHandler(server);
 		statusHandler = new StatusChangeHandler(server);
 		trackListChangeHandler = new TrackListChangeHandler(server);
@@ -82,7 +86,7 @@ public class DBusMPRIS extends DBus {
 		try {
 			conn = DBusConnection.getConnection(DBusConnection.SESSION);
 			mediaPlayer = (MediaPlayer) conn.getRemoteObject(serviceBusName,
-					objectPath);
+					playerPath);
 			trackList = (MediaPlayer) conn.getRemoteObject(serviceBusName,
 					trackListObjectPath);
 			conn.addSigHandler(MediaPlayer.TrackChange.class, handler);
@@ -142,8 +146,8 @@ public class DBusMPRIS extends DBus {
 		return new MetaData(map);
 	}
 
-	public MPRISStatus getStatus() {
-		return mediaPlayer.GetStatus();
+	public Status getStatus() {
+		return mediaPlayer.GetStatus().toStatus();
 	}
 
 	public int addTrack(String uri, boolean playImmediatly) {
@@ -155,12 +159,7 @@ public class DBusMPRIS extends DBus {
 	}
 
 	public MetaData getMetaData(int a) {
-		Map<String, Variant> dmap = trackList.GetMetadata(a);
-		Map<String, String> map = new HashMap<String, String>(dmap.size());
-		for (String key : dmap.keySet()) {
-			map.put(key, dmap.get(key).getValue().toString());
-		}
-		return new MetaData(map);
+		return new MetaData(getMetaDataMap(a));
 	}
 
 	public int getCurrentTrack() {
@@ -199,6 +198,16 @@ public class DBusMPRIS extends DBus {
 				mediaPlayer.Next();
 			}
 		}
+	}
+	
+	
+	protected Map<String, String> getMetaDataMap(int a) {
+		Map<String, Variant> dmap = trackList.GetMetadata(a);
+		Map<String, String> map = new HashMap<String, String>(dmap.size());
+		for (String key : dmap.keySet()) {
+			map.put(key, dmap.get(key).getValue().toString());
+		}
+		return map;
 	}
 
 }

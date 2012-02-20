@@ -13,7 +13,7 @@ import tools.SerializationTool;
 public class MetaData implements Serializable {
 	private static final long serialVersionUID = 1L;
 
-	private Map<String, String> metaData;
+	protected Map<String, String> metaData;
 
 	public MetaData(Map<String, String> metaData) {
 		this.metaData = metaData;

@@ -1,12 +1,13 @@
 package dbus;
 
+import general.ApplicationControlInterface;
 import media.MetaData;
 import media.TrackList;
 
-import org.freedesktop.MPRISStatus;
 import org.freedesktop.dbus.DBusConnection;
 import org.freedesktop.dbus.exceptions.DBusException;
 
+import player.Status;
 import server.ServerThreadConnexion;
 
 /**
@@ -17,13 +18,13 @@ import server.ServerThreadConnexion;
  * @author TANGUY Arnaud
  * 
  */
-abstract public class DBus {
+abstract public class DBus implements ApplicationControlInterface {
 
 	// dbus-send --print-reply --session --dest=org.mpris.vlc /Player
 	// org.freedesktop.MediaPlayer.Pause
 
 	// The path to the /Player, or /TrackList
-	protected String objectPath;
+	protected String playerPath;
 	// The service bus name, for instance org.mpris.vlc
 	protected String serviceBusName;
 	protected static DBusConnection conn = null;
@@ -69,7 +70,7 @@ abstract public class DBus {
 	
 	abstract public MetaData getMetaData(int a);
 
-	abstract public MPRISStatus getStatus();
+	abstract public Status getStatus();
 	
 	abstract public int addTrack(String uri, boolean playImmediatly);
 	

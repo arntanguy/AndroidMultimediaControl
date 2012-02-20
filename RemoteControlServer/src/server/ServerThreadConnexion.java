@@ -171,7 +171,7 @@ public class ServerThreadConnexion implements Runnable {
 
 					case GET_STATUS:
 						sendCommand(new StatusCommand(CommandWord.GET_STATUS,
-								dbus.getStatus().toStatus()));
+								dbus.getStatus()));
 						break;
 
 					/**
