@@ -35,7 +35,8 @@ public class DBusMPRIS extends DBus {
 	public DBusMPRIS(ServerThreadConnexion serverThreadConnexion) {
 		super(serverThreadConnexion);
 		objectPath = "/Player";
-		serviceBusName = "org.mpris.vlc";
+		//serviceBusName = "org.mpris.vlc";
+		serviceBusName = "org.mpris.quodlibet";
 		handler = new TrackChangeHandler(server);
 		statusHandler = new StatusChangeHandler(server);
 		trackListChangeHandler = new TrackListChangeHandler(server);

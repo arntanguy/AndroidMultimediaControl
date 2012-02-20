@@ -116,7 +116,9 @@ public class TrackListActivity extends ListActivity {
 			if (trackList != null) {
 				uiHandler.post(new UpdateTrackList(trackList));
 			}
-			dialog.dismiss();
+			if(dialog != null) {
+				dialog.dismiss();
+			}
 
 		}
 

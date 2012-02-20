@@ -1,13 +1,15 @@
 package rc.client;
 
+import commands.CommandWord;
+import commands.ObjectCommand;
+
 import android.app.Activity;
-import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.GridView;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.GridView;
 
 public class ApplicationSelectorActivity extends Activity {
 	private static final String TAG = "ChoseApplicationActivity";
@@ -29,8 +31,10 @@ public class ApplicationSelectorActivity extends Activity {
 		// XXX: generalize this
 		// Add vlc to view
 		ImageObject app = new ImageObject("vlc", R.drawable.vlc_launcher);
+		ImageObject app2 = new ImageObject("quodlibet", R.drawable.quodlibet_launcher);
 		gridviewAdapter = (ImageAdapter) gridview.getAdapter();
 		gridviewAdapter.addItem(app);
+		gridviewAdapter.addItem(app2);
 	}
 
 	/**
@@ -42,6 +46,7 @@ public class ApplicationSelectorActivity extends Activity {
 				long id) {
 			// Log.d(TAG,"Position Clicked ["+position+"] with item id ["+id+"]");
 			ImageObject app = (ImageObject) gridviewAdapter.getItem(position);
+			Global.network.sendCommand(new ObjectCommand<String>(CommandWord.SET_APPLICATION, app.getName()));
 			if (app.getName() == "vlc") {
 				((TabWidgetActivity) ApplicationSelectorActivity.this
 						.getParent()).setTab(TabWidgetActivity.PLAYTAB);
