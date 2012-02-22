@@ -1,6 +1,7 @@
 package server;
 
 import general.ApplicationControlInterface;
+import general.ConnectedApplications;
 import general.Factory;
 
 import java.io.IOException;
@@ -8,12 +9,14 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 
+import commands.AvailableApplicationsCommand;
 import commands.Command;
 import commands.CommandWord;
 import commands.MetaDataCommand;
 import commands.ObjectCommand;
 import commands.StatusCommand;
 import commands.TrackListCommand;
+import dbus.mpris.DBusVlc;
 
 public class ServerThreadConnexion implements Runnable {
 	private Thread tread;
@@ -21,9 +24,6 @@ public class ServerThreadConnexion implements Runnable {
 	private ObjectOutputStream oos;
 	private ObjectInputStream ois;
 	private boolean run = true;
-
-	// Factory used to create the appropriate object according to an application
-	private Factory factory = null;
 
 	// Interface through wich all links with applications will be handled
 	private ApplicationControlInterface applicationControl = null;
@@ -35,7 +35,6 @@ public class ServerThreadConnexion implements Runnable {
 		// client
 		tread = new Thread(this);
 		tread.start();
-		factory = new Factory(this);
 	}
 
 	@Override
@@ -76,6 +75,7 @@ public class ServerThreadConnexion implements Runnable {
 	 */
 	public void sendCommand(Command command) {
 		try {
+			System.out.println("Sending command: "+command.getCommand().toString());
 			oos.writeObject(command);
 		} catch (IOException e) {
 			System.err.println("=== Erreur de sérialization de la commande "
@@ -107,11 +107,12 @@ public class ServerThreadConnexion implements Runnable {
 				if (applicationControl == null) {
 					if (c.getCommand() == CommandWord.SET_APPLICATION) {
 						System.out.println("Set application "
-								+ c.getCommand().toString());
+							+ c.getCommand().toString());
 						ObjectCommand<String> appC = (ObjectCommand) c;
-						applicationControl = factory.getApplicationControl(appC
+						applicationControl = Factory.getApplicationControl(appC
 								.getObject());
 						try {
+							applicationControl.setServer(this);
 							applicationControl.connect();
 						} catch (Exception e) {
 							System.err
@@ -124,6 +125,13 @@ public class ServerThreadConnexion implements Runnable {
 					switch (c.getCommand()) {
 					case HELLO:
 						System.out.println("Hello from client");
+						break;
+
+					case GET_AVAILABLE_APPLICATIONS:
+						System.out.println("Sending command get_available_applications");
+						sendCommand(new AvailableApplicationsCommand(
+								CommandWord.GET_AVAILABLE_APPLICATIONS,
+								ConnectedApplications.getAvailable()));
 						break;
 
 					case PLAY:

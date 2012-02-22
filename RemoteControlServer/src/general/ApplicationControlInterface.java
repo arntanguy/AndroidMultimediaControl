@@ -4,9 +4,11 @@ import media.MetaData;
 import media.TrackList;
 
 import player.Status;
+import server.ServerThreadConnexion;
 
 
 public interface ApplicationControlInterface {
+		public void setServer(ServerThreadConnexion server);
 	
 		/**
 		 * Start playing when stopped Pause when playing Play when in pause

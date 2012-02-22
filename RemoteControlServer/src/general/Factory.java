@@ -1,24 +1,21 @@
 package general;
 
-import server.ServerThreadConnexion;
+import media.Applications;
 import dbus.mpris.DBusQuodlibet;
 import dbus.mpris.DBusVlc;
-import media.Applications;
 
-public class Factory {
-	private ServerThreadConnexion server;
-	
-	public Factory(ServerThreadConnexion server) {
-		this.server = server;
+public class Factory {	
+
+	public static ApplicationControlInterface getApplicationControl(String applicationName) {
+		return getApplicationControl(Applications.get(applicationName));
 	}
 	
-	public ApplicationControlInterface getApplicationControl(String applicationName) {
-		Applications app = Applications.get(applicationName);
-		switch(app) {
+	public static ApplicationControlInterface getApplicationControl(Applications application) {
+		switch(application) {
 		case VLC:
-			return new DBusVlc(server);
+			return new DBusVlc();
 		case QUODLIBET:
-			return new DBusQuodlibet(server);
+			return new DBusQuodlibet();
 		}
 		return null;
 	}

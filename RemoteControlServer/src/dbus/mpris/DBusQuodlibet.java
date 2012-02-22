@@ -11,6 +11,10 @@ public class DBusQuodlibet extends DBusMPRIS {
 		serviceBusName = "org.mpris.quodlibet";
 	}
 	
+	public DBusQuodlibet() {
+		super();
+	}
+
 	public MetaData getMetaData(int a) {
 		return new MetaDataQuodlibet(getMetaDataMap(a));
 	}

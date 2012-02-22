@@ -2,6 +2,7 @@ package rc.client;
 
 import java.io.IOException;
 
+import media.AvailableApplications;
 import media.MetaData;
 import media.TrackList;
 import player.Status;
@@ -292,6 +293,11 @@ public class MediaPlayerActivity extends Activity {
 			// fetch it manually !
 			((TabWidgetActivity) MediaPlayerActivity.this.getParent())
 					.sendMetaDataBundle(bundle);
+		}
+
+		@Override
+		public void availableApplicationsChanged(
+				AvailableApplications availableApplications) {		
 		}
 	}
 

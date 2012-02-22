@@ -1,5 +1,6 @@
 package rc.network;
 
+import media.AvailableApplications;
 import media.MetaData;
 import media.TrackList;
 import player.Status;
@@ -22,4 +23,6 @@ public interface NetworkDataListener {
 	public void trackChanged();
 	
 	public void trackListChanged(TrackList trackList);
+	
+	public void availableApplicationsChanged(AvailableApplications availableApplications);
 }

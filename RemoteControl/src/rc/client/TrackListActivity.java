@@ -2,6 +2,7 @@ package rc.client;
 
 import java.io.IOException;
 
+import media.AvailableApplications;
 import media.MetaData;
 import media.TrackList;
 import player.Status;
@@ -23,7 +24,7 @@ import commands.ObjectCommand;
 public class TrackListActivity extends ListActivity {
 	private static final String TAG = "TrackListActivity";
 
-	// Need handler for callbacks to the UI thread
+	// Need handler for callback to the UI thread
 	private final Handler uiHandler = new Handler();
 
 	// overwrite the toString method of object to show what you want
@@ -120,6 +121,11 @@ public class TrackListActivity extends ListActivity {
 				dialog.dismiss();
 			}
 
+		}
+
+		@Override
+		public void availableApplicationsChanged(
+				AvailableApplications availableApplications) {			
 		}
 
 	}

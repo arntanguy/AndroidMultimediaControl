@@ -9,7 +9,6 @@ import media.MetaData;
 import media.TrackList;
 
 import org.freedesktop.MediaPlayer;
-import org.freedesktop.dbus.DBusConnection;
 import org.freedesktop.dbus.Variant;
 import org.freedesktop.dbus.exceptions.DBusException;
 
@@ -29,18 +28,28 @@ import dbus.DBus;
 public class DBusMPRIS extends DBus implements ApplicationControlInterface {
 	protected MediaPlayer mediaPlayer;
 	protected MediaPlayer trackList;
-	
+
 	protected TrackChangeHandler handler;
 	protected StatusChangeHandler statusHandler;
 	protected TrackListChangeHandler trackListChangeHandler;
-	
+
 	protected static String trackListObjectPath;
-	
+
+	/**
+	 * When using this constructor, the method setServer should be used to have
+	 * all the functionalities working, in particular the signals
+	 */
+	public DBusMPRIS() {
+		this(null);
+	}
+
 	public DBusMPRIS(ServerThreadConnexion serverThreadConnexion) {
-		super(serverThreadConnexion);
-		playerPath = "/Player";
-		trackListObjectPath = "/TrackList";
-		serviceBusName = "org.mpris.vlc";
+		setServer(serverThreadConnexion);
+	}
+	
+	@Override
+	public void setServer(ServerThreadConnexion server) {
+		super.server = server;
 		handler = new TrackChangeHandler(server);
 		statusHandler = new StatusChangeHandler(server);
 		trackListChangeHandler = new TrackListChangeHandler(server);
@@ -84,7 +93,6 @@ public class DBusMPRIS extends DBus implements ApplicationControlInterface {
 	@Override
 	public void connect() throws DBusException {
 		try {
-			conn = DBusConnection.getConnection(DBusConnection.SESSION);
 			mediaPlayer = (MediaPlayer) conn.getRemoteObject(serviceBusName,
 					playerPath);
 			trackList = (MediaPlayer) conn.getRemoteObject(serviceBusName,
@@ -199,8 +207,7 @@ public class DBusMPRIS extends DBus implements ApplicationControlInterface {
 			}
 		}
 	}
-	
-	
+
 	protected Map<String, String> getMetaDataMap(int a) {
 		Map<String, Variant> dmap = trackList.GetMetadata(a);
 		Map<String, String> map = new HashMap<String, String>(dmap.size());

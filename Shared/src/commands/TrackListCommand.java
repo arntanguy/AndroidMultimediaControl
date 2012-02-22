@@ -15,5 +15,4 @@ public class TrackListCommand extends Command {
 	public TrackList getTrackList() {
 		return trackList;
 	}
-
 }

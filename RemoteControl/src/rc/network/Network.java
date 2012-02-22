@@ -13,6 +13,7 @@ import media.MetaData;
 import player.Status;
 import android.util.Log;
 
+import commands.AvailableApplicationsCommand;
 import commands.Command;
 import commands.ErrorCommand;
 import commands.MetaDataCommand;
@@ -22,9 +23,9 @@ import commands.TrackListCommand;
 
 /**
  * This class manages all network relations with the server. It serves as a link
- * between the Android application and the computer server It provides activities
- * with updates on the state of the multimedia player through the use of
- * listeners
+ * between the Android application and the computer server It provides
+ * activities with updates on the state of the multimedia player through the use
+ * of listeners
  * 
  * @author TANGUY Arnaud
  * 
@@ -110,6 +111,7 @@ public class Network {
 		private ErrorCommand errorC = null;
 		private ObjectCommand<Integer> oc = null;
 		private TrackListCommand trackListC = null;
+		private AvailableApplicationsCommand availableApplicationsC = null;
 
 		@Override
 		public void run() {
@@ -124,10 +126,21 @@ public class Network {
 				if (c != null) {
 					System.out.println("Command recieved " + c.toString());
 					switch (c.getCommand()) {
+					case GET_AVAILABLE_APPLICATIONS:
+						System.out.println("Available applications retrieved");
+						availableApplicationsC = (AvailableApplicationsCommand) c;
+						for (NetworkDataListener l : networkDataListeners) {
+							l.availableApplicationsChanged(availableApplicationsC
+									.getAvailable());
+						}
+						System.out.println(availableApplicationsC
+								.getAvailable());
+						break;
+
 					case TRACK_CHANGED:
 						metaDataC = (MetaDataCommand) c;
 						MetaData metaData = metaDataC.getMetaData();
-						Log.i(TAG,metaData.toString());
+						Log.i(TAG, metaData.toString());
 						for (NetworkDataListener l : networkDataListeners) {
 							l.metaDataChanged(metaData);
 							l.trackChanged();

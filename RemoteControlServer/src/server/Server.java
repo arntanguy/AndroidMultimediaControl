@@ -47,7 +47,7 @@ public class Server {
         getIps();
         
         // Lancer le serveur UDP
-        servEcoute = new ServerUDP(port+1);
+     //   servEcoute = new ServerUDP(port+1);
     }
 
     public List<String> getIps(){
