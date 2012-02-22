@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import rc.network.Network;
+import rc.network.UDPLookup;
 import tools.SerializationTool;
 import android.app.Activity;
 import android.app.ProgressDialog;
@@ -33,7 +34,7 @@ import commands.CommandWord;
 public class ConnectActivity extends Activity {
 	public static final String TAG = "ConnectActivity";
 
-	// Trucated list, according to text entry
+	// Truncated list, according to text entry
 	private ArrayList<IpItem> partialNames = new ArrayList<IpItem>();
 	private ArrayList<IpItem> searchNames = null;
 	private HashMap<String, String> ipTable = null;
@@ -89,7 +90,14 @@ public class ConnectActivity extends Activity {
 
 		Toast.makeText(this, "Toast it !!! Roast it !", Toast.LENGTH_SHORT)
 				.show();
-
+		
+		UDPLookup lookup = new UDPLookup(this.getApplicationContext(), "4243");
+		try {
+			String serverIP = lookup.seekIP("Ping");
+			Log.i(TAG, "Found server IP : " + serverIP);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 	private OnClickListener connectClickListener = new OnClickListener() {
@@ -196,7 +204,7 @@ public class ConnectActivity extends Activity {
 				Thread t = new Thread(Global.network.getCommandParser(),
 						"CommandParser Thread");
 				t.start();
-
+				
 				ipTable.put(ip, port);
 				preferencesEditor.putString("ip",
 						SerializationTool.mapToString(ipTable));
@@ -248,6 +256,100 @@ public class ConnectActivity extends Activity {
 		}
 	};
 
+	private class IpLookup extends AsyncTask<String, Integer, Void> {
+		private String ip;
+		private String port;
+
+		/**
+		 * Called before the execution of doInBackground, used to set up dialogs
+		 * for instance
+		 */
+		protected void onPreExecute() {
+		}
+
+		/**
+		 * Effectively handles the creation of the connection. This task may
+		 * take some time according to the network capabilities, thus the
+		 * threading
+		 */
+		protected Void doInBackground(String... IP) {
+			int nb = IP.length;
+			String ip = (nb > 0) ? IP[0] : "";
+			this.ip = ip;
+			this.port = portT.getText().toString();
+			Global.network.setIp(ip);
+			Global.network.setPort(Integer.parseInt(port));
+			try {
+				Global.network.connect();
+			} catch (SocketException e) {
+				publishProgress(0);
+				Log.e(TAG, "Socket exeption\n" + e.toString());
+			} catch (UnknownHostException e) {
+				publishProgress(1);
+				Log.e(TAG, "Unknown Host\n" + e.toString());
+			} catch (IOException e) {
+				publishProgress(1);
+				Log.e(TAG, "IO Exception\n" + e.toString());
+			}
+			return null;
+		}
+
+		/**
+		 * Update the UI on the status of the connection
+		 * 
+		 * @param progress
+		 */
+		@SuppressWarnings("unused")
+		protected void onProgressUpdate(Integer progress) {
+			Log.i(TAG, "Progress");
+			if (progress == 1) {
+				Toast.makeText(ConnectActivity.this,
+						"Network connection failed!", Toast.LENGTH_SHORT)
+						.show();
+			} else if (progress == 2) {
+				Toast.makeText(ConnectActivity.this, "Unkown host!",
+						Toast.LENGTH_SHORT).show();
+			}
+		}
+
+		/**
+		 * Called once the doInBackground thread ends, manages the UI. On
+		 * success, shows the GridView used to manage the list of available
+		 * application, effectively giving the user access to the rest of the
+		 * application.
+		 */
+		protected void onPostExecute(Void result) {
+			Log.i(TAG, "Connection finished ");
+
+			if (Global.network.isConnected()) {
+				Toast.makeText(ConnectActivity.this, "Connected",
+						Toast.LENGTH_SHORT).show();
+
+				// Start the command parser thread
+				Thread t = new Thread(Global.network.getCommandParser(),
+						"CommandParser Thread");
+				t.start();
+				
+				ipTable.put(ip, port);
+				preferencesEditor.putString("ip",
+						SerializationTool.mapToString(ipTable));
+				// save preferences
+				preferencesEditor.commit();
+				alterAdapter();
+
+				// Start application choice activity
+				startApplicationSelectorActivity();
+
+			} else {
+				Toast.makeText(ConnectActivity.this,
+						"Network connection failed", Toast.LENGTH_SHORT).show();
+			}
+
+			Global.network.sendCommand(new Command(CommandWord.HELLO));
+		}
+		
+	} // IpLookup (AsyncTask)
+	
 	// Filters list of contacts based on user search criteria. If no information
 	// is filled in, contact list will be fully shown
 	private void alterAdapter() {

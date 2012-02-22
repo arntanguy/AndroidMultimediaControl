@@ -22,7 +22,7 @@ import commands.TrackListCommand;
 
 /**
  * This class manages all network relations with the server. It serves as a link
- * between the Android application and the computer server It provides activites
+ * between the Android application and the computer server It provides activities
  * with updates on the state of the multimedia player through the use of
  * listeners
  * 
