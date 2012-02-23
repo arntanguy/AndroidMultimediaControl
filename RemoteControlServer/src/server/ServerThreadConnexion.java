@@ -16,7 +16,6 @@ import commands.MetaDataCommand;
 import commands.ObjectCommand;
 import commands.StatusCommand;
 import commands.TrackListCommand;
-import dbus.mpris.DBusVlc;
 
 public class ServerThreadConnexion implements Runnable {
 	private Thread tread;
@@ -115,6 +114,7 @@ public class ServerThreadConnexion implements Runnable {
 						break;
 					case SET_APPLICATION:
 						ObjectCommand<String> appC = (ObjectCommand) c;
+						System.out.println("Application: "+appC.getObject());
 						applicationControl = Factory.getApplicationControl(appC
 								.getObject());
 						try {

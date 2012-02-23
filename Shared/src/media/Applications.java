@@ -6,20 +6,20 @@ import java.util.Map;
 public enum Applications {
 	VLC("vlc"), QUODLIBET("quodlibet");
 
-	private final String abbreviation;
+	private final String name;
 	// Reverse-lookup map for getting a day from an abbreviation
 	private static final Map<String, Applications> lookup = new HashMap<String, Applications>();
 	static {
 		for (Applications d : Applications.values())
-			lookup.put(d.getAbbreviation(), d);
+			lookup.put(d.getName(), d);
 	}
 
 	private Applications(String abbreviation) {
-		this.abbreviation = abbreviation;
+		this.name = abbreviation;
 	}
 
-	public String getAbbreviation() {
-		return abbreviation;
+	public String getName() {
+		return name;
 	}
 
 	public static Applications get(String abbreviation) {

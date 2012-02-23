@@ -1,5 +1,8 @@
 package rc.client;
 
+import java.lang.reflect.Field;
+
+import media.Applications;
 import media.AvailableApplications;
 import media.MetaData;
 import media.TrackList;
@@ -24,7 +27,7 @@ public class ApplicationSelectorActivity extends Activity {
 	private ImageAdapter gridviewAdapter;
 
 	private NetworkDataListener networkHandler;
-	
+
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -38,15 +41,28 @@ public class ApplicationSelectorActivity extends Activity {
 
 		networkHandler = new NetworkDataHandler();
 		Global.network.addStatusListener(networkHandler);
-		Global.network.sendCommand(new Command(CommandWord.GET_AVAILABLE_APPLICATIONS));
-		
-		// XXX: generalize this
-		// Add vlc to view
-		ImageObject app = new ImageObject("vlc", R.drawable.vlc_launcher);
-		gridviewAdapter = (ImageAdapter) gridview.getAdapter();
-		gridviewAdapter.addItem(app);
-	}
+		Global.network.sendCommand(new Command(
+				CommandWord.GET_AVAILABLE_APPLICATIONS));
 
+		/*
+		 * Shows an ImageView with the icon of an available application.
+		 */
+		gridviewAdapter = (ImageAdapter) gridview.getAdapter();
+		int resID = 0;
+		for (Applications app : Applications.values()) {
+			try {
+				Class res = R.drawable.class;
+				Field field = res.getField(app.getName().toLowerCase()
+						+ "_launcher");
+				resID = field.getInt(null);
+			} catch (Exception e) {
+				resID = R.drawable.vlc_launcher;
+				Log.e(TAG, "Failure to get drawable id.", e);
+			}
+
+			gridviewAdapter.addItem(new ImageObject(app.getName(), resID));
+		}
+	}
 
 	/**
 	 * NetworkDataHandler is an observer for the Network class. It will recieve
@@ -76,8 +92,9 @@ public class ApplicationSelectorActivity extends Activity {
 
 		@Override
 		public void availableApplicationsChanged(
-				AvailableApplications availableApplications) {	
-			Log.i(TAG, "Available applications changed: "+availableApplications.getAvailable());
+				AvailableApplications availableApplications) {
+			Log.i(TAG, "Available applications changed: "
+					+ availableApplications.getAvailable());
 		}
 	}
 
@@ -88,14 +105,11 @@ public class ApplicationSelectorActivity extends Activity {
 		@Override
 		public void onItemClick(AdapterView<?> parent, View v, int position,
 				long id) {
-			// Log.d(TAG,"Position Clicked ["+position+"] with item id ["+id+"]");
 			ImageObject app = (ImageObject) gridviewAdapter.getItem(position);
-			Global.network.sendCommand(new ObjectCommand<String>(CommandWord.SET_APPLICATION, app.getName()));
-			if (app.getName() == "vlc") {
-				((TabWidgetActivity) ApplicationSelectorActivity.this
-						.getParent()).setTab(TabWidgetActivity.PLAYTAB);
-				;
-			}
+			Global.network.sendCommand(new ObjectCommand<String>(
+					CommandWord.SET_APPLICATION, app.getName()));
+			((TabWidgetActivity) ApplicationSelectorActivity.this.getParent())
+					.setTab(TabWidgetActivity.PLAYTAB);
 
 		}
 	};

@@ -9,6 +9,7 @@ import media.MetaData;
 import media.TrackList;
 
 import org.freedesktop.MediaPlayer;
+import org.freedesktop.dbus.DBusConnection;
 import org.freedesktop.dbus.Variant;
 import org.freedesktop.dbus.exceptions.DBusException;
 
@@ -91,6 +92,7 @@ public class DBusMPRIS extends DBus implements ApplicationControlInterface {
 	@Override
 	public void connect() throws DBusException {
 		try {
+			conn = DBusConnection.getConnection(DBusConnection.SESSION);
 			mediaPlayer = (MediaPlayer) conn.getRemoteObject(serviceBusName,
 					playerPath);
 			trackList = (MediaPlayer) conn.getRemoteObject(serviceBusName,

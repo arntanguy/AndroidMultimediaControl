@@ -6,13 +6,15 @@ import server.ServerThreadConnexion;
 
 public class DBusQuodlibet extends DBusMPRIS {
 
+	public DBusQuodlibet() {
+		this(null);
+	}
+
 	public DBusQuodlibet(ServerThreadConnexion serverThreadConnexion) {
 		super(serverThreadConnexion);
 		serviceBusName = "org.mpris.quodlibet";
-	}
-	
-	public DBusQuodlibet() {
-		super();
+		playerPath = "/Player";
+		trackListObjectPath = "/TrackList";
 	}
 
 	public MetaData getMetaData(int a) {
