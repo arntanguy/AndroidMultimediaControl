@@ -1,8 +1,5 @@
 package general;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import media.Applications;
 import media.AvailableApplications;
 

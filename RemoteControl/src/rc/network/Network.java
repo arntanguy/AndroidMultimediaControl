@@ -124,10 +124,10 @@ public class Network {
 				}
 
 				if (c != null) {
-					System.out.println("Command recieved " + c.toString());
+					Log.i(TAG, "Command recieved " + c.toString());
 					switch (c.getCommand()) {
 					case GET_AVAILABLE_APPLICATIONS:
-						System.out.println("Available applications retrieved");
+						Log.i(TAG, "Available applications retrieved");
 						availableApplicationsC = (AvailableApplicationsCommand) c;
 						for (NetworkDataListener l : networkDataListeners) {
 							l.availableApplicationsChanged(availableApplicationsC

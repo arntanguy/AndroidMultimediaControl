@@ -22,8 +22,8 @@ import commands.MetaDataCommand;
  * 
  */
 public class TrackChangeHandler implements
-		DBusSigHandler<MediaPlayer.TrackChange> {
-	ServerThreadConnexion server;
+	DBusSigHandler<MediaPlayer.TrackChange> {
+	private ServerThreadConnexion server;
 
 	public TrackChangeHandler(ServerThreadConnexion server2) {
 		server = server2;

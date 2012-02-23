@@ -75,7 +75,8 @@ public class ServerThreadConnexion implements Runnable {
 	 */
 	public void sendCommand(Command command) {
 		try {
-			System.out.println("Sending command: "+command.getCommand().toString());
+			System.out.println("Sending command: "
+					+ command.getCommand().toString());
 			oos.writeObject(command);
 		} catch (IOException e) {
 			System.err.println("=== Erreur de sérialization de la commande "
@@ -104,10 +105,15 @@ public class ServerThreadConnexion implements Runnable {
 				c = null;
 			}
 			if (c != null) {
+				System.out.println("Recieved command: "+c.getCommand().toString());
 				if (applicationControl == null) {
-					if (c.getCommand() == CommandWord.SET_APPLICATION) {
-						System.out.println("Set application "
-							+ c.getCommand().toString());
+					switch (c.getCommand()) {
+					case GET_AVAILABLE_APPLICATIONS:
+						sendCommand(new AvailableApplicationsCommand(
+								CommandWord.GET_AVAILABLE_APPLICATIONS,
+								ConnectedApplications.getAvailable()));
+						break;
+					case SET_APPLICATION:
 						ObjectCommand<String> appC = (ObjectCommand) c;
 						applicationControl = Factory.getApplicationControl(appC
 								.getObject());
@@ -120,18 +126,12 @@ public class ServerThreadConnexion implements Runnable {
 											+ appC.getObject());
 							e.printStackTrace();
 						}
+						break;
 					}
 				} else {
 					switch (c.getCommand()) {
 					case HELLO:
 						System.out.println("Hello from client");
-						break;
-
-					case GET_AVAILABLE_APPLICATIONS:
-						System.out.println("Sending command get_available_applications");
-						sendCommand(new AvailableApplicationsCommand(
-								CommandWord.GET_AVAILABLE_APPLICATIONS,
-								ConnectedApplications.getAvailable()));
 						break;
 
 					case PLAY:

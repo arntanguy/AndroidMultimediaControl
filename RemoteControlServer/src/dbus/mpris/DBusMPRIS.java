@@ -46,13 +46,11 @@ public class DBusMPRIS extends DBus implements ApplicationControlInterface {
 	public DBusMPRIS(ServerThreadConnexion serverThreadConnexion) {
 		setServer(serverThreadConnexion);
 	}
-	
+
 	@Override
 	public void setServer(ServerThreadConnexion server) {
 		super.server = server;
-		handler = new TrackChangeHandler(server);
-		statusHandler = new StatusChangeHandler(server);
-		trackListChangeHandler = new TrackListChangeHandler(server);
+
 	}
 
 	/**
@@ -97,10 +95,17 @@ public class DBusMPRIS extends DBus implements ApplicationControlInterface {
 					playerPath);
 			trackList = (MediaPlayer) conn.getRemoteObject(serviceBusName,
 					trackListObjectPath);
-			conn.addSigHandler(MediaPlayer.TrackChange.class, handler);
-			conn.addSigHandler(MediaPlayer.StatusChange.class, statusHandler);
-			conn.addSigHandler(MediaPlayer.TrackListChange.class,
-					trackListChangeHandler);
+			if (server != null) {
+				handler = new TrackChangeHandler(server);
+				statusHandler = new StatusChangeHandler(server);
+				trackListChangeHandler = new TrackListChangeHandler(server);
+				conn.addSigHandler(MediaPlayer.TrackChange.class, handler);
+				conn.addSigHandler(MediaPlayer.StatusChange.class,
+						statusHandler);
+				conn.addSigHandler(MediaPlayer.TrackListChange.class,
+						trackListChangeHandler);
+			}
+
 		} catch (DBusException e) {
 			connected = false;
 			throw e;
