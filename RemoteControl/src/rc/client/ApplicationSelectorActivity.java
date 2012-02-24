@@ -49,18 +49,22 @@ public class ApplicationSelectorActivity extends Activity {
 		 */
 		gridviewAdapter = (ImageAdapter) gridview.getAdapter();
 		int resID = 0;
+		int disabledResId = 0;
 		for (Applications app : Applications.values()) {
 			try {
 				Class res = R.drawable.class;
 				Field field = res.getField(app.getName().toLowerCase()
 						+ "_launcher");
 				resID = field.getInt(null);
+				field = res.getField(app.getName().toLowerCase()
+						+ "_launcher_disabled");
+				disabledResId = field.getInt(null);
 			} catch (Exception e) {
 				resID = R.drawable.vlc_launcher;
 				Log.e(TAG, "Failure to get drawable id.", e);
 			}
 
-			gridviewAdapter.addItem(new ImageObject(app.getName(), resID));
+			gridviewAdapter.addItem(new ApplicationIconView(this, app, resID, disabledResId));
 		}
 	}
 
@@ -95,6 +99,9 @@ public class ApplicationSelectorActivity extends Activity {
 				AvailableApplications availableApplications) {
 			Log.i(TAG, "Available applications changed: "
 					+ availableApplications.getAvailable());
+			for(Applications app:availableApplications.getAvailable())  {
+				gridviewAdapter.setItemEnabled(app, true);
+			}
 		}
 	}
 
@@ -105,12 +112,11 @@ public class ApplicationSelectorActivity extends Activity {
 		@Override
 		public void onItemClick(AdapterView<?> parent, View v, int position,
 				long id) {
-			ImageObject app = (ImageObject) gridviewAdapter.getItem(position);
+			ApplicationIconView app = (ApplicationIconView) gridviewAdapter.getItem(position);
 			Global.network.sendCommand(new ObjectCommand<String>(
-					CommandWord.SET_APPLICATION, app.getName()));
+					CommandWord.SET_APPLICATION, app.getApplication().getName()));
 			((TabWidgetActivity) ApplicationSelectorActivity.this.getParent())
 					.setTab(TabWidgetActivity.PLAYTAB);
-
 		}
 	};
 }

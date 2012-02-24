@@ -1,20 +1,21 @@
 package rc.client;
 
 public class ImageObject {
-	private int launcher;
+	private int enabledLauncher;
 	private String name;
+	private boolean enabled;
 	
-	public ImageObject(String name, int launcher) {
+	public ImageObject(String name, int enabledLauncher, int disabledLauncher) {
 		this.name = name;
-		this.launcher = launcher;
+		this.enabledLauncher = enabledLauncher;
 	}
 
 	public int getLauncherRessource() {
-		return launcher;
+		return enabledLauncher;
 	}
 
 	public void setLauncherRessource(int launcher) {
-		this.launcher = launcher;
+		this.enabledLauncher = launcher;
 	}
 
 	public String getName() {
