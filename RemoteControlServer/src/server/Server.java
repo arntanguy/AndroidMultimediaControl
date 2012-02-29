@@ -46,8 +46,10 @@ public class Server {
         // Afficher l'ip du serveur
         getIps();
         
-        // Lancer le serveur UDP
-     //   servEcoute = new ServerUDP(port+1);
+        // Runs the UDP server in a separate thread
+        System.out.println("Running UPD server on port "+(port+1));
+        servEcoute = new ServerUDP(port+1);
+        new Thread(servEcoute).run();
     }
 
     public List<String> getIps(){

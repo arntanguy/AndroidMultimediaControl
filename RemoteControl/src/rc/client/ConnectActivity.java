@@ -91,10 +91,9 @@ public class ConnectActivity extends Activity {
 		Toast.makeText(this, "Toast it !!! Roast it !", Toast.LENGTH_SHORT)
 				.show();
 		
-		UDPLookup lookup = new UDPLookup(this.getApplicationContext(), "4243");
+		UDPLookup lookup = new UDPLookup(this.getApplicationContext(), 4243);
 		try {
-			String serverIP = lookup.seekIP("Ping");
-			Log.i(TAG, "Found server IP : " + serverIP);
+			Log.i(TAG, "Found server IP : " + lookup.getServerIp());
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

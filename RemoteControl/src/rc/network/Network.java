@@ -244,4 +244,15 @@ public class Network {
 	public void removeStatusListener(NetworkDataListener listener) {
 		networkDataListeners.remove(listener);
 	}
+
+	public static InetAddress getIpAddress() {
+		InetAddress thisIp = null;
+		try {
+			thisIp = InetAddress.getLocalHost();
+			System.out.println("IP:" + thisIp.getHostAddress());
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return thisIp;
+	}
 }

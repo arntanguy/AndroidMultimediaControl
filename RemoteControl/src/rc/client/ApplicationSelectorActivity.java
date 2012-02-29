@@ -13,6 +13,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.Toast;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.GridView;
 
@@ -64,7 +65,8 @@ public class ApplicationSelectorActivity extends Activity {
 				Log.e(TAG, "Failure to get drawable id.", e);
 			}
 
-			gridviewAdapter.addItem(new ApplicationIconView(this, app, resID, disabledResId));
+			gridviewAdapter.addItem(new ApplicationIconView(this, app, resID,
+					disabledResId));
 		}
 	}
 
@@ -99,7 +101,7 @@ public class ApplicationSelectorActivity extends Activity {
 				AvailableApplications availableApplications) {
 			Log.i(TAG, "Available applications changed: "
 					+ availableApplications.getAvailable());
-			for(Applications app:availableApplications.getAvailable())  {
+			for (Applications app : availableApplications.getAvailable()) {
 				gridviewAdapter.setItemEnabled(app, true);
 			}
 		}
@@ -112,11 +114,18 @@ public class ApplicationSelectorActivity extends Activity {
 		@Override
 		public void onItemClick(AdapterView<?> parent, View v, int position,
 				long id) {
-			ApplicationIconView app = (ApplicationIconView) gridviewAdapter.getItem(position);
-			Global.network.sendCommand(new ObjectCommand<String>(
-					CommandWord.SET_APPLICATION, app.getApplication().getName()));
-			((TabWidgetActivity) ApplicationSelectorActivity.this.getParent())
-					.setTab(TabWidgetActivity.PLAYTAB);
+			ApplicationIconView app = (ApplicationIconView) gridviewAdapter
+					.getItem(position);
+			if (app.isEnabled()) {
+				Global.network.sendCommand(new ObjectCommand<String>(
+						CommandWord.SET_APPLICATION, app.getApplication()
+								.getName()));
+				((TabWidgetActivity) ApplicationSelectorActivity.this
+						.getParent()).setTab(TabWidgetActivity.PLAYTAB);
+			} else {
+				Toast.makeText(ApplicationSelectorActivity.this, "Application is not enabled",
+						Toast.LENGTH_SHORT).show();
+			}
 		}
 	};
 }
