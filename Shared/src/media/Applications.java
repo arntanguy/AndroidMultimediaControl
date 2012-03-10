@@ -4,7 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public enum Applications {
-	VLC("vlc"), QUODLIBET("quodlibet");
+	VLC("vlc"), QUODLIBET("quodlibet"), BANSHEE("banshee");
 
 	private final String name;
 	// Reverse-lookup map for getting a day from an abbreviation

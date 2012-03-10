@@ -24,7 +24,7 @@ public class ServerThreadConnexion implements Runnable {
 	private ObjectInputStream ois;
 	private boolean run = true;
 
-	// Interface through wich all links with applications will be handled
+	// Interface through which all links with applications will be handled
 	private ApplicationControlInterface applicationControl = null;
 
 	public ServerThreadConnexion(Socket client, Server serv) {

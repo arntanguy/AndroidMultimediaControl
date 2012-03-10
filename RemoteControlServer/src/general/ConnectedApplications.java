@@ -12,10 +12,13 @@ public class ConnectedApplications {
 			try {
 				ac.connect();
 			} catch (Exception e) {
+				System.out.println("Application "+app.getName()+" not connected!");
+				continue;
 			}
 			if(ac.isConnected()) {
 				available.add(app);
 			}
+			
 		}
 		return available;
 	}

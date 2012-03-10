@@ -27,201 +27,203 @@ import dbus.DBus;
  * 
  */
 public class DBusMPRIS extends DBus implements ApplicationControlInterface {
-	protected MediaPlayer mediaPlayer;
-	protected MediaPlayer trackList;
+    protected MediaPlayer mediaPlayer;
+    protected MediaPlayer trackList;
 
-	protected TrackChangeHandler handler;
-	protected StatusChangeHandler statusHandler;
-	protected TrackListChangeHandler trackListChangeHandler;
+    protected TrackChangeHandler handler;
+    protected StatusChangeHandler statusHandler;
+    protected TrackListChangeHandler trackListChangeHandler;
 
-	protected static String trackListObjectPath;
+    protected static String trackListObjectPath;
 
-	/**
-	 * When using this constructor, the method setServer should be used to have
-	 * all the functionalities working, in particular the signals
-	 */
-	public DBusMPRIS() {
-		this(null);
-	}
+    /**
+     * When using this constructor, the method setServer should be used to have
+     * all the functionalities working, in particular the signals
+     */
+    public DBusMPRIS() {
+        this(null);
+    }
 
-	public DBusMPRIS(ServerThreadConnexion serverThreadConnexion) {
-		setServer(serverThreadConnexion);
-	}
+    public DBusMPRIS(ServerThreadConnexion serverThreadConnexion) {
+        setServer(serverThreadConnexion);
+    }
 
-	@Override
-	public void setServer(ServerThreadConnexion server) {
-		super.server = server;
+    @Override
+    public void setServer(ServerThreadConnexion server) {
+        super.server = server;
 
-	}
+    }
 
-	/**
-	 * Start playing when stopped Pause when playing Play when in pause
-	 */
-	@Override
-	public void togglePlayPause() {
-		System.out.println("DBUS Play");
-		// If stopped, play
-		if (mediaPlayer.GetStatus().playingStatus == 2) {
-			mediaPlayer.Play();
+    /**
+     * Start playing when stopped Pause when playing Play when in pause
+     */
+    @Override
+    public void togglePlayPause() {
+        System.out.println("DBUS Play");
+        // If stopped, play
+        if (mediaPlayer.GetStatus().playingStatus == 2) {
+            mediaPlayer.Play();
 
-		} else { // Toggle play/pause
-			mediaPlayer.Pause();
-		}
-	}
+        } else { // Toggle play/pause
+            mediaPlayer.Pause();
+        }
+    }
 
-	/**
-	 * Pause if playing, do nothing otherwise
-	 */
-	@Override
-	public void pause() {
-		if (mediaPlayer.GetStatus().playingStatus == 0) {
-			mediaPlayer.Pause();
-		}
-	}
+    /**
+     * Pause if playing, do nothing otherwise
+     */
+    @Override
+    public void pause() {
+        if (mediaPlayer.GetStatus().playingStatus == 0) {
+            mediaPlayer.Pause();
+        }
+    }
 
-	@Override
-	public void next() {
-		mediaPlayer.Next();
-	}
+    @Override
+    public void next() {
+        mediaPlayer.Next();
+    }
 
-	@Override
-	public void previous() {
-		mediaPlayer.Prev();
-	}
+    @Override
+    public void previous() {
+        mediaPlayer.Prev();
+    }
 
-	@Override
-	public void connect() throws DBusException {
-		try {
-			conn = DBusConnection.getConnection(DBusConnection.SESSION);
-			mediaPlayer = (MediaPlayer) conn.getRemoteObject(serviceBusName,
-					playerPath);
-			trackList = (MediaPlayer) conn.getRemoteObject(serviceBusName,
-					trackListObjectPath);
-			if (server != null) {
-				handler = new TrackChangeHandler(server);
-				statusHandler = new StatusChangeHandler(server);
-				trackListChangeHandler = new TrackListChangeHandler(server);
-				conn.addSigHandler(MediaPlayer.TrackChange.class, handler);
-				conn.addSigHandler(MediaPlayer.StatusChange.class,
-						statusHandler);
-				conn.addSigHandler(MediaPlayer.TrackListChange.class,
-						trackListChangeHandler);
-			}
+    @Override
+    public void connect() throws DBusException {
+        try {
+            conn = DBusConnection.getConnection(DBusConnection.SESSION);
+            System.out.println(conn.getRemoteObject(serviceBusName, playerPath)
+                    .getClass());
+            mediaPlayer = (MediaPlayer) conn.getRemoteObject(serviceBusName,
+                    playerPath);
+            trackList = (MediaPlayer) conn.getRemoteObject(serviceBusName,
+                    trackListObjectPath);
+            if (server != null) {
+                handler = new TrackChangeHandler(server);
+                statusHandler = new StatusChangeHandler(server);
+                trackListChangeHandler = new TrackListChangeHandler(server);
+                conn.addSigHandler(MediaPlayer.TrackChange.class, handler);
+                conn.addSigHandler(MediaPlayer.StatusChange.class,
+                        statusHandler);
+                conn.addSigHandler(MediaPlayer.TrackListChange.class,
+                        trackListChangeHandler);
+            }
 
-		} catch (DBusException e) {
-			connected = false;
-			throw e;
-		}
-		connected = true;
-	}
+        } catch (DBusException e) {
+            connected = false;
+            throw e;
+        }
+        connected = true;
+    }
 
-	@Override
-	public void setVolume(int value) {
-		if (value == 0)
-			return;
-		int volume = mediaPlayer.VolumeGet();
-		System.out.println("Volume == " + volume);
-		if (volume + value > 100) {
-			volume = 100;
-		} else if (volume + value < 0) {
-			volume = 0;
-		} else {
-			volume = volume + value;
-		}
-		mediaPlayer.VolumeSet(volume);
-	}
+    @Override
+    public void setVolume(int value) {
+        if (value == 0)
+            return;
+        int volume = mediaPlayer.VolumeGet();
+        System.out.println("Volume == " + volume);
+        if (volume + value > 100) {
+            volume = 100;
+        } else if (volume + value < 0) {
+            volume = 0;
+        } else {
+            volume = volume + value;
+        }
+        mediaPlayer.VolumeSet(volume);
+    }
 
-	@Override
-	public void disconnect() {
-		conn.disconnect();
-	}
+    @Override
+    public void disconnect() {
+        conn.disconnect();
+    }
 
-	@Override
-	public void setPosition(int pos) {
-		mediaPlayer.PositionSet(pos);
-	}
+    @Override
+    public void setPosition(int pos) {
+        mediaPlayer.PositionSet(pos);
+    }
 
-	@Override
-	public int getPosition() {
-		return mediaPlayer.PositionGet();
-	}
+    @Override
+    public int getPosition() {
+        return mediaPlayer.PositionGet();
+    }
 
-	@Override
-	public int getTotalLenght() {
-		// TODO Auto-generated method stub
-		return 0;
-	}
+    @Override
+    public int getTotalLenght() {
+        // TODO Auto-generated method stub
+        return 0;
+    }
 
-	public MetaData getMetaData() {
-		Map<String, Variant> dmap = mediaPlayer.GetMetadata();
-		Map<String, String> map = new HashMap<String, String>(dmap.size());
-		for (String key : dmap.keySet()) {
-			map.put(key, dmap.get(key).getValue().toString());
-		}
-		return new MetaData(map);
-	}
+    public MetaData getMetaData() {
+        Map<String, Variant> dmap = mediaPlayer.GetMetadata();
+        Map<String, String> map = new HashMap<String, String>(dmap.size());
+        for (String key : dmap.keySet()) {
+            map.put(key, dmap.get(key).getValue().toString());
+        }
+        return new MetaData(map);
+    }
 
-	public Status getStatus() {
-		return mediaPlayer.GetStatus().toStatus();
-	}
+    public Status getStatus() {
+        return mediaPlayer.GetStatus().toStatus();
+    }
 
-	public int addTrack(String uri, boolean playImmediatly) {
-		return trackList.AddTrack(uri, playImmediatly);
-	}
+    public int addTrack(String uri, boolean playImmediatly) {
+        return trackList.AddTrack(uri, playImmediatly);
+    }
 
-	public void DelTrack(int a) {
-		trackList.DelTrack(a);
-	}
+    public void DelTrack(int a) {
+        trackList.DelTrack(a);
+    }
 
-	public MetaData getMetaData(int a) {
-		return new MetaData(getMetaDataMap(a));
-	}
+    public MetaData getMetaData(int a) {
+        return new MetaData(getMetaDataMap(a));
+    }
 
-	public int getCurrentTrack() {
-		return trackList.GetCurrentTrack();
-	}
+    public int getCurrentTrack() {
+        return trackList.GetCurrentTrack();
+    }
 
-	public int getLength() {
-		return trackList.GetLength();
-	}
+    public int getLength() {
+        return trackList.GetLength();
+    }
 
-	public void setLoop(boolean a) {
-		trackList.SetLoop(a);
-	}
+    public void setLoop(boolean a) {
+        trackList.SetLoop(a);
+    }
 
-	public void setRandom(boolean a) {
-		trackList.SetRandom(a);
-	}
+    public void setRandom(boolean a) {
+        trackList.SetRandom(a);
+    }
 
-	public TrackList getTrackList() {
-		TrackList t = new TrackList();
-		for (int i = 0; i < getLength(); i++) {
-			t.addTrack(getMetaData(i));
-		}
-		return t;
-	}
+    public TrackList getTrackList() {
+        TrackList t = new TrackList();
+        for (int i = 0; i < getLength(); i++) {
+            t.addTrack(getMetaData(i));
+        }
+        return t;
+    }
 
-	@Override
-	public void setTrack(int nb) {
-		int current = getCurrentTrack();
-		if (current > nb) {
-			for (int i = 0; i < current - nb; i++) {
-				mediaPlayer.Prev();
-			}
-		} else {
-			for (int i = 0; i < nb - current; i++) {
-				mediaPlayer.Next();
-			}
-		}
-	}
+    @Override
+    public void setTrack(int nb) {
+        int current = getCurrentTrack();
+        if (current > nb) {
+            for (int i = 0; i < current - nb; i++) {
+                mediaPlayer.Prev();
+            }
+        } else {
+            for (int i = 0; i < nb - current; i++) {
+                mediaPlayer.Next();
+            }
+        }
+    }
 
-	protected Map<String, String> getMetaDataMap(int a) {
-		Map<String, Variant> dmap = trackList.GetMetadata(a);
-		Map<String, String> map = new HashMap<String, String>(dmap.size());
-		for (String key : dmap.keySet()) {
-			map.put(key, dmap.get(key).getValue().toString());
-		}
-		return map;
-	}
+    protected Map<String, String> getMetaDataMap(int a) {
+        Map<String, Variant> dmap = trackList.GetMetadata(a);
+        Map<String, String> map = new HashMap<String, String>(dmap.size());
+        for (String key : dmap.keySet()) {
+            map.put(key, dmap.get(key).getValue().toString());
+        }
+        return map;
+    }
 
 }

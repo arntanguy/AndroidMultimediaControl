@@ -1,6 +1,7 @@
 package general;
 
 import media.Applications;
+import dbus.mpris.DBusBanshee;
 import dbus.mpris.DBusQuodlibet;
 import dbus.mpris.DBusVlc;
 
@@ -16,6 +17,8 @@ public class Factory {
 			return new DBusVlc();
 		case QUODLIBET:
 			return new DBusQuodlibet();
+		case BANSHEE:
+			return new DBusBanshee();
 		}
 		return null;
 	}

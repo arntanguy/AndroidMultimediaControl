@@ -23,7 +23,7 @@ abstract public class DBus implements ApplicationControlInterface {
 	// dbus-send --print-reply --session --dest=org.mpris.vlc /Player
 	// org.freedesktop.MediaPlayer.Pause
 
-	// The path to the /Player, or /TrackList
+    // The path to the /Player, or /TrackList
 	protected String playerPath;
 	// The service bus name, for instance org.mpris.vlc
 	protected String serviceBusName;
