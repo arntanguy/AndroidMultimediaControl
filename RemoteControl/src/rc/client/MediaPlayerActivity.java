@@ -238,6 +238,7 @@ public class MediaPlayerActivity extends Activity {
 		@Override
 		public void statusChanged(Status status) {
 			Log.i(TAG, "Status changed");
+			if(status == null) return;
 			if (status.isPaused()) {
 				isPlaying = false;
 				Log.i(TAG, "Paused");
@@ -262,6 +263,7 @@ public class MediaPlayerActivity extends Activity {
 
 		@Override
 		public void metaDataChanged(MetaData metaData) {
+		    if(metaData == null) return;
 			if (metaData.getLength() != 0) {
 				progressBar.setMax(metaData.getLength());
 				uiHandler.post(new UpdateMetadata(metaData));
@@ -278,7 +280,8 @@ public class MediaPlayerActivity extends Activity {
 
 		@Override
 		public void trackListChanged(TrackList trackList) {
-			MediaPlayerActivity.this.trackList = trackList;
+		    if(trackList == null) return;
+		    MediaPlayerActivity.this.trackList = trackList;
 			Bundle bundle = new Bundle();
 			try {
 				bundle.putByteArray("tracklist",

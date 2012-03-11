@@ -34,8 +34,6 @@ public class DBusMPRIS extends DBus implements ApplicationControlInterface {
     protected StatusChangeHandler statusHandler;
     protected TrackListChangeHandler trackListChangeHandler;
 
-    protected static String trackListObjectPath;
-
     /**
      * When using this constructor, the method setServer should be used to have
      * all the functionalities working, in particular the signals
@@ -46,47 +44,6 @@ public class DBusMPRIS extends DBus implements ApplicationControlInterface {
 
     public DBusMPRIS(ServerThreadConnexion serverThreadConnexion) {
         setServer(serverThreadConnexion);
-    }
-
-    @Override
-    public void setServer(ServerThreadConnexion server) {
-        super.server = server;
-
-    }
-
-    /**
-     * Start playing when stopped Pause when playing Play when in pause
-     */
-    @Override
-    public void togglePlayPause() {
-        System.out.println("DBUS Play");
-        // If stopped, play
-        if (mediaPlayer.GetStatus().playingStatus == 2) {
-            mediaPlayer.Play();
-
-        } else { // Toggle play/pause
-            mediaPlayer.Pause();
-        }
-    }
-
-    /**
-     * Pause if playing, do nothing otherwise
-     */
-    @Override
-    public void pause() {
-        if (mediaPlayer.GetStatus().playingStatus == 0) {
-            mediaPlayer.Pause();
-        }
-    }
-
-    @Override
-    public void next() {
-        mediaPlayer.Next();
-    }
-
-    @Override
-    public void previous() {
-        mediaPlayer.Prev();
     }
 
     @Override
@@ -118,6 +75,56 @@ public class DBusMPRIS extends DBus implements ApplicationControlInterface {
     }
 
     @Override
+    public void disconnect() {
+        conn.disconnect();
+    }
+
+    @Override
+    public void setServer(ServerThreadConnexion server) {
+        super.server = server;
+
+    }
+
+    /**
+     * Start playing when stopped Pause when playing Play when in pause
+     */
+    public void togglePlayPause() {
+        System.out.println("DBUS Play");
+        // If stopped, play
+        if (mediaPlayer.GetStatus().playingStatus == 2) {
+            mediaPlayer.Play();
+
+        } else { // Toggle play/pause
+            mediaPlayer.Pause();
+        }
+    }
+
+    @Override
+    public void play() {
+        mediaPlayer.Play();
+    }
+
+    /**
+     * Pause if playing, do nothing otherwise
+     */
+    @Override
+    public void pause() {
+        if (mediaPlayer.GetStatus().playingStatus == 0) {
+            mediaPlayer.Pause();
+        }
+    }
+
+    @Override
+    public void next() {
+        mediaPlayer.Next();
+    }
+
+    @Override
+    public void previous() {
+        mediaPlayer.Prev();
+    }
+
+    @Override
     public void setVolume(int value) {
         if (value == 0)
             return;
@@ -131,11 +138,6 @@ public class DBusMPRIS extends DBus implements ApplicationControlInterface {
             volume = volume + value;
         }
         mediaPlayer.VolumeSet(volume);
-    }
-
-    @Override
-    public void disconnect() {
-        conn.disconnect();
     }
 
     @Override

@@ -5,6 +5,7 @@ import media.MetaData;
 import media.TrackList;
 
 import org.freedesktop.dbus.DBusConnection;
+import org.freedesktop.dbus.DBusInterface;
 import org.freedesktop.dbus.exceptions.DBusException;
 
 import player.Status;
@@ -25,6 +26,8 @@ abstract public class DBus implements ApplicationControlInterface {
 
     // The path to the /Player, or /TrackList
 	protected String playerPath;
+    protected static String trackListObjectPath;
+
 	// The service bus name, for instance org.mpris.vlc
 	protected String serviceBusName;
 	protected static DBusConnection conn = null;
@@ -32,6 +35,9 @@ abstract public class DBus implements ApplicationControlInterface {
 
 	protected ServerThreadConnexion server;
 
+	protected DBusInterface mediaPlayer;
+	protected DBusInterface trackList;
+	
 	public DBus() {		
 	}
 	

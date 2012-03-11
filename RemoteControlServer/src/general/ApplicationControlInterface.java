@@ -2,61 +2,61 @@ package general;
 
 import media.MetaData;
 import media.TrackList;
-
 import player.Status;
 import server.ServerThreadConnexion;
 
-
 public interface ApplicationControlInterface {
-		public void setServer(ServerThreadConnexion server);
-	
-		/**
-		 * Start playing when stopped Pause when playing Play when in pause
-		 */
-		public void togglePlayPause();
+    public void connect() throws Exception;
 
-		/**
-		 * Pause if playing, do nothing otherwise
-		 */
-		public void pause();
+    public void disconnect();
 
-		public void next();
+    public void setServer(ServerThreadConnexion server);
 
-		public void previous();
+    public boolean isConnected();
 
-		public void setVolume(int value);
+    /**
+     * Start playing when stopped Pause when playing Play when in pause
+     */
+    public void togglePlayPause();
 
-		public void connect() throws Exception;
+    public void play();
 
-		public boolean isConnected();
+    /**
+     * Pause if playing, do nothing otherwise
+     */
+    public void pause();
 
-		public void disconnect();
+    public void next();
 
-		public void setPosition(int pos);
+    public void previous();
 
-		public int getPosition();
+    public void setVolume(int value);
 
-		public int getTotalLenght();
-		
-		public MetaData getMetaData();
-		
-		public MetaData getMetaData(int a);
+    public void setPosition(int pos);
 
-		public Status getStatus();
-		
-		public int addTrack(String uri, boolean playImmediatly);
-		
-		public void DelTrack(int a);
-		
-		public int getCurrentTrack();
-		
-		public void setTrack(int nb);
+    public int getPosition();
 
-		public int getLength();
+    public int getTotalLenght();
 
-		public void setLoop(boolean a);
+    public MetaData getMetaData();
 
-		public void setRandom(boolean a);
-		
-		public TrackList getTrackList();
+    public MetaData getMetaData(int a);
+
+    public Status getStatus();
+
+    public int addTrack(String uri, boolean playImmediatly);
+
+    public void DelTrack(int a);
+
+    public int getCurrentTrack();
+
+    public void setTrack(int nb);
+
+    public int getLength();
+
+    public void setLoop(boolean a);
+
+    public void setRandom(boolean a);
+
+    public TrackList getTrackList();
 }
