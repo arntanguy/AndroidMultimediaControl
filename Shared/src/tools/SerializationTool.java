@@ -22,7 +22,7 @@ import java.util.Map;
 public class SerializationTool {
 	public static String mapToString(Map<String, String> map) {
 		StringBuilder stringBuilder = new StringBuilder();
-
+		if(map == null) return null;
 		for (String key : map.keySet()) {
 			if (stringBuilder.length() > 0) {
 				stringBuilder.append("&");

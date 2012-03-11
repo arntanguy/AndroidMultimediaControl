@@ -1,8 +1,7 @@
 package dbus.mpris;
 
-import org.mpris.MediaPlayer2.Player;
-import org.freedesktop.dbus.DBusConnection;
 import org.freedesktop.dbus.exceptions.DBusException;
+import org.mpris.MediaPlayer2.Player;
 
 import server.ServerThreadConnexion;
 

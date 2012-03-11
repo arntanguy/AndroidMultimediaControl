@@ -22,7 +22,7 @@ public interface Playlists extends DBusInterface {
 
     public void ActivatePlaylist(DBusInterface playlist_id);
 
-    public List<Struct1> GetPlaylists(UInt32 index, UInt32 max_count,
+    public List<Playlist> GetPlaylists(UInt32 index, UInt32 max_count,
             String order, boolean reverse_order);
 
 }

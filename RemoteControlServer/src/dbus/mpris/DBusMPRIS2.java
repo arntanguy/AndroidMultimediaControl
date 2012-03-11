@@ -61,8 +61,7 @@ public class DBusMPRIS2 extends DBus implements ApplicationControlInterface {
 
     @Override
     public void setServer(ServerThreadConnexion server) {
-        // TODO Auto-generated method stub
-
+        super.server = server;
     }
 
     @Override
@@ -93,7 +92,7 @@ public class DBusMPRIS2 extends DBus implements ApplicationControlInterface {
     @Override
     public void setVolume(int value) {
         // TODO Auto-generated method stub
-
+        
     }
 
     @Override
@@ -116,7 +115,7 @@ public class DBusMPRIS2 extends DBus implements ApplicationControlInterface {
     @Override
     public MetaData getMetaData() {
         // TODO Auto-generated method stub
-        return null;
+        return new MetaData();
     }
 
     @Override
@@ -178,6 +177,6 @@ public class DBusMPRIS2 extends DBus implements ApplicationControlInterface {
     @Override
     public TrackList getTrackList() {
         // TODO Auto-generated method stub
-        return null;
+        return new TrackList();
     }
 }
