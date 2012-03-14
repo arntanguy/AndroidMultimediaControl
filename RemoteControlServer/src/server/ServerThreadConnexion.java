@@ -178,6 +178,7 @@ public class ServerThreadConnexion implements Runnable {
                         MetaDataCommand mc = new MetaDataCommand(
                                 CommandWord.GET_META_DATA);
                         mc.setMetaData(applicationControl.getMetaData());
+                        System.out.println("Sending metadata...");
                         sendCommand(mc);
                         break;
 

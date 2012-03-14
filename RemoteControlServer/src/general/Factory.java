@@ -1,9 +1,9 @@
 package general;
 
 import media.Applications;
-import dbus.mpris.DBusBanshee;
 import dbus.mpris.DBusQuodlibet;
 import dbus.mpris.DBusVlc;
+import dbus.mpris2.DBusBanshee;
 
 public class Factory {	
 

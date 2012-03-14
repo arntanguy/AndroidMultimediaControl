@@ -1,7 +1,8 @@
-package dbus.mpris;
+package dbus.mpris2;
 
 import org.freedesktop.dbus.exceptions.DBusException;
 import org.mpris.MediaPlayer2.Player;
+
 
 import server.ServerThreadConnexion;
 
@@ -18,6 +19,7 @@ public class DBusBanshee extends DBusMPRIS2 {
         super(serverThreadConnexion);
         serviceBusName = "org.mpris.MediaPlayer2.banshee";
         playerPath = "/org/mpris/MediaPlayer2";
+        playerPropertiesInterface = "org.mpris.MediaPlayer2.Player";
         trackListObjectPath = "/TrackList";
         try {
             connect();

@@ -1,12 +1,18 @@
-package dbus.mpris;
+package dbus.mpris2;
+
+import java.util.HashMap;
+import java.util.Map;
 
 import general.ApplicationControlInterface;
 import media.MetaData;
 import media.TrackList;
 
+import org.freedesktop.DBus.Properties;
 import org.freedesktop.dbus.DBusConnection;
+import org.freedesktop.dbus.Variant;
 import org.freedesktop.dbus.exceptions.DBusException;
 import org.mpris.MediaPlayer2.Player;
+import org.mpris.MediaPlayer2.Playlists;
 
 import player.Status;
 import server.ServerThreadConnexion;
@@ -14,12 +20,12 @@ import dbus.DBus;
 
 public class DBusMPRIS2 extends DBus implements ApplicationControlInterface {
     protected Player mediaPlayer;
-    // protected MediaPlayer trackList;
-
-    protected TrackChangeHandler handler;
-    protected StatusChangeHandler statusHandler;
-    protected TrackListChangeHandler trackListChangeHandler;
-
+    protected Properties mediaProperties;
+    protected SeekedHandler seekedHandler;
+    protected PlaylistChangeHandler playlistChangeHandler;
+    
+    protected String playerPropertiesInterface;
+    
     public DBusMPRIS2(ServerThreadConnexion serverThreadConnexion) {
         super(serverThreadConnexion);
     }
@@ -32,16 +38,21 @@ public class DBusMPRIS2 extends DBus implements ApplicationControlInterface {
                     .getClass());
             mediaPlayer = (Player) conn.getRemoteObject(serviceBusName,
                     playerPath);
-            // trackList = (Player) conn.getRemoteObject(serviceBusName,
-            // trackListObjectPath);
+            //signal sender=:1.77 -> dest=(null destination) serial=266 path=/org/mpris/MediaPlayer2; interface=org.freedesktop.DBus.Properties; member=PropertiesChanged
+            mediaProperties = (Properties) conn.getRemoteObject(serviceBusName,
+                    playerPath);
+          //  mediaProperties = (Properties) conn.getRemoteObject(serviceBusName,
+          //          playerPath);
+              
+            // playlist = (Player) conn.getRemoteObject(serviceBusName,
+            // playlistObjectPath);
             if (server != null) {
-                handler = new TrackChangeHandler(server);
-                statusHandler = new StatusChangeHandler(server);
-                trackListChangeHandler = new TrackListChangeHandler(server);
+                playlistChangeHandler = new PlaylistChangeHandler(server);
+                seekedHandler = new SeekedHandler(server);
                 // conn.addSigHandler(Player.TrackChange.class, handler);
                 // conn.addSigHandler(Player.StatusChange.class, statusHandler);
-                // conn.addSigHandler(Player.TrackListChange.class,
-                // trackListChangeHandler);
+                conn.addSigHandler(Playlists.PlaylistChanged.class, playlistChangeHandler);
+                conn.addSigHandler(Player.Seeked.class, seekedHandler);
 
             }
 
@@ -92,7 +103,8 @@ public class DBusMPRIS2 extends DBus implements ApplicationControlInterface {
     @Override
     public void setVolume(int value) {
         // TODO Auto-generated method stub
-        
+        System.out.println("Set volume");
+        mediaProperties.Set(playerPropertiesInterface, "Volume", 1);
     }
 
     @Override
@@ -103,7 +115,8 @@ public class DBusMPRIS2 extends DBus implements ApplicationControlInterface {
     @Override
     public int getPosition() {
         // TODO Auto-generated method stub
-        return 0;
+        System.out.println("Position: "+mediaProperties.Get(playerPropertiesInterface, "Position"));
+        return Integer.parseInt(mediaProperties.Get(playerPropertiesInterface, "Position").toString());
     }
 
     @Override
@@ -112,9 +125,30 @@ public class DBusMPRIS2 extends DBus implements ApplicationControlInterface {
         return 0;
     }
 
+    /**
+     * {u'mpris:artUrl': u'file:///home/arnaud/.cache/media-art/album-28e74852b80d9b6e632a56f9771c0801.jpg',
+ u'mpris:length': 261892000L,
+ u'mpris:trackid': u'/org/bansheeproject/Banshee/Track/552643',
+ u'xesam:album': u'Viva Santana! CD 2',
+ u'xesam:albumArtist': [u'Santana'],
+ u'xesam:artist': [u'Santana'],
+ u'xesam:genre': [u'Folk-Rock'],
+ u'xesam:title': u'Brotherhood',
+ u'xesam:trackNumber': 1,
+ u'xesam:url': u'file:///media/DATA/Musique/Santana%20Discografia%20Mp3%20320kbps/4%20Some%20Extra%20live,%20Bootlegs%20&%20Other%20albums/1988%20Viva%20Santana%20(Live)%20@320/CD2/01%20Brotherhood.mp3'}
+     */
     @Override
     public MetaData getMetaData() {
-        // TODO Auto-generated method stub
+    /*    Map<String, Variant> dmap = mediaProperties.Get(playerPropertiesInterface, "Metadata");
+        if(dmap == null) {
+            System.out.println("Metadata null!");
+            return null;
+        }
+        Map<String, String> map = new HashMap<String, String>(dmap.size());
+        for (String key : dmap.keySet()) {
+            map.put(key, dmap.get(key).getValue().toString());
+        }
+        return new MetaData(map); */
         return new MetaData();
     }
 
