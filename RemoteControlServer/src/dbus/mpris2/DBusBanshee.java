@@ -1,5 +1,8 @@
 package dbus.mpris2;
 
+import media.MetaData;
+import media.MetaDataMPRIS2;
+
 import org.freedesktop.dbus.exceptions.DBusException;
 import org.mpris.MediaPlayer2.Player;
 
@@ -26,5 +29,10 @@ public class DBusBanshee extends DBusMPRIS2 {
         } catch (DBusException e) {
             e.printStackTrace();
         }
+    }
+    
+    @Override
+    public MetaData getMetaData() {       
+        return new MetaDataMPRIS2(getMetaDataMap());
     }
 }

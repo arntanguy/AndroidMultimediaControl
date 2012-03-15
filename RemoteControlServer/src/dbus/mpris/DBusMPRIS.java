@@ -150,12 +150,6 @@ public class DBusMPRIS extends DBus implements ApplicationControlInterface {
         return mediaPlayer.PositionGet();
     }
 
-    @Override
-    public int getTotalLenght() {
-        // TODO Auto-generated method stub
-        return 0;
-    }
-
     public MetaData getMetaData() {
         Map<String, Variant> dmap = mediaPlayer.GetMetadata();
         Map<String, String> map = new HashMap<String, String>(dmap.size());

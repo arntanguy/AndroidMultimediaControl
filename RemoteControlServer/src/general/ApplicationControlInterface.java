@@ -36,8 +36,6 @@ public interface ApplicationControlInterface {
 
     public int getPosition();
 
-    public int getTotalLenght();
-
     public MetaData getMetaData();
 
     public MetaData getMetaData(int a);

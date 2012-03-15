@@ -134,6 +134,7 @@ public class MediaPlayerActivity extends Activity {
 		@Override
 		public void onClick(View v) {
 			Global.network.sendCommand(new Command(CommandWord.GET_POSITION));
+			Global.network.sendCommand(new Command(CommandWord.GET_META_DATA));
 			if (isPlaying) {
 				playB.setImageResource(R.drawable.ic_media_play);
 				Global.network.sendCommand(new Command(CommandWord.PAUSE));

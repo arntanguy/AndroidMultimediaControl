@@ -99,7 +99,6 @@ public class ServerThreadConnexion implements Runnable {
             try {
                 c = (Command) ois.readObject();
             } catch (ClassNotFoundException e1) {
-                // TODO Auto-generated catch block
                 e1.printStackTrace();
                 c = null;
             }

@@ -72,8 +72,6 @@ abstract public class DBus implements ApplicationControlInterface {
 	abstract public void setPosition(int pos);
 
 	abstract public int getPosition();
-
-	abstract public int getTotalLenght();
 	
 	abstract public MetaData getMetaData();
 	
