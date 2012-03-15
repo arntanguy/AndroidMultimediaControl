@@ -1,9 +1,10 @@
 package dbus.mpris2;
 
+import general.ApplicationControlInterface;
+
 import java.util.HashMap;
 import java.util.Map;
 
-import general.ApplicationControlInterface;
 import media.MetaData;
 import media.TrackList;
 
@@ -119,7 +120,6 @@ public class DBusMPRIS2 extends DBus implements ApplicationControlInterface {
                 "Position").toString());
     }
 
-    
     protected Map<String, String> getMetaDataMap() {
         Map<String, Variant> tdmap = mediaProperties
                 .GetAll(playerPropertiesInterface);
@@ -137,9 +137,9 @@ public class DBusMPRIS2 extends DBus implements ApplicationControlInterface {
         }
         return map;
     }
-    
+
     @Override
-    public MetaData getMetaData() {       
+    public MetaData getMetaData() {
         return new MetaData(getMetaDataMap());
     }
 
@@ -152,7 +152,40 @@ public class DBusMPRIS2 extends DBus implements ApplicationControlInterface {
     @Override
     public Status getStatus() {
         // TODO Auto-generated method stub
-        return null;
+        System.out.println("######## Status : "
+                + mediaProperties.Get(playerPropertiesInterface,
+                        "PlaybackStatus"));
+        String playbackStatus = mediaProperties.Get(playerPropertiesInterface,
+                "PlaybackStatus");
+        Status status = new Status();
+        if (playbackStatus.equals("Playing"))
+            status.setPlaying();
+        else if (playbackStatus.equals("Paused"))
+            status.setPaused();
+        else
+            status.setStopped();
+
+        String loopStatus = mediaProperties.Get(playerPropertiesInterface,
+                "LoopStatus");
+        /*
+         * "None" if the playback will stop when there are no more tracks to
+         * play "Track" if the current track will start again from the begining
+         * once it has finished playing "Playlist" if the playback loops through
+         * a list of tracks
+         */
+        if (loopStatus.equals("None"))
+            status.setNotRepeating();
+        else
+            status.setRepeating();
+
+        boolean shuffel = mediaProperties.Get(playerPropertiesInterface,
+                "Shuffle");
+        if (shuffel)
+            status.setRandomPlaying();
+        else
+            status.setLinearPlaying();
+
+        return status;
     }
 
     @Override

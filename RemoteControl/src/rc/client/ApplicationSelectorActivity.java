@@ -6,7 +6,6 @@ import media.Applications;
 import media.AvailableApplications;
 import media.MetaData;
 import media.TrackList;
-import player.Status;
 import rc.network.NetworkDataListener;
 import android.app.Activity;
 import android.os.Bundle;
@@ -20,6 +19,7 @@ import android.widget.GridView;
 import commands.Command;
 import commands.CommandWord;
 import commands.ObjectCommand;
+import player.Status;
 
 public class ApplicationSelectorActivity extends Activity {
 	private static final String TAG = "ChoseApplicationActivity";

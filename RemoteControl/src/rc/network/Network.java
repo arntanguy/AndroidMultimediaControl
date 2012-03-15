@@ -10,7 +10,6 @@ import java.net.UnknownHostException;
 import java.util.ArrayList;
 
 import media.MetaData;
-import player.Status;
 import android.util.Log;
 
 import commands.AvailableApplicationsCommand;
@@ -20,6 +19,7 @@ import commands.MetaDataCommand;
 import commands.ObjectCommand;
 import commands.StatusCommand;
 import commands.TrackListCommand;
+import player.Status;
 
 /**
  * This class manages all network relations with the server. It serves as a link

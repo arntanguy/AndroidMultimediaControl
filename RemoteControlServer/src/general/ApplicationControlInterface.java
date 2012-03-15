@@ -1,8 +1,8 @@
 package general;
 
+import player.Status;
 import media.MetaData;
 import media.TrackList;
-import player.Status;
 import server.ServerThreadConnexion;
 
 public interface ApplicationControlInterface {

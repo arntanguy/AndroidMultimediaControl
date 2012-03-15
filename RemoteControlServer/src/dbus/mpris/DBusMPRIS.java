@@ -13,9 +13,9 @@ import org.freedesktop.dbus.DBusConnection;
 import org.freedesktop.dbus.Variant;
 import org.freedesktop.dbus.exceptions.DBusException;
 
-import player.Status;
 import server.ServerThreadConnexion;
 import dbus.DBus;
+import player.Status;
 
 /**
  * Implementation of the MPRIS dbus standard. This standard is meant to

@@ -1,9 +1,9 @@
 package rc.network;
 
+import player.Status;
 import media.AvailableApplications;
 import media.MetaData;
 import media.TrackList;
-import player.Status;
 
 /**
  * The interface NetworkDataListener provides a description of functions to

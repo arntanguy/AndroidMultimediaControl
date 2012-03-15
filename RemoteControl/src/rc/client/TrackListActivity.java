@@ -5,7 +5,6 @@ import java.io.IOException;
 import media.AvailableApplications;
 import media.MetaData;
 import media.TrackList;
-import player.Status;
 import rc.network.NetworkDataListener;
 import tools.SerializationTool;
 import android.app.ListActivity;
@@ -20,6 +19,7 @@ import android.widget.ListView;
 import commands.Command;
 import commands.CommandWord;
 import commands.ObjectCommand;
+import player.Status;
 
 public class TrackListActivity extends ListActivity {
 	private static final String TAG = "TrackListActivity";
