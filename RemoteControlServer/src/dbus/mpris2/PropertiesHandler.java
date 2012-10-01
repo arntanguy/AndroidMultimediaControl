@@ -1,10 +1,11 @@
 package dbus.mpris2;
 
+import org.freedesktop.PropertiesChangedSignal.PropertiesChanged;
 import org.freedesktop.dbus.DBusSigHandler;
 
-import dbus.mpris2.PropertiesChangedSignal.PropertiesChanged;
 
-public class PropertiesHandler implements DBusSigHandler<dbus.mpris2.PropertiesChangedSignal.PropertiesChanged>  {
+
+public class PropertiesHandler implements DBusSigHandler<org.freedesktop.PropertiesChangedSignal.PropertiesChanged>  {
 
 	@Override
 	public void handle(PropertiesChanged arg0) {

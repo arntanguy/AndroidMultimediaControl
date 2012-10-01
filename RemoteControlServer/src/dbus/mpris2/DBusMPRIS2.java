@@ -35,8 +35,6 @@ public class DBusMPRIS2 extends DBus implements ApplicationControlInterface {
     public void connect() throws DBusException {
         try {
             conn = DBusConnection.getConnection(DBusConnection.SESSION);
-            System.out.println(conn.getRemoteObject(serviceBusName, playerPath)
-                    .getClass());
             mediaPlayer = (Player) conn.getRemoteObject(serviceBusName,
                     playerPath);
             // signal sender=:1.77 -> dest=(null destination) serial=266
@@ -56,7 +54,7 @@ public class DBusMPRIS2 extends DBus implements ApplicationControlInterface {
                 conn.addSigHandler(Playlists.PlaylistChanged.class,
                         playlistChangeHandler);
                 conn.addSigHandler(Player.Seeked.class, seekedHandler);
-                conn.addSigHandler(dbus.mpris2.PropertiesChangedSignal.PropertiesChanged.class, pHandler);
+                conn.addSigHandler(org.freedesktop.PropertiesChangedSignal.PropertiesChanged.class, pHandler);
             }
 
         } catch (DBusException e) {

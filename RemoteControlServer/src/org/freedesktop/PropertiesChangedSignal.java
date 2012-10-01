@@ -1,4 +1,4 @@
-package dbus.mpris2;
+package org.freedesktop;
 
 import java.util.List;
 import java.util.Map;
