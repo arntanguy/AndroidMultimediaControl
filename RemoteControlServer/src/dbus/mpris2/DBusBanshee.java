@@ -6,7 +6,6 @@ import media.MetaDataMPRIS2;
 import org.freedesktop.dbus.exceptions.DBusException;
 import org.mpris.MediaPlayer2.Player;
 
-
 import server.ServerThreadConnexion;
 
 //dbus-send --print-reply --session --dest=org.mpris.Player2.banshee /org/mpris/Player2 org.mpris.Player2.Player.PlayPause

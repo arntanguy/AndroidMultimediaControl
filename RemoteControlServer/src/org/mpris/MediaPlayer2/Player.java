@@ -5,7 +5,7 @@ import org.freedesktop.dbus.DBusInterfaceName;
 import org.freedesktop.dbus.DBusSignal;
 import org.freedesktop.dbus.exceptions.DBusException;
 
-@DBusInterfaceName("org.mpris.Player")
+@DBusInterfaceName("org.mpris.MediaPlayer2.Player")
 public interface Player extends DBusInterface {
     public static class Seeked extends DBusSignal {
         public final long position;

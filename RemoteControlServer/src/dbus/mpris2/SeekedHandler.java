@@ -16,8 +16,8 @@ DBusSigHandler<Player.Seeked> {
     }
 
     @Override
-    public void handle(Seeked arg0) {
-        System.out.println("Seeked !!");
+    public void handle(Seeked pos) {
+        System.out.println("Seeked !!" + pos.position);
     }
 
 }

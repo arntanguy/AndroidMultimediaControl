@@ -38,7 +38,7 @@ public class ServerUDP extends Thread {
 				try {
 					socket.receive(paquetRecu);
 				} catch (Exception e) {
-					System.out.println("No UDP request recieved");
+//					System.out.println("No UDP request recieved");
 				}
 				String requete = new String(paquetRecu.getData());
 				InetAddress IPAddress = paquetRecu.getAddress();

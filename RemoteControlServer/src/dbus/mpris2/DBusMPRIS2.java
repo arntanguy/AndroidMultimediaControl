@@ -47,6 +47,8 @@ public class DBusMPRIS2 extends DBus implements ApplicationControlInterface {
                     playerPath);
 
             if (server != null) {
+                PropertiesHandler pHandler = new PropertiesHandler();
+
                 playlistChangeHandler = new PlaylistChangeHandler(server);
                 seekedHandler = new SeekedHandler(server);
                 // conn.addSigHandler(Player.TrackChange.class, handler);
@@ -54,6 +56,7 @@ public class DBusMPRIS2 extends DBus implements ApplicationControlInterface {
                 conn.addSigHandler(Playlists.PlaylistChanged.class,
                         playlistChangeHandler);
                 conn.addSigHandler(Player.Seeked.class, seekedHandler);
+                conn.addSigHandler(dbus.mpris2.PropertiesChangedSignal.PropertiesChanged.class, pHandler);
             }
 
         } catch (DBusException e) {
