@@ -12,6 +12,7 @@ DBusSigHandler<Player.Seeked> {
     
     public SeekedHandler(ServerThreadConnexion server) {
         this.server = server;
+        System.out.println("New seeked handler");
     }
 
     @Override

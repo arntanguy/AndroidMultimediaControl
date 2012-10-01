@@ -1,6 +1,5 @@
 package rc.client;
 
-import tools.SerializationTool;
 import android.app.TabActivity;
 import android.content.Intent;
 import android.content.res.Resources;

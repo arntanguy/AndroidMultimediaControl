@@ -21,12 +21,12 @@ import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
-import android.widget.AdapterView.OnItemClickListener;
 
 import commands.Command;
 import commands.CommandWord;
@@ -76,8 +76,8 @@ public class ConnectActivity extends Activity {
 		preferencesEditor = preferences.edit();
 
 		ipTable = new HashMap<String, String>();
-		ipTable = (HashMap<String, String>) SerializationTool
-				.stringToMap(preferences.getString("ip", "fail"));
+		// XXX : fixme
+		ipTable = (HashMap<String, String>) SerializationTool.stringToMap(preferences.getString("ip", "fail"));
 
 		searchNames = new ArrayList<IpItem>(ipTable.size());
 		for (String s : ipTable.keySet()) {
@@ -353,7 +353,7 @@ public class ConnectActivity extends Activity {
 	// is filled in, contact list will be fully shown
 	private void alterAdapter() {
 		Log.i(TAG, "alter " + ipAdressT.getText().toString());
-		if (ipAdressT.getText().toString().isEmpty()) {
+		if ((ipAdressT.getText().toString()).length() == 0) {
 			partialNames.clear();
 			partialNames.addAll(searchNames);
 		} else {

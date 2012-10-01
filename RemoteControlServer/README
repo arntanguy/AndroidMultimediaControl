@@ -10,7 +10,6 @@ vlc --control dbus %f
 
 
 DBUS
-CreateInterface -s -f org.mpris.vlc /MediaPlayer 
 d-feet : affiche graphiquement les services dbus
 
 Needs to be linked with jni
