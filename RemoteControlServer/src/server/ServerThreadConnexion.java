@@ -18,7 +18,7 @@ import commands.StatusCommand;
 import commands.TrackListCommand;
 
 public class ServerThreadConnexion implements Runnable {
-    private Thread tread;
+    private Thread thread;
     private Socket socket;
     private ObjectOutputStream oos;
     private ObjectInputStream ois;
@@ -32,8 +32,8 @@ public class ServerThreadConnexion implements Runnable {
 
         // Initialiser et démarrer le thread en charge de la connexion avec le
         // client
-        tread = new Thread(this);
-        tread.start();
+        thread = new Thread(this);
+        thread.start();
     }
 
     @Override

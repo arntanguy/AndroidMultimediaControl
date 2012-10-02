@@ -19,8 +19,7 @@ import android.util.Log;
  */
 public class UDPLookup {
 	public static final String TAG = "UDPLookup";
-	public static final int RECEIVING_TIMEOUT = 10000;
-	public static final int RECEIVING_TIMEOUT_SERVER = 30000;
+	public static final int RECEIVING_TIMEOUT = 1000;
 	private DatagramSocket socket;
 	private Context mContext;
 	private int mPort;
@@ -38,13 +37,13 @@ public class UDPLookup {
 		}
 	}
 
-	public InetAddress getServerIp() {
+	public DatagramPacket getServerIp() {
 		try {
 			// Broadcast a Ping message to try and get an host to answer
 			DatagramPacket packet = sendBroadcast("Ping");
 			System.out.println("Lookup done: "
 					+ packet.getAddress().getHostAddress());
-			return packet.getAddress();
+			return packet;
 		} catch (InterruptedIOException ie) {
 			Log.d("ERROR", "No server found");
 			try {
@@ -111,7 +110,7 @@ public class UDPLookup {
 
 		byte[] receiveData = new byte[4];
 
-		// Tant qu'on est connecté, on attend une requête et on y répond
+		// Wait for request
 		while (socket != null && !socket.isClosed()) {
 			try {
 				DatagramPacket packetReceived = new DatagramPacket(receiveData,

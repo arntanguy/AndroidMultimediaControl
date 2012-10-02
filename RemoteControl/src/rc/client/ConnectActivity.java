@@ -1,7 +1,7 @@
 package rc.client;
 
 import java.io.IOException;
-import java.net.InetAddress;
+import java.net.DatagramPacket;
 import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
@@ -11,7 +11,9 @@ import rc.network.Network;
 import rc.network.UDPLookup;
 import tools.SerializationTool;
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -78,9 +80,8 @@ public class ConnectActivity extends Activity {
 
 		ipTable = new HashMap<String, String>();
 		// XXX : fixme
-		ipTable = (HashMap<String, String>) SerializationTool
-				.stringToMap(preferences.getString("ip", "fail"));
-
+//		ipTable = (HashMap<String, String>) SerializationTool
+	//			.stringToMap(preferences.getString("ip", "fail"));
 		searchNames = new ArrayList<IpItem>(ipTable.size());
 		for (String s : ipTable.keySet()) {
 			searchNames.add(new IpItem(s, Integer.parseInt(ipTable.get(s))));
@@ -93,21 +94,9 @@ public class ConnectActivity extends Activity {
 		Toast.makeText(this, "Toast it !!! Roast it !", Toast.LENGTH_SHORT)
 				.show();
 
-		/**
-		 * UDP lookup to search for server IP This works by broadcasting a
-		 * request (Ping) on all host on network on a certain port and waiting
-		 * for someone to respond. If you get a response, that means that the
-		 * server is up and running there ;)
-		 */
-		UDPLookup lookup = new UDPLookup(this.getApplicationContext(), 4243);
-		try {
-			InetAddress serverAddress = lookup.getServerIp();
-			Toast.makeText(this, "Found Server: " + serverAddress,
-					Toast.LENGTH_SHORT).show();
-			Log.i(TAG, "Found server IP : " + serverAddress);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+		//XXX/UDPLookup*
+	    new ASyncUDPLookup().execute();
+
 	}
 
 	private OnClickListener connectClickListener = new OnClickListener() {
@@ -163,6 +152,7 @@ public class ConnectActivity extends Activity {
 			this.port = portT.getText().toString();
 			Global.network.setIp(ip);
 			Global.network.setPort(Integer.parseInt(port));
+			Log.i(TAG, "Connecting to "+ip+":"+port);
 			try {
 				Global.network.connect();
 			} catch (SocketException e) {
@@ -233,6 +223,97 @@ public class ConnectActivity extends Activity {
 			Global.network.sendCommand(new Command(CommandWord.HELLO));
 		}
 	} // ConnectNetwork (AsyncTask)
+	
+	private class ASyncUDPLookup extends AsyncTask<String, Integer, Void> {
+        //private ProgressDialog dialog = null;
+        private DatagramPacket foundServerIP = null;
+
+        /**
+         * Called before the execution of doInBackground, used to set up dialogs
+         * for instance
+         */
+        protected void onPreExecute() {
+            //dialog = new ProgressDialog(ConnectActivity.this);
+            //dialog.setMessage("Looking for server...");
+            //dialog.show();
+            Toast.makeText(ConnectActivity.this, "Looking for server...",
+                    Toast.LENGTH_SHORT).show();
+        }
+
+        /**
+         * UDP lookup to search for server IP This works by broadcasting a
+         * request (Ping) on all host on network on a certain port and waiting
+         * for someone to respond. If you get a response, that means that the
+         * server is up and running there ;)
+         */
+        protected Void doInBackground(String...strings) {
+            UDPLookup lookup = new UDPLookup(ConnectActivity.this.getApplicationContext(), 4243);
+            try {
+                foundServerIP = lookup.getServerIp();
+                Log.i(TAG, "IP: "+foundServerIP.getAddress());
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            return null;
+        }
+
+        /**
+         * Update the UI on the status of the connection
+         * 
+         * @param progress
+         */
+        @SuppressWarnings("unused")
+        protected void onProgressUpdate(Integer progress) {
+        }
+
+        /**
+         * Called once the doInBackground thread ends, manages the UI. On
+         * success, shows the GridView used to manage the list of available
+         * application, effectively giving the user access to the rest of the
+         * application.
+         */
+        protected void onPostExecute(Void result) {
+            //dialog.dismiss();
+            if(foundServerIP != null) {
+                final String IP = foundServerIP.getAddress().getHostAddress();
+                final int port = foundServerIP.getPort();
+                Log.i(TAG, "Found server IP : " + foundServerIP.getAddress().getHostAddress());
+                Toast.makeText(ConnectActivity.this, "Server IP: "+foundServerIP.getAddress().getHostAddress(),
+                        Toast.LENGTH_SHORT).show();
+                AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(ConnectActivity.this);
+         
+                    // set title
+                    alertDialogBuilder.setTitle("Server Found");
+         
+                    // set dialog message
+                    alertDialogBuilder
+                        .setMessage("Connect to server "+IP+":"+(port-1)+"?")
+                        .setCancelable(false)
+                        .setPositiveButton("Yes",new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog,int id) {
+                                connect(IP, port-1);
+                            }
+                          })
+                        .setNegativeButton("No",new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog,int id) {
+                                // if this button is clicked, just close
+                                // the dialog box and do nothing
+                                dialog.cancel();
+                            }
+                        });
+         
+                        // create alert dialog
+                        AlertDialog alertDialog = alertDialogBuilder.create();
+         
+                        // show it
+                        alertDialog.show();
+            } else {
+                Toast.makeText(ConnectActivity.this, "Server not found",
+                        Toast.LENGTH_SHORT).show();
+            }
+        }
+
+    } // AsyncUDPLookup (AsyncTask)
 
 	private TextWatcher textChangedWatcher = new TextWatcher() {
 
@@ -266,100 +347,7 @@ public class ConnectActivity extends Activity {
 		}
 	};
 
-	private class IpLookup extends AsyncTask<String, Integer, Void> {
-		private String ip;
-		private String port;
-
-		/**
-		 * Called before the execution of doInBackground, used to set up dialogs
-		 * for instance
-		 */
-		protected void onPreExecute() {
-		}
-
-		/**
-		 * Effectively handles the creation of the connection. This task may
-		 * take some time according to the network capabilities, thus the
-		 * threading
-		 */
-		protected Void doInBackground(String... IP) {
-			int nb = IP.length;
-			String ip = (nb > 0) ? IP[0] : "";
-			this.ip = ip;
-			this.port = portT.getText().toString();
-			Global.network.setIp(ip);
-			Global.network.setPort(Integer.parseInt(port));
-			try {
-				Global.network.connect();
-			} catch (SocketException e) {
-				publishProgress(0);
-				Log.e(TAG, "Socket exeption\n" + e.toString());
-			} catch (UnknownHostException e) {
-				publishProgress(1);
-				Log.e(TAG, "Unknown Host\n" + e.toString());
-			} catch (IOException e) {
-				publishProgress(1);
-				Log.e(TAG, "IO Exception\n" + e.toString());
-			}
-			return null;
-		}
-
-		/**
-		 * Update the UI on the status of the connection
-		 * 
-		 * @param progress
-		 */
-		@SuppressWarnings("unused")
-		protected void onProgressUpdate(Integer progress) {
-			Log.i(TAG, "Progress");
-			if (progress == 1) {
-				Toast.makeText(ConnectActivity.this,
-						"Network connection failed!", Toast.LENGTH_SHORT)
-						.show();
-			} else if (progress == 2) {
-				Toast.makeText(ConnectActivity.this, "Unkown host!",
-						Toast.LENGTH_SHORT).show();
-			}
-		}
-
-		/**
-		 * Called once the doInBackground thread ends, manages the UI. On
-		 * success, shows the GridView used to manage the list of available
-		 * application, effectively giving the user access to the rest of the
-		 * application.
-		 */
-		protected void onPostExecute(Void result) {
-			Log.i(TAG, "Connection finished ");
-
-			if (Global.network.isConnected()) {
-				Toast.makeText(ConnectActivity.this, "Connected",
-						Toast.LENGTH_SHORT).show();
-
-				// Start the command parser thread
-				Thread t = new Thread(Global.network.getCommandParser(),
-						"CommandParser Thread");
-				t.start();
-
-				ipTable.put(ip, port);
-				preferencesEditor.putString("ip",
-						SerializationTool.mapToString(ipTable));
-				// save preferences
-				preferencesEditor.commit();
-				alterAdapter();
-
-				// Start application choice activity
-				startApplicationSelectorActivity();
-
-			} else {
-				Toast.makeText(ConnectActivity.this,
-						"Network connection failed", Toast.LENGTH_SHORT).show();
-			}
-
-			Global.network.sendCommand(new Command(CommandWord.HELLO));
-		}
-
-	} // IpLookup (AsyncTask)
-
+	
 	// Filters list of contacts based on user search criteria. If no information
 	// is filled in, contact list will be fully shown
 	private void alterAdapter() {

@@ -13,6 +13,7 @@ import java.net.SocketException;
  * 
  */
 public class ServerUDP extends Thread {
+    private Thread thread;
 	private static final int TIMEOUT_RECEPTION_REPONSE = 10000;
 	private DatagramSocket socket;
 	private static final String TAG = "ServerUDP";
@@ -22,6 +23,7 @@ public class ServerUDP extends Thread {
 		try {
 			socket = new DatagramSocket(port);
 			socket.setSoTimeout(TIMEOUT_RECEPTION_REPONSE);
+		    
 		} catch (SocketException se) {
 			System.err
 					.println(TAG
@@ -36,7 +38,7 @@ public class ServerUDP extends Thread {
 	 */
 	@Override
 	public void run() {
-		System.out.println(TAG + ": Running UDP Lookup");
+		System.out.println(TAG + ": Running UDP Lookup ");
 
 		// Initializing array used to send and receive Ping and Pong
 		byte[] receiveData = new byte[4];
