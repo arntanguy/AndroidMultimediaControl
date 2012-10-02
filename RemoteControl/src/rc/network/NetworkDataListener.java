@@ -1,9 +1,11 @@
 package rc.network;
 
-import player.Status;
 import media.AvailableApplications;
 import media.MetaData;
 import media.TrackList;
+import player.Status;
+
+import commands.ErrorCommand;
 
 /**
  * The interface NetworkDataListener provides a description of functions to
@@ -25,4 +27,6 @@ public interface NetworkDataListener {
 	public void trackListChanged(TrackList trackList);
 	
 	public void availableApplicationsChanged(AvailableApplications availableApplications);
+	
+	public void error(ErrorCommand error);
 }

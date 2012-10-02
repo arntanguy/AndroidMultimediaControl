@@ -154,6 +154,14 @@ public class Network {
 						errorC = (ErrorCommand) c;
 						Log.e(TAG, errorC.toString());
 						break;
+					
+					case ERROR_APPLICATION_NOT_STARTED:
+					    errorC = (ErrorCommand) c;
+					    Log.e(TAG, errorC.toString());
+					    for (NetworkDataListener l : networkDataListeners) {
+                            l.error(errorC);
+                        }
+					    break;
 
 					case STATUS_CHANGED:
 						statusC = (StatusCommand) c;

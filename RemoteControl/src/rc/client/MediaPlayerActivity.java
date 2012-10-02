@@ -21,6 +21,7 @@ import android.widget.SeekBar.OnSeekBarChangeListener;
 
 import commands.Command;
 import commands.CommandWord;
+import commands.ErrorCommand;
 import commands.ObjectCommand;
 import player.Status;
 
@@ -231,7 +232,7 @@ public class MediaPlayerActivity extends Activity {
 	};
 
 	/**
-	 * NetworkDataHandler is an observer for the Network class. It will recieve
+	 * NetworkDataHandler is an observer for the Network class. It will receive
 	 * new data when available, status update on the player state, and various
 	 * informations about the network.
 	 */
@@ -303,6 +304,12 @@ public class MediaPlayerActivity extends Activity {
 		public void availableApplicationsChanged(
 				AvailableApplications availableApplications) {		
 		}
+
+        @Override
+        public void error(ErrorCommand error) {
+            // TODO Auto-generated method stub
+            
+        }
 	}
 
 	/**

@@ -26,7 +26,7 @@ public class DBusBanshee extends DBusMPRIS2 {
         try {
             connect();
         } catch (DBusException e) {
-            e.printStackTrace();
+            //e.printStackTrace();
         }
     }
     

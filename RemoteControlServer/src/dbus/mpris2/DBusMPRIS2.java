@@ -54,7 +54,9 @@ public class DBusMPRIS2 extends DBus implements ApplicationControlInterface {
                 conn.addSigHandler(Playlists.PlaylistChanged.class,
                         playlistChangeHandler);
                 conn.addSigHandler(Player.Seeked.class, seekedHandler);
-                conn.addSigHandler(org.freedesktop.PropertiesChangedSignal.PropertiesChanged.class, pHandler);
+                conn.addSigHandler(
+                        org.freedesktop.PropertiesChangedSignal.PropertiesChanged.class,
+                        pHandler);
             }
 
         } catch (DBusException e) {

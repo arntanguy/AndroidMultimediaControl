@@ -12,6 +12,7 @@ import java.net.Socket;
 import commands.AvailableApplicationsCommand;
 import commands.Command;
 import commands.CommandWord;
+import commands.ErrorCommand;
 import commands.MetaDataCommand;
 import commands.ObjectCommand;
 import commands.StatusCommand;
@@ -23,6 +24,8 @@ public class ServerThreadConnexion implements Runnable {
     private ObjectOutputStream oos;
     private ObjectInputStream ois;
     private boolean run = true;
+    public final int DELAY_RETRY_DBUS = 500;
+    public final int MAX_TRIES_DBUS_CONNECTION = 15;
 
     // Interface through which all links with applications will be handled
     private ApplicationControlInterface applicationControl = null;
@@ -107,25 +110,26 @@ public class ServerThreadConnexion implements Runnable {
                         + c.getCommand().toString());
                 if (applicationControl == null) {
                     switch (c.getCommand()) {
+                    case START_APPLICATION:
+                        String app = ((ObjectCommand) c).getObject().toString();
+                        System.out.println("## START_APPLICATION");
+
+                        try {
+                            Process p = Runtime.getRuntime().exec(app);
+                        } catch (Exception err) {
+                            // Program not found or execution error
+                            err.printStackTrace();
+                        }
+                        System.out.println("Starting application " + app);
+                        setApplication(app);
                     case GET_AVAILABLE_APPLICATIONS:
                         sendCommand(new AvailableApplicationsCommand(
                                 CommandWord.GET_AVAILABLE_APPLICATIONS,
                                 ConnectedApplications.getAvailable()));
                         break;
                     case SET_APPLICATION:
-                        ObjectCommand<String> appC = (ObjectCommand) c;
-                        System.out.println("Application: " + appC.getObject());
-                        applicationControl = Factory.getApplicationControl(appC
-                                .getObject());
-                        try {
-                            applicationControl.setServer(this);
-                            applicationControl.connect();
-                        } catch (Exception e) {
-                            System.err
-                                    .println("Failed to establish connection with "
-                                            + appC.getObject());
-                            e.printStackTrace();
-                        }
+                        setApplication(((ObjectCommand) c).getObject()
+                                .toString());
                         break;
                     }
                 } else {
@@ -212,6 +216,37 @@ public class ServerThreadConnexion implements Runnable {
             }
         }
 
+    }
+    /**
+     * Tries to establish dbus link with application.
+     * It will try MAX_TRIES_DBUS_CONNECTION times, waiting DELAY_RETRY_DEBUS ms between each tries.
+     * @param app
+     *      The name of the binary executable of the application
+     * @return
+     *      True on success, false otherwise (and sends an error command to the android client to notify of failure)
+     */
+    private boolean setApplication(String app) {
+        int tries = 0;
+        while (tries <= MAX_TRIES_DBUS_CONNECTION) {
+            applicationControl = Factory.getApplicationControl(app);
+            try {
+                applicationControl.setServer(this);
+                applicationControl.connect();
+                System.out.println("Link with " + app + " established!");
+                return true;
+            } catch (Exception e) {
+                tries++;
+                System.err.println("Failed to establish connection with " + app + ", retrying");
+                try {
+                    Thread.sleep(DELAY_RETRY_DBUS);
+                } catch (InterruptedException e1) {
+                }
+            }
+        }
+        System.out.println("Connection with application "+app+" failed!");
+        sendCommand(new ErrorCommand(CommandWord.ERROR_APPLICATION_NOT_STARTED,
+                "Application not started", "The application hasn't been started properly or isn't connected to DBUS"));
+        return false;
     }
 
     public void disconnect() throws IOException {

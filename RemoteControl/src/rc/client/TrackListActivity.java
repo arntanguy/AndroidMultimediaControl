@@ -18,6 +18,7 @@ import android.widget.ListView;
 
 import commands.Command;
 import commands.CommandWord;
+import commands.ErrorCommand;
 import commands.ObjectCommand;
 import player.Status;
 
@@ -127,6 +128,12 @@ public class TrackListActivity extends ListActivity {
 		public void availableApplicationsChanged(
 				AvailableApplications availableApplications) {			
 		}
+
+        @Override
+        public void error(ErrorCommand error) {
+            // TODO Auto-generated method stub
+            
+        }
 
 	}
 
