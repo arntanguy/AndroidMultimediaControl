@@ -4,12 +4,17 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.InetAddress;
+import java.net.NetworkInterface;
 import java.net.Socket;
 import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Enumeration;
+import java.util.List;
 
 import media.MetaData;
+import player.Status;
 import android.util.Log;
 
 import commands.AvailableApplicationsCommand;
@@ -19,7 +24,6 @@ import commands.MetaDataCommand;
 import commands.ObjectCommand;
 import commands.StatusCommand;
 import commands.TrackListCommand;
-import player.Status;
 
 /**
  * This class manages all network relations with the server. It serves as a link
@@ -245,14 +249,41 @@ public class Network {
 		networkDataListeners.remove(listener);
 	}
 
-	public static InetAddress getIpAddress() {
-		InetAddress thisIp = null;
-		try {
-			thisIp = InetAddress.getLocalHost();
-			System.out.println("IP:" + thisIp.getHostAddress());
-		} catch (Exception e) {
-			e.printStackTrace();
+	/**
+	 * Lists properties of network interfaces
+	 * 
+	 * @author Arnaud TANGUY
+	 * 
+	 */
+	public static class NetworkInterfacesProperties {
+		/**
+		 * Shows a list of all available network interfaces
+		 * 
+		 * @throws SocketException
+		 */
+		public static void Show() throws SocketException {
+			Enumeration<NetworkInterface> networkInterfaces = NetworkInterface
+					.getNetworkInterfaces();
+			for (NetworkInterface netint : Collections.list(networkInterfaces))
+				displayInterfaceInformation(netint);
 		}
-		return thisIp;
+
+		/**
+		 * Display informations about current interface (such as name, IP...)
+		 * 
+		 * @param netint
+		 *            The Network interface
+		 * @throws SocketException
+		 */
+		public static void displayInterfaceInformation(NetworkInterface netint)
+				throws SocketException {
+			System.out.printf("Display name: %s\n", netint.getDisplayName());
+			System.out.printf("Name: %s\n", netint.getName());
+			Enumeration<InetAddress> inetAddresses = netint.getInetAddresses();
+			for (InetAddress inetAddress : Collections.list(inetAddresses)) {
+				System.out.printf("InetAddress: %s\n", inetAddress);
+			}
+			System.out.printf("\n");
+		}
 	}
 }

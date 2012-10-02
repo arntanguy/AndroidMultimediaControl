@@ -4,15 +4,21 @@ import java.io.InterruptedIOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
-import java.net.SocketException;
 
 import android.content.Context;
 import android.net.DhcpInfo;
 import android.net.wifi.WifiManager;
 import android.util.Log;
 
+/**
+ * This class gives basic Ping-Pong functionnality used to query a simple UDP
+ * server (ServerUDP) in order to determine its IP Address
+ * 
+ * @author Arnaud TANGUY
+ * 
+ */
 public class UDPLookup {
-	private static final String TAG = "UDPLookup";
+	public static final String TAG = "UDPLookup";
 	public static final int RECEIVING_TIMEOUT = 10000;
 	public static final int RECEIVING_TIMEOUT_SERVER = 30000;
 	private DatagramSocket socket;
@@ -32,10 +38,13 @@ public class UDPLookup {
 		}
 	}
 
-	public String getServerIp() {
+	public InetAddress getServerIp() {
 		try {
+			// Broadcast a Ping message to try and get an host to answer
 			DatagramPacket packet = sendBroadcast("Ping");
-			return packet.getAddress().getHostAddress();
+			System.out.println("Lookup done: "
+					+ packet.getAddress().getHostAddress());
+			return packet.getAddress();
 		} catch (InterruptedIOException ie) {
 			Log.d("ERROR", "No server found");
 			try {
@@ -56,40 +65,12 @@ public class UDPLookup {
 		return null;
 	}
 
-	public void waitingForDiscover() {
-		socket = null;
-		try {
-			socket = new DatagramSocket(mPort);
-			socket.setSoTimeout(RECEIVING_TIMEOUT_SERVER);
-		} catch (SocketException se) {
-			Log.d("ERROR", "Verify your Wifi connection");
-			se.printStackTrace();
-		}
-
-		byte[] receiveData = new byte[1024];
-		byte[] sendData = new byte[1024];
-
-		while (socket != null && !socket.isClosed()) {
-			try {
-				DatagramPacket receivePacket = new DatagramPacket(receiveData,
-						receiveData.length);
-				socket.receive(receivePacket);
-				String sentence = new String(receivePacket.getData());
-				InetAddress IPAddress = receivePacket.getAddress();
-				int port = receivePacket.getPort();
-				if (sentence.contains("Ping")) {
-					sendData = "Pong".getBytes();
-					DatagramPacket sendPacket = new DatagramPacket(sendData,
-							sendData.length, IPAddress, port);
-					socket.send(sendPacket);
-				}
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-		}
-		stop();
-	}
-
+	/**
+	 * Gets the multicast adress
+	 * 
+	 * @return Multicast adress
+	 * @throws Exception
+	 */
 	private InetAddress getBroadcastAddress() throws Exception {
 		WifiManager wifi = (WifiManager) mContext
 				.getSystemService(Context.WIFI_SERVICE);
@@ -102,31 +83,64 @@ public class UDPLookup {
 		return InetAddress.getByAddress(quads);
 	}
 
+	/**
+	 * Send a packet on all IP range by using the UDP protocol in broadcast mode
+	 * 
+	 * @param data
+	 *            The string to send
+	 * @return The DatagramPacket of the first server to answer
+	 * @throws Exception
+	 */
 	private DatagramPacket sendBroadcast(String data) throws Exception {
 		socket = new DatagramSocket(mPort);
 		socket.setBroadcast(true);
 		InetAddress broadcastAdress = getBroadcastAddress();
 		DatagramPacket packet = new DatagramPacket(data.getBytes(),
 				data.length(), broadcastAdress, mPort);
+		// Broadcast packet
 		socket.send(packet);
 
-		byte[] buf = new byte[1024];
+		/*
+		 * Receiving buffer
+		 */
+		byte[] buf = new byte[4];
 		packet = new DatagramPacket(buf, buf.length);
+		// Stop broadcasting
+		socket.setBroadcast(false);
 		socket.setSoTimeout(RECEIVING_TIMEOUT);
 
-		InetAddress localAddress = Network.getIpAddress();
-		if (localAddress == null)
-			return packet;
-		else {
-			String myAdress = localAddress.toString();
-			Log.i(TAG, "My Address: "+myAdress);
-			myAdress = "192.168.42.161";
-			socket.receive(packet);
-			while (packet.getAddress().getHostAddress().contains(myAdress))
-				socket.receive(packet);
+		byte[] receiveData = new byte[4];
 
-			stop();
+		// Tant qu'on est connecté, on attend une requête et on y répond
+		while (socket != null && !socket.isClosed()) {
+			try {
+				DatagramPacket packetReceived = new DatagramPacket(receiveData,
+						receiveData.length);
+				try {
+					socket.receive(packetReceived);
+				} catch (Exception e) {
+				}
+				String requete = new String(packetReceived.getData());
+				InetAddress IPAddress = packetReceived.getAddress();
+				int port = packetReceived.getPort();
+				System.out.println("Packet received " + IPAddress + " " + port
+						+ " " + requete);
+
+				// If we received pong, it means than the server answered, so
+				// the packet contains its IP :)
+				if (requete.contains("Pong")) {
+					System.out.println("Returning server ip: "
+							+ packetReceived.getAddress().getHostAddress());
+					stop();
+					socket = null;
+					return packetReceived;
+				}
+			} catch (Exception e) {
+				System.err.println("Erreur de communication UDP");
+				e.printStackTrace();
+			}
 		}
-		return packet;
+		stop();
+		return null;
 	}
 }

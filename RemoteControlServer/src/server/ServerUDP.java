@@ -5,66 +5,84 @@ import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.SocketException;
 
+/**
+ * A simple UDP server used to answer to UDP broadcast Ping queries, used in
+ * order to get the server IP
+ * 
+ * @author Arnaud TANGUY
+ * 
+ */
 public class ServerUDP extends Thread {
 	private static final int TIMEOUT_RECEPTION_REPONSE = 10000;
 	private DatagramSocket socket;
+	private static final String TAG = "ServerUDP";
 
 	public ServerUDP(int port) {
-		// Construire la socket réseau UDP
+		/* Building UDP socket */
 		try {
-			// On essaye de créer notre socket serveur UDP
 			socket = new DatagramSocket(port);
 			socket.setSoTimeout(TIMEOUT_RECEPTION_REPONSE);
-			this.start();
 		} catch (SocketException se) {
-			System.err.println("Impossible de lancer le serveur UDP");
+			System.err
+					.println(TAG
+							+ ": Unable to start UDP server. Auto-ip lookup will not work!");
 			se.printStackTrace();
 			return;
 		}
 	}
 
+	/**
+	 * Run the server thread, and start the network loop
+	 */
 	@Override
 	public void run() {
-		// On initialise les trames qui vont servir à recevoir et envoyer les
-		// paquets
-		byte[] receiveData = new byte[1024];
-		byte[] sendData = new byte[1024];
+		System.out.println(TAG + ": Running UDP Lookup");
 
-		// Tant qu'on est connecté, on attend une requête et on y répond
+		// Initializing array used to send and receive Ping and Pong
+		byte[] receiveData = new byte[4];
+		byte[] sendData = new byte[4];
+		DatagramPacket paquetReceived = null;
+
+		// Wait for request
 		while (socket != null && !socket.isClosed()) {
 			try {
-				DatagramPacket paquetRecu = new DatagramPacket(receiveData,
+				paquetReceived = new DatagramPacket(receiveData,
 						receiveData.length);
 				try {
-					socket.receive(paquetRecu);
+					socket.receive(paquetReceived);
 				} catch (Exception e) {
-//					System.out.println("No UDP request recieved");
 				}
-				String requete = new String(paquetRecu.getData());
-				InetAddress IPAddress = paquetRecu.getAddress();
-				int port = paquetRecu.getPort();
-				// Si on reçoit un "ping", on répond "pong" à celui qui nous l'a
-				// envoyé
-				if (requete.contains("Ping")) {
-					System.out
-							.println("Requesting package from server to get its IP");
-					sendData = "Pong".getBytes();
-					DatagramPacket paquetRetour = new DatagramPacket(sendData,
-							sendData.length, IPAddress, port);
-					socket.send(paquetRetour);
-					socket.close();
+				if (paquetReceived != null) {
+					String requete = new String(paquetReceived.getData(), 0,
+							paquetReceived.getLength());
+					InetAddress IPAddress = paquetReceived.getAddress();
+					int port = paquetReceived.getPort();
+
+					/*
+					 * On receiving Ping, answer to the sender, so that he can
+					 * get your IP ;)
+					 */
+					if (requete.contains("Ping")) {
+						System.out.println(TAG
+								+ ": Ping received from client IP: "
+								+ IPAddress + "\tPort: " + port);
+						sendData = "Pong".getBytes();
+						DatagramPacket paquetRetour = new DatagramPacket(
+								sendData, sendData.length, IPAddress, port);
+						socket.send(paquetRetour);
+						System.out.println(TAG + ": Pong sent to " + IPAddress);
+					}
+					receiveData = new byte[4];
 				}
 			} catch (Exception e) {
-				System.err.println("Erreur de communication UDP");
+				System.err.println(TAG + ": Erreur de communication UDP");
 				e.printStackTrace();
 			}
 		}
-
 	}
 
 	public void closeUDP() {
 		socket.close();
-
-		System.out.println("Serveur UDP fermé");
+		System.out.println(TAG + ": Serveur UDP fermé");
 	}
 }

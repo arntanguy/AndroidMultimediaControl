@@ -1,6 +1,7 @@
 package rc.client;
 
 import java.io.IOException;
+import java.net.InetAddress;
 import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
@@ -77,7 +78,8 @@ public class ConnectActivity extends Activity {
 
 		ipTable = new HashMap<String, String>();
 		// XXX : fixme
-		ipTable = (HashMap<String, String>) SerializationTool.stringToMap(preferences.getString("ip", "fail"));
+		ipTable = (HashMap<String, String>) SerializationTool
+				.stringToMap(preferences.getString("ip", "fail"));
 
 		searchNames = new ArrayList<IpItem>(ipTable.size());
 		for (String s : ipTable.keySet()) {
@@ -90,10 +92,19 @@ public class ConnectActivity extends Activity {
 
 		Toast.makeText(this, "Toast it !!! Roast it !", Toast.LENGTH_SHORT)
 				.show();
-		
+
+		/**
+		 * UDP lookup to search for server IP This works by broadcasting a
+		 * request (Ping) on all host on network on a certain port and waiting
+		 * for someone to respond. If you get a response, that means that the
+		 * server is up and running there ;)
+		 */
 		UDPLookup lookup = new UDPLookup(this.getApplicationContext(), 4243);
 		try {
-			Log.i(TAG, "Found server IP : " + lookup.getServerIp());
+			InetAddress serverAddress = lookup.getServerIp();
+			Toast.makeText(this, "Found Server: " + serverAddress,
+					Toast.LENGTH_SHORT).show();
+			Log.i(TAG, "Found server IP : " + serverAddress);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -203,7 +214,7 @@ public class ConnectActivity extends Activity {
 				Thread t = new Thread(Global.network.getCommandParser(),
 						"CommandParser Thread");
 				t.start();
-				
+
 				ipTable.put(ip, port);
 				preferencesEditor.putString("ip",
 						SerializationTool.mapToString(ipTable));
@@ -328,7 +339,7 @@ public class ConnectActivity extends Activity {
 				Thread t = new Thread(Global.network.getCommandParser(),
 						"CommandParser Thread");
 				t.start();
-				
+
 				ipTable.put(ip, port);
 				preferencesEditor.putString("ip",
 						SerializationTool.mapToString(ipTable));
@@ -346,9 +357,9 @@ public class ConnectActivity extends Activity {
 
 			Global.network.sendCommand(new Command(CommandWord.HELLO));
 		}
-		
+
 	} // IpLookup (AsyncTask)
-	
+
 	// Filters list of contacts based on user search criteria. If no information
 	// is filled in, contact list will be fully shown
 	private void alterAdapter() {
