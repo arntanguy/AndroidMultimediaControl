@@ -18,5 +18,8 @@
     <string name="empty"></string>
     <string name="connect_table_layout_ip_label">Ip adress</string>
     <string name="connect_table_layout_port_label">Port</string>
+    <string name="autoDetectServer">Auto Detect Server</string>
+    <string name="autoDetectedServers">Auto Detected Servers</string>
+    <string name="successfulConnections">Successful Connections History</string>
 
 </resources>

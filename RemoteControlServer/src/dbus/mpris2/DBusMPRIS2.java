@@ -142,6 +142,11 @@ public class DBusMPRIS2 extends DBus implements ApplicationControlInterface {
     }
 
     @Override
+    public String getCoverArtPath() {
+        return getMetaDataMap().get("artUrl");
+    }
+    
+    @Override
     public MetaData getMetaData() {
         return new MetaData(getMetaDataMap());
     }

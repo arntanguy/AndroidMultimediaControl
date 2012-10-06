@@ -19,7 +19,7 @@ import player.Status;
 
 /**
  * Implementation of the MPRIS dbus standard. This standard is meant to
- * uniformize the use of dbus through the multimedia applications implementing
+ * uniformize the use of dbus through the media applications implementing
  * the protocol. Thus, this class will work with a lot of players, such as VLC,
  * Quodlibet, Clementine, and many others.
  * 
@@ -220,6 +220,12 @@ public class DBusMPRIS extends DBus implements ApplicationControlInterface {
             map.put(key, dmap.get(key).getValue().toString());
         }
         return map;
+    }
+
+    @Override
+    public String getCoverArtPath() {
+        // TODO Auto-generated method stub
+        return null;
     }
 
 }

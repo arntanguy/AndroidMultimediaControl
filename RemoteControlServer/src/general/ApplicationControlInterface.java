@@ -39,6 +39,8 @@ public interface ApplicationControlInterface {
     public MetaData getMetaData();
 
     public MetaData getMetaData(int a);
+    
+    public String getCoverArtPath();
 
     public Status getStatus();
 
